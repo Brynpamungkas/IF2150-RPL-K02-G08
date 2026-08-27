@@ -20,7 +20,8 @@ docs/
 		assets/                        # gambar, diagram, dll disimpan di sini
 			diagram/                       # diagram UML, activity, dll
 		KXX_GYY_Form-Asistensi.md      # dokumentasi asistensi
-		KXX_GYY_Tugas-TB.md            # dokumen tugas besar milestone 1
+		KXX_GYY_Draft_TB.md            # dokumen tugas besar (draft, sebelum asistensi)
+		KXX_GYY_Final_TB.md            # dokumen tugas besar (final, setelah asistensi)
 	M2/                             # milestone 2
 		...
 	...
