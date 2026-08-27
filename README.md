@@ -70,8 +70,18 @@ Cara membuat tag submission:
 
 1. Pastikan semua perubahan untuk milestone ini sudah di-commit ke branch `main` fork kelompok.
 2. Buka tab **Releases** di repo fork kelompok → **Draft a new release**.
-3. Di bagian tag, ketik tag baru. Format tag adalah MX, dengan X adalah nomor milestone. Misal M1, M2, dst.
+3. Di bagian tag, ketik tag baru dengan format `vX.Y`, dengan `X` adalah nomor milestone pengerjaan tugas dan `Y` adalah nomor revisi pada milestone tersebut.
 4. Pastikan target rilis mengarah ke branch `main` (commit terakhir kelompok saat itu).
+
+Contoh penggunaan format tag:
+
+| Tag | Keterangan |
+| :--- | :--- |
+| `v1.0` | Release milestone pertama |
+| `v1.1` | Revisi pertama pada milestone pertama |
+| `v2.0` | Release milestone kedua |
+
+Khusus pengumpulan final, kelompok **WAJIB** membuat release dengan format tag di atas.
 
 Tag inilah yang jadi bukti resmi apa yang kelompok kumpulkan untuk milestone tersebut. Ulangi langkah ini di setiap deadline milestone.
 
