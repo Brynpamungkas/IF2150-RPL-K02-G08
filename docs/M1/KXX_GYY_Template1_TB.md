@@ -1,3 +1,34 @@
+<h1>
+IF2150 REKAYASA PERANGKAT LUNAK
+<br>
+TUGAS 1
+<br>
+TOPIC BRAINSTORMING
+</h1>
+<br>
+
+## *Nama Perangkat Lunak*
+
+### Untuk: *[Nama Asisten]*
+
+Dipersiapkan oleh:
+| Informasi | Keterangan |
+| --- | --- |
+| Kelas | *\[Kelas\]* |
+| Kelompok | *\[Nomor Kelompok\]*  |
+
+| NIM | Nama |
+|---|---|
+| *[NIM 1]* | *[Nama Anggota 1]* |
+| *[NIM 2]* | *[Nama Anggota 2]* |
+| *[NIM 3]* | *[Nama Anggota 3]* |
+| *[NIM 4]* | *[Nama Anggota 4]* |
+| *[NIM 5]* | *[Nama Anggota 5]* |
+---
+
+<br>
+<br>
+
 # BAB 1: Analisis Permasalahan
 
 ## 1.1 Latar Belakang Masalah
@@ -25,7 +56,7 @@ Buatlah daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan s
 
 | Aktor | Deskripsi |
 | :--- | :--- |
-| *Kasir* | *Pengguna ini bertindak sebagai pihak yang bertanggung jawab untuk memproses transaksi harian dan melayani pembayaran pelanggan. Karakteristik dari pengguna ini adalah mengutamakan kecepatan dan keakuratan saat bertransaksi.*
+| *Kasir* | *Pengguna ini bertindak sebagai pihak yang bertanggung jawab untuk memproses transaksi harian dan melayani pembayaran pelanggan. Karakteristik dari pengguna ini adalah mengutamakan kecepatan dan keakuratan saat bertransaksi.* |
 | ... | ... |
 
 
@@ -42,14 +73,14 @@ Definisikan apa yang ingin dicapai oleh pengguna saat menggunakan sistem ini dal
 Buatlah *Activity Diagram* atau *Swimlane Diagram* yang menunjukkan alur kerja proses bisnis dari sistem solusi. Diagram ini harus memvisualisasikan bagaimana alur operasional di dunia nyata berjalan lebih efisien dengan adanya interaksi antara aktor (yang didefinisikan pada poin 3.1) dan sistem perangkat lunak. Perhatikan notasi yang digunakan dalam pembuatannya.
 <br>
 
-<p align = "center">
-<img alt = "Contoh Activity Diagram" src="./assets/diagram/diagram-act-1.avif" width="70%">
+<p align="center">
+<img alt="Contoh Activity Diagram" src="./assets/diagram/diagram-act-1.avif" width="70%">
 </p>
-<p align = "center">
+<p align="center">
 <i>Gambar 1. Contoh Activity Diagram</i>
 </p>
 
 <br>
 
 # Referensi
-* Diagram UML: https://www.drawio.com/, https://staruml.io/
+- Diagram UML: https://www.drawio.com/, https://staruml.io/

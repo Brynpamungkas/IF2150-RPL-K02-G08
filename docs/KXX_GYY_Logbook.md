@@ -2,26 +2,27 @@
 
 ## Tugas Besar IF2150 - Rekayasa Perangkat Lunak
 
-**Nama P/L:** 
-
-**Nomor Kelompok:**
-
-**Kelas:**
+| Informasi | Keterangan |
+|---|---|
+| Kelas | *[Kelas]* |
+| Nomor Kelompok | *[Nomor Kelompok]* |
+| Nama Kelompok | *[Nama Kelompok]* |
+| Nama Perangkat Lunak | *[Nama P/L]* |
 
 **Anggota Kelompok:**
 
 | NIM | Nama |
 |---|---|
-| [NIM 1] | [Nama Anggota 1] |
-| [NIM 2] | [Nama Anggota 2] |
-| [NIM 3] | [Nama Anggota 3] |
-| [NIM 4] | [Nama Anggota 4] |
-| [NIM 5] | [Nama Anggota 5] |
+| *[NIM 1]* | *[Nama Anggota 1]* |
+| *[NIM 2]* | *[Nama Anggota 2]* |
+| *[NIM 3]* | *[Nama Anggota 3]* |
+| *[NIM 4]* | *[Nama Anggota 4]* |
+| *[NIM 5]* | *[Nama Anggota 5]* |
 
 ---
 
 ### Daftar Isi
-* [Milestone 1](#./M1/)
+* [Milestone 1](#milestone-1)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 

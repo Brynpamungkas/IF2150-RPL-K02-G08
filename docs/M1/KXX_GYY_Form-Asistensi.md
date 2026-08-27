@@ -5,9 +5,11 @@
 | Informasi | Keterangan |
 | --- | --- |
 | **Hari** | *\[Hari\]* |
-| Tanggal | *\[DD/MM/YYYY\]* |
+| **Tanggal** | *\[DD/MM/YYYY\]* |
 | **Kelas** | *\[Kelas\]* |
-| **Kelompok** | *\[Nomor Kelompok\]*  |
+| **Nomor Kelompok** | *\[Nomor Kelompok\]*  |
+| **Nama Kelompok** | *\[Nama Kelompok\]*  |
+| **Nama Perangkat Lunak** | *\[Nama P/L\]*  |
 | **Dokumen** | *\[Nama Dokumen yang diasistensikan\]*  |
 
 ### Anggota Kelompok
