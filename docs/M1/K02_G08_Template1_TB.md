@@ -49,7 +49,7 @@ Saat ini, aplikasi donasi digital di Indonesia mayoritas hanya berfokus pada tra
 
 KlimPooL adalah aplikasi berbasis web yang menghubungkan masyarakat dengan aksi iklim dan penanganan bencana di berbagai wilayah Indonesia. Dari sudut pandang pengguna, KlimPooL menyajikan peta interaktif yang menampilkan proyek lingkungan yang sedang berjalan di tiap daerah. Melalui peta tersebut, pengguna dapat menelusuri proyek di wilayah tertentu, membaca kebutuhan yang belum terpenuhi, lalu memilih bentuk kontribusi yang sesuai dengan kapasitasnya, baik berupa penyaluran dana maupun pendaftaran diri sebagai relawan. Selain berperan sebagai kontributor, setiap pengguna juga diberi keleluasaan untuk menginisiasi penggalangan dana maupun rekrutmen relawan bagi proyeknya sendiri. Seluruh inisiatif yang masuk tetap melewati verifikasi admin sebelum dipublikasikan, sehingga keterbukaan platform tidak mengorbankan kredibilitas informasi yang ditampilkan.
 
-Perangkat lunak ini dikembangkan sebagai aplikasi berbasis web atas tiga pertimbangan. Pertama, tujuan platform adalah menjangkau partisipasi publik seluas mungkin, sehingga aksesibilitas menjadi faktor penentu; aplikasi web dapat diakses melalui peramban pada berbagai perangkat tanpa proses pemasangan. Kedua, fitur utama berupa peta interaktif berskala nasional menuntut penyajian data geografis secara dinamis, dan kebutuhan tersebut dapat dipenuhi secara optimal oleh teknologi web. Ketiga, data pada KlimPooL seperti progres donasi dan sisa kuota relawan berubah terus-menerus, sehingga pembaruan cukup dilakukan pada sisi peladen tanpa memerlukan pemutakhiran versi di sisi pengguna.
+Perangkat lunak ini dikembangkan sebagai aplikasi berbasis web atas tiga pertimbangan. Pertama, tujuan platform adalah menjangkau partisipasi publik seluas mungkin, sehingga aksesibilitas menjadi faktor penentu; aplikasi web dapat diakses melalui peramban pada berbagai perangkat tanpa proses pemasangan. Kedua, fitur utama berupa peta interaktif berskala nasional menuntut penyajian data geografis secara dinamis, dan kebutuhan tersebut dapat dipenuhi secara optimal oleh teknologi web. Ketiga, data pada KlimPooL seperti progres donasi dan sisa kuota relawan berubah terus-menerus, sehingga pembaruan cukup dilakukan pada sisi peladen tanpa memerlukan pemutakhiran versi di sisi pengguna. Setiap pengguna dapat membuat dua jenis saldo yang terpisah, yaitu saldo pribadi yang digunakan untuk berdonasi dan saldo penggalangan dana yang menampung donasi masuk pada proyek yang ia buka.
 
 Nilai unik KlimPooL terletak pada perluasan bentuk kontribusi yang belum terakomodasi platform sejenis. Aplikasi donasi digital di Indonesia umumnya hanya memfasilitasi bantuan berupa dana, padahal pemulihan pascabencana dan pelaksanaan proyek lingkungan sangat bergantung pada ketersediaan tenaga di lapangan. Perbandingan berikut merangkum posisi KlimPooL terhadap platform donasi yang telah ada:
 
@@ -69,7 +69,7 @@ Pengembangan KlimPooL dilandasi sejumlah asumsi, baik dari sisi teknis maupun da
 | :--- | :--- |
 | Teknis | Sistem dijalankan pada peladen yang tersedia berkelanjutan dan mampu melayani permintaan pengguna secara bersamaan |
 | Teknis | Data proyek menggunakan data tiruan yang disusun tim, bukan integrasi langsung dengan basis data lembaga eksternal |
-| Teknis | Transaksi keuangan ditangani penyalur donasi sebagai pihak ketiga; sistem hanya berperan sebagai perantara pencatatan |
+| Teknis | Setiap pengguna memiliki saldo di dalam aplikasi yang bertambah melalui proses pengisian saldo. Proses pengisian saldo tersebut merupakan data tiruan dan tidak berasal dari transaksi keuangan yang sebenarnya |
 | Pengguna | Pengguna memiliki perangkat dengan peramban modern dan koneksi internet yang memadai |
 | Pengguna | Pengguna memiliki literasi digital dasar untuk mendaftar akun, menelusuri proyek, dan mengisi formulir |
 | Pengguna | Inisiator penggalangan bersedia menyediakan informasi yang benar dan melaporkan perkembangan proyek secara berkala |
@@ -79,9 +79,9 @@ Selain asumsi di atas, terdapat sejumlah batasan yang membingkai pengembangan Kl
 | Kategori | Batasan |
 | :--- | :--- |
 | Regulasi | Penggalangan dana tunduk pada ketentuan hukum yang berlaku, sehingga seluruh proyek wajib melewati verifikasi dan tidak tersedia penyaluran dana anonim |
-| Regulasi | Sistem tidak memproses transaksi keuangan secara mandiri, melainkan bergantung pada penyedia layanan pembayaran |
 | Sumber Daya | Dikembangkan oleh tim beranggotakan lima orang dalam rentang satu semester, bersamaan dengan tanggung jawab akademik lain |
 | Sumber Daya | Prioritas pengembangan diletakkan pada fungsi inti: peta proyek, penggalangan dana, dan pengelolaan relawan |
+| Ruang Lingkup | Sistem tidak melakukan pemrosesan pengisian saldo. Pengisian saldo hanya disimulasikan di dalam aplikasi, sehingga tidak ada perpindahan dana yang nyata |
 | Ruang Lingkup | Cakupan wilayah terbatas pada teritori Indonesia |
 | Ruang Lingkup | Sistem tidak menangani operasional proyek di lapangan, seperti pengelolaan logistik fisik dan penjadwalan kegiatan terperinci |
 | Ruang Lingkup | Materi edukasi mitigasi iklim tidak termasuk cakupan utama tahap ini dan dipertimbangkan sebagai pengembangan lanjutan |
