@@ -93,11 +93,15 @@ Daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan sistem be
 | US-17 | *Pemerintah/Lembaga Terkait (Pihak Ketiga)* | *Memberikan atau memvalidasi data terkait kondisi dan kebutuhan lingkungan* | *Memastikan informasi project dan kebutuhan di lapangan dapat dipertanggungjawabkan* |
 
 ## 3.3 Model Proses Bisnis
-Buatlah *Activity Diagram* atau *Swimlane Diagram* yang menunjukkan alur kerja proses bisnis dari sistem solusi. Diagram ini harus memvisualisasikan bagaimana alur operasional di dunia nyata berjalan lebih efisien dengan adanya interaksi antara aktor (yang didefinisikan pada poin 3.1) dan sistem perangkat lunak. Perhatikan notasi yang digunakan dalam pembuatannya.
+Berikut adalah penjelasan singkat mengenai diagram alur kerja (Activity Diagram) untuk sistem KlimPool:
+1. Pendaftaran & Pengguna: Diagram dimulai dengan pendaftaran Donatur/Relawan melalui Aplikasi Mobile, yang datanya kemudian diverifikasi oleh Sistem KlimPool.
+2. Alur Kontribusi (Donasi & Relawan): Dari katalog proyek, pengguna memiliki dua opsi kontribusi utama. Untuk donasi, terdapat alur terintegrasi dengan Gerbang Pembayaran (Payment Gateway) pihak ketiga untuk memproses dan mengonfirmasi transaksi. Untuk pendaftaran relawan, sistem menangani proses aplikasi hingga manajemen jadwal.
+3. Pelaksanaan & Pelaporan Proyek: Pemilik Proyek dapat mencatat kemajuan dengan mengunggah foto/video kegiatan. Data ini kemudian secara otomatis dikompilasi menjadi Laporan Kemajuan Proyek melalui dasbor web mereka.
+4. Tinjauan & Validasi: Tahap akhir diagram menunjukkan interaksi dengan Admin Sistem, Mitra, dan Pemerintah untuk meninjau laporan, memberikan dukungan tambahan (logistik/dana), serta melakukan validasi data dan dampak proyek.
 <br>
 
 <p align="center">
-<img alt="Contoh Activity Diagram" src="./assets/diagram/diagram-act-1.avif" width="70%">
+<img alt="Contoh Activity Diagram" src="./assets/diagram/diagram-draft.png" width="70%">
 </p>
 <p align="center">
 <i>Gambar 1. Contoh Activity Diagram</i>
