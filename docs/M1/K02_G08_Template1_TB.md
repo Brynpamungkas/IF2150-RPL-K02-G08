@@ -60,8 +60,14 @@ Buatlah daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan s
 
 | Aktor | Deskripsi |
 | :--- | :--- |
-| *Kasir* | *Pengguna ini bertindak sebagai pihak yang bertanggung jawab untuk memproses transaksi harian dan melayani pembayaran pelanggan. Karakteristik dari pengguna ini adalah mengutamakan kecepatan dan keakuratan saat bertransaksi.* |
-| ... | ... |
+| *Donatur* | *Pengguna ini bertindak sebagai pihak yang memberikan dana untuk mendukung climate action project melalui sistem. Karakteristik dari pengguna ini adalah mengutamakan transparansi penggunaan dana, keamanan transaksi, dan kemudahan dalam berdonasi.* |
+| *Penggalang Donasi* | *Pengguna ini bertindak sebagai pihak yang membuka dan mengelola penggalangan dana untuk mendukung suatu climate action project. Karakteristik dari pengguna ini adalah membutuhkan kemudahan dalam membuat campaign, mengelola dana, dan menyampaikan informasi secara transparan kepada donatur.* |
+| *Pemilik/Pembuat Project* | *Pengguna ini bertindak sebagai pihak yang menciptakan, mengelola, dan menjalankan climate action project pada lokasi tertentu. Karakteristik dari pengguna ini adalah memiliki tujuan project yang jelas dan membutuhkan sarana untuk mengelola serta menyampaikan perkembangan project.* |
+| *Volunteer* | *Pengguna ini bertindak sebagai pihak yang memberikan kontribusi secara langsung dalam pelaksanaan climate action project melalui waktu, tenaga, atau keahliannya. Karakteristik dari pengguna ini adalah membutuhkan informasi project, jadwal, lokasi, dan proses pendaftaran yang jelas dan mudah.* |
+| *Admin Sistem* | *Pengguna ini bertindak sebagai pihak yang mengelola dan mengawasi keberjalanan sistem, termasuk memverifikasi pengguna dan project yang terdaftar. Karakteristik dari pengguna ini adalah mengutamakan keamanan, validitas data, dan keteraturan sistem.* |
+| *Penyalur Donasi (Pihak Ketiga)* | *Pihak ini bertindak sebagai perantara dalam memproses dan menyalurkan dana dari donatur kepada pihak atau project yang dituju. Karakteristik dari pihak ini adalah mengutamakan keamanan, keandalan, dan keakuratan dalam proses transaksi.* |
+| *Mitra/Sponsor (Pihak Ketiga)* | *Pihak ini bertindak sebagai pendukung climate action project melalui pendanaan, fasilitas, sumber daya, atau bentuk kerja sama lainnya. Karakteristik dari pihak ini adalah membutuhkan informasi project yang kredibel, transparan, dan sesuai dengan tujuan kerja sama.* |
+| *Pemerintah/Lembaga Terkait (Pihak Ketiga)* | *Pihak ini bertindak sebagai regulator, penyedia data, validator, atau mitra dalam pelaksanaan climate action project. Karakteristik dari pihak ini adalah mengutamakan kepatuhan terhadap regulasi, validitas informasi, dan dampak project yang dapat dipertanggungjawabkan.* |
 
 
 ## 3.2 Kebutuhan Pengguna Awal
