@@ -95,8 +95,9 @@ Daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan sistem be
 
 | Aktor | Deskripsi |
 | :--- | :--- |
-| *Pengguna* | *Pengguna dapat bertindak sebagai donatur proyek, relawan proyek, membuka penggalangan donasi proyek, atau menciptakan dan mengelola proyek. Karakteristik dari pengguna adalah kemudahan dalam berdonasi baik sebagai donatur ataupun relawan, transparansi penggunaan dana dan pelaksanaan proyek, kemudahan dalam membuat campaign dan mengelola informasi* |
+| *Pengguna* | *Pengguna dapat bertindak sebagai donatur proyek, relawan proyek, pembuka penggalangan donasi proyek, atau pembuat dan pengelola proyek. Karakteristik dari pengguna adalah kemudahan dalam berdonasi baik sebagai donatur ataupun relawan, transparansi penggunaan dana dan pelaksanaan proyek, serta kemudahan dalam membuat campaign dan mengelola informasi.* |
 | *Admin Sistem* | *Pengguna ini bertindak sebagai pihak yang mengelola dan mengawasi keberjalanan sistem, termasuk memverifikasi pengguna dan project yang terdaftar. Karakteristik dari pengguna ini adalah mengutamakan keamanan, validitas data, dan keteraturan sistem.* |
+
 
 ## 3.2 Kebutuhan Pengguna Awal
 
@@ -120,7 +121,15 @@ Daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan sistem be
 | US-16 | *Mitra/Sponsor (Pihak Ketiga)* | *Melihat dan memberikan dukungan kepada project* | *Menemukan project yang sesuai untuk diberikan pendanaan atau sumber daya* |
 | US-17 | *Pemerintah/Lembaga Terkait (Pihak Ketiga)* | *Memberikan atau memvalidasi data terkait kondisi dan kebutuhan lingkungan* | *Memastikan informasi project dan kebutuhan di lapangan dapat dipertanggungjawabkan* |
 
-## 3.3 Model Proses Bisnis
+## 3.3 Deskripsi Aktivitas
+Daftar seluruh aktivitas yang terdapat dalam sistem solusi beserta hubungannya dengan *user story*:
+| ID | Aktivitas | Penjelasan | ID User Story |
+| :--- | :--- | :--- | :--- |
+| A01 | *Melakukan Pemesanan* | *Pelanggan memulai proses dengan memesan produk.* | *US-01* |
+| A02 | *Memproses Pesanan* | *Sistem memproses dan menyiapkan detail sesuai dengan pesanan.* | *US-02*|
+| ... | ... | ... | ... |
+
+## 3.4 Model Proses Bisnis
 Berikut adalah penjelasan singkat mengenai diagram alur kerja (Activity Diagram) untuk sistem KlimPool:
 1. Pendaftaran & Pengguna: Diagram dimulai dengan pendaftaran Donatur/Relawan melalui Aplikasi Mobile, yang datanya kemudian diverifikasi oleh Sistem KlimPool.
 2. Alur Kontribusi (Donasi & Relawan): Dari katalog proyek, pengguna memiliki dua opsi kontribusi utama. Untuk donasi, terdapat alur terintegrasi dengan Gerbang Pembayaran (Payment Gateway) pihak ketiga untuk memproses dan mengonfirmasi transaksi. Untuk pendaftaran relawan, sistem menangani proses aplikasi hingga manajemen jadwal.
