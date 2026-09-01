@@ -39,7 +39,7 @@ Di tingkat nasional, kondisi geografis dan perubahan iklim membuat Indonesia san
 ## 1.2 Analisis Kondisi Saat Ini
 Dalam penanganan bencana akibat krisis iklim, proses pemulihan masyarakat terdampak tidak dapat diselesaikan hanya dengan bantuan finansial. Realita di lapangan sangat membutuhkan kehadiran relawan secara langsung untuk evakuasi darurat, distribusi logistik, hingga rekonstruksi infrastruktur. Di luar penanganan darurat, masyarakat luas juga mendesak untuk dibekali pengetahuan tentang mitigasi iklim agar kerentanan terhadap bencana di masa depan dapat ditekan.Ketersediaan dana yang cepat, pengerahan relawan yang terkoordinasi, dan edukasi lingkungan yang berkelanjutan merupakan kebutuhan mutlak yang harus dijalankan beriringan.
 
-Saat ini, aplikasi donasi digital di Indonesia mayoritas hanya berfokus pada transaksi finansial yang muncul setelah krisis terjadi. Sistem yang ada belum menyediakan fitur untuk mengakomodasi kebutuhan operasional utama di lapangan, seperti penyaluran bantuan logistik dan pengerahan relawan. Selain itu, platform belum mengintegrasikan edukasi mitigasi iklim, sehingga partisipasi publik hanya berhenti pada pemberian donasi darurat tanpa membangun kesadaran pencegahan bencana lingkungan secara berkelanjutan.
+Saat ini, aplikasi donasi digital di Indonesia, seperti Kitabisa, mayoritas hanya berfokus pada transaksi finansial yang muncul setelah krisis terjadi. Sistem yang ada belum menyediakan fitur untuk mengakomodasi kebutuhan operasional utama di lapangan, seperti penyaluran bantuan logistik dan pengerahan relawan. Selain itu, platform belum mengintegrasikan edukasi mitigasi iklim, sehingga partisipasi publik hanya berhenti pada pemberian donasi darurat tanpa membangun kesadaran pencegahan bencana lingkungan secara berkelanjutan.
 
 ---
 
@@ -147,4 +147,11 @@ Berikut adalah penjelasan singkat mengenai diagram alur kerja (Activity Diagram)
 <br>
 
 # Referensi
+- IPCC, 2023: Laporan Climate Change 2023: Synthesis Report dari Intergovernmental Panel on Climate Change. Tautan resmi: https://www.ipcc.ch/report/ar6/syr/
+- Kasus Pencairan Gletser Nepal: Laporan kolaboratif Thame Valley Glacial Lake Outburst Flood 2024 dan identifikasi danau glasial oleh International Centre for Integrated Mountain Development (ICIMOD) bersama UNDP. Tautan publikasi: https://lib.icimod.org/records/8g9ze-1r153 dan https://www.undp.org/nepal/press-releases/report-icimod-and-undp-identifies-potentially-dangerous-glacial-lakes-koshi-gandaki-and-karnali-river-basins
+- Tujuan Pembangunan Berkelanjutan (SDGs): Agenda resmi PBB Transforming our world: the 2030 Agenda for Sustainable Development yang merinci 17 target utama, termasuk Climate Action (SDG 13). Tautan resmi: https://sdgs.un.org/2030agenda
+- Data Statistik Bencana Nasional: Portal Data Informasi Bencana Indonesia (DIBI) kelolaan Badan Nasional Penanggulangan Bencana (BNPB). Tautan resmi: https://dibi.bnpb.go.id/
+- Analisis Tren Donasi Digital: Portal informasi dan repositori dari Perhimpunan Filantropi Indonesia yang merangkum dinamika donasi dan crowdfunding di tingkat nasional. Tautan resmi: https://filantropi.or.id/ aku ingin cara buka ini langsung ke informasi yang kita pake gimana
+- Platform Crowdfunding Eksisting: PT Kita Bisa Indonesia. Kitabisa: Platform Galang Dana dan Donasi Online. Diakses melalui https://kitabisa.com/ (Sebagai rujukan analisis sistem donasi digital yang saat ini terfokus pada penggalangan dana moneter).
+- Peta Interaktif Kerentanan Iklim: Kementerian Lingkungan Hidup dan Kehutanan (KemenLHK) Republik Indonesia. Sistem Informasi Data Indeks Kerentanan (SIDIK). Diakses melalui https://sidik.kemenlh.go.id/ (Sebagai purwarupa rujukan visual dan fungsional sistem pemetaan dampak lingkungan interaktif).
 - Diagram UML: https://www.drawio.com/, https://staruml.io/
