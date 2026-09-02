@@ -50,8 +50,8 @@ Kami yang bertanda tangan di bawah ini menyatakan bahwa seluruh log penggunaan A
 
 | Tanda Tangan | Nama Anggota |
 | :---: | :--- |
-| <img src="./assets/ttd-anggota1.png" width="100"> | **[NIM - Nama Anggota 1]** |
-| <img src="./assets/ttd-anggota2.png" width="100"> | **[NIM - Nama Anggota 2]** |
+| <img src="./assets/ttd-anggota1.png" width="100"> | **[13525023 - Shaquille Nathan Kalevi]** |
+| <img src="./assets/ttd-anggota2.png" width="100"> | **[13525080 - Neysa Alya Mukhbita]** |
 | <img src="./assets/ttd-anggota3.png" width="100"> | **[13525092 - Bryan Pamungkas Prahara]** |
-| <img src="./assets/ttd-anggota4.png" width="100"> | **[NIM - Nama Anggota 4]** |
-| <img src="./assets/ttd-anggota5.png" width="100"> | **[NIM - Nama Anggota 5]** |
+| <img src="./assets/ttd-anggota4.png" width="100"> | **[13525134 - Sahla Nailah Salsabilla]** |
+| <img src="./assets/ttd-anggota5.png" width="100"> | **[13525140 - Nayla Putri Ghaisani]** |
