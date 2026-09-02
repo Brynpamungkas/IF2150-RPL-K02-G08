@@ -26,11 +26,11 @@
 
 | Catatan |
 | --- |
-| 1. *Bab 3.1 direvisi dengan menggabungkan pihak-pihak yang termasuk dalam aktor Pengguna: Donatur, Volunteer, Penggalang Donasi, dan Pemilik/Pembuat Project. Pihak eksternal dihapus karena tidak berinteraksi secara langsung dengan sistem.* |
-| 2. *Bab 3.2 direvisi dan disesuaikan dengan Bab 3.1, setiap kebutuhan dipisahkan berdasarkan role yang dimiliki oleh Pengguna agar kebutuhan sistem dapat dirincikan lebih jelas.* |
-| 3. *Bab 3.3 ditambahkan dan disesuaikan dengan Bab 3.2 serta Bab 3.4 (diagram).* |
-| 4. *Bab 3.4 direvisi dengan memisahkan diagram menjadi 2 bagian, lalu lebih dirincikan alur/proses dalam diagramnya.* |
-| 5. *Menambahkan referensi artikel.* |
+| 1. Bab 3.1 direvisi dengan menggabungkan pihak-pihak yang termasuk dalam aktor Pengguna: Donatur, Volunteer, Penggalang Donasi, dan Pemilik/Pembuat Project. Pihak eksternal dihapus karena tidak berinteraksi secara langsung dengan sistem. |
+| 2. Bab 3.2 direvisi dan disesuaikan dengan Bab 3.1, setiap kebutuhan dipisahkan berdasarkan role yang dimiliki oleh Pengguna agar kebutuhan sistem dapat dirincikan lebih jelas. |
+| 3. Bab 3.3 ditambahkan dan disesuaikan dengan Bab 3.2 serta Bab 3.4 (diagram). |
+| 4. Bab 3.4 direvisi dengan memisahkan diagram menjadi 2 bagian, lalu lebih dirincikan alur/proses dalam diagramnya. |
+| 5. Menambahkan referensi artikel. |
 
 ## Dokumentasi
 
@@ -39,7 +39,7 @@
 </p>
 
 <p align="center">
-  <i>Gambar 1. Dokumentasi kegiatan asistensi pertama.</i>
+  Gambar 1. Dokumentasi kegiatan asistensi pertama.
 </p>
 
 <p align="center">
@@ -47,5 +47,5 @@
 </p>
 
 <p align="center">
-  <i>Gambar 2. Dokumentasi kegiatan asistensi pertama.</i>
+  Gambar 2. Dokumentasi kegiatan asistensi pertama.
 </p>

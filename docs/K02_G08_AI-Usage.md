@@ -4,10 +4,10 @@
 
 | Informasi | Keterangan |
 |---|---|
-| Kelas | *02* |
-| Nomor Kelompok | *08* |
-| Nama Kelompok | *BS3N* |
-| Nama Perangkat Lunak | *KlimPooL* |
+| Kelas | 02 |
+| Nomor Kelompok | 08|
+| Nama Kelompok | BS3N |
+| Nama Perangkat Lunak | KlimPooL |
 
 **Anggota Kelompok:**
 
