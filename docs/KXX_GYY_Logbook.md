@@ -13,12 +13,11 @@
 
 | NIM | Nama |
 |---|---|
-| *[NIM 1]* | *[Nama Anggota 1]* |
-| *[NIM 2]* | *[Nama Anggota 2]* |
-| *[NIM 3]* | *[Nama Anggota 3]* |
-| *[NIM 4]* | *[Nama Anggota 4]* |
-| *[NIM 5]* | *[Nama Anggota 5]* |
-
+| 13525023 | Shaquille Nathan Kalevi |
+| 13525080 | Neysa Alya Mukhbita |
+| 13525092 | Bryan Pamungkas Prahara |
+| 13525134 | Sahla Nailah Salsabilla |
+| 13525140 | Nayla Putri Ghaisani |
 ---
 
 ### Daftar Isi
@@ -29,11 +28,14 @@
 ---
 
 ### Milestone 1
-**Periode:** [Tanggal Mulai] - [Tanggal Selesai]
+**Periode:** 27 Agustus 2026 - 2 September 2026
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / *Blocker* | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
-| *04-05-2026* | *[Nama Mahasiswa]* | *[Jelaskan Pekerjaan secara Singkat]* | *[Durasi Pengerjaan]* | *[On Progress/Done]* | [Kendala yang dialami, jika tidak ada cukup tandai "-"] | 
+| *27-08-2026* | *Sahla Nailah Salsabilla* | *Brainstorming SDGs* | *1* | *Done* | - | 
+| *28-08-2026* | *Sahla Nailah Salsabilla* | *Brainstorming Topik Software* | *2* | *Done* | - | 
+| *30-08-2026* | *Sahla Nailah Salsabilla* | *Brainstorming Nama Software, Mengerjakan Subbab 3.1* | *1/2* | *Done* | - | 
+| *02-09-2026* | *Sahla Nailah Salsabilla* | *Revisi Subbab 3.1* | *1/2* | *Done* | - | 
 | *05-05-2026* | *John Doe* | *Mendesain diagram kelas* | *3* | *Done* | *-* | 
 | | | | | | | |
 
