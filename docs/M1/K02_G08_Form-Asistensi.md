@@ -26,21 +26,26 @@
 
 | Catatan |
 | --- |
-| 1. *\[Berikan catatan hasil asistensi\]*  |
-| 2. ... |
-| 3. ... |
-| 4. ... |
-
-**Notes for this section:**  
-*Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja.* 
+| 1. *Bab 3.2 direvisi dengan menggabungkan pihak-pihak yang termasuk dalam aktor Pengguna: Donatur, Volunteer, Penggalang Donasi, dan Pemilik/Pembuat Project. Pihak eksternal dihapus karena tidak berinteraksi secara langsung dengan sistem.* |
+| 2. *Bab 3.3 direvisi dan disesuaikan dengan Bab 3.1, setiap kebutuhan dipisahkan berdasarkan role yang dimiliki oleh Pengguna agar kebutuhan sistem dapat dirincikan lebih jelas.* |
+| 3. *Bab 3.3 ditambahkan dan disesuaikan dengan kebutuhan pada Bab 3.2 serta Bab 3.4 (diagram).* |
+| 4. *Bab 3.4 direvisi.* |
+| 5. *Menambahkan referensi artikel.* |
 
 ## Dokumentasi
 
-<!-- ![](./assets/foto-asistensi.jpg) -->
 <p align="center">
-  <img src="./assets/foto-asistensi.jpg" width="100%">
+  <img src="./assets/asistensi/fotoAsistensiPertama_2.png" width="100%">
 </p>
 
 <p align="center">
-  <i>Gambar 1. Dokumentasi kegiatan asistensi.</i>
+  <i>Gambar 1. Dokumentasi kegiatan asistensi pertama.</i>
+</p>
+
+<p align="center">
+  <img src="./assets/asistensi/fotoAsistensiPertama_1.png" width="100%">
+</p>
+
+<p align="center">
+  <i>Gambar 2. Dokumentasi kegiatan asistensi pertama.</i>
 </p>
