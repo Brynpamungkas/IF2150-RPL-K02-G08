@@ -26,9 +26,9 @@
 
 | Catatan |
 | --- |
-| 1. *Bab 3.2 direvisi dengan menggabungkan pihak-pihak yang termasuk dalam aktor Pengguna: Donatur, Volunteer, Penggalang Donasi, dan Pemilik/Pembuat Project. Pihak eksternal dihapus karena tidak berinteraksi secara langsung dengan sistem.* |
-| 2. *Bab 3.3 direvisi dan disesuaikan dengan Bab 3.1, setiap kebutuhan dipisahkan berdasarkan role yang dimiliki oleh Pengguna agar kebutuhan sistem dapat dirincikan lebih jelas.* |
-| 3. *Bab 3.3 ditambahkan dan disesuaikan dengan kebutuhan pada Bab 3.2 serta Bab 3.4 (diagram).* |
+| 1. *Bab 3.1 direvisi dengan menggabungkan pihak-pihak yang termasuk dalam aktor Pengguna: Donatur, Volunteer, Penggalang Donasi, dan Pemilik/Pembuat Project. Pihak eksternal dihapus karena tidak berinteraksi secara langsung dengan sistem.* |
+| 2. *Bab 3.2 direvisi dan disesuaikan dengan Bab 3.1, setiap kebutuhan dipisahkan berdasarkan role yang dimiliki oleh Pengguna agar kebutuhan sistem dapat dirincikan lebih jelas.* |
+| 3. *Bab 3.3 ditambahkan dan disesuaikan dengan Bab 3.2 serta Bab 3.4 (diagram).* |
 | 4. *Bab 3.4 direvisi.* |
 | 5. *Menambahkan referensi artikel.* |
 
