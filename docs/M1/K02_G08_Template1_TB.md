@@ -145,7 +145,7 @@ Berikut adalah penjelasan singkat mengenai diagram alur kerja (Activity Diagram)
 <img alt="Activity Diagram 2 (Alur Pendaftaran & Aktivitas Volunteer)" src="./assets/diagram/diagram2.jpeg" width="70%">
 </p>
 <p align="center">
-<i>Gambar 2. Activity Diagram 1 (Alur Pendaftaran & Aktivitas Volunteer)</i>
+<i>Gambar 2. Activity Diagram 2 (Alur Pendaftaran & Aktivitas Volunteer)</i>
 </p>
 
 <br>
