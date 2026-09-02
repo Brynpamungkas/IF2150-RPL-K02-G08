@@ -101,25 +101,24 @@ Daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan sistem be
 
 ## 3.2 Kebutuhan Pengguna Awal
 
+## 3.2 Kebutuhan Pengguna Awal
+
 | ID | Aktor | Kebutuhan / Aktivitas | Tujuan / Nilai |
 | :--- | :--- | :--- | :--- |
-| US-01 | *Donatur* | *Melihat daftar dan informasi climate action project* | *Menemukan project yang ingin didukung dan mengetahui kebutuhan project* |
-| US-02 | *Donatur* | *Memberikan donasi berupa dana* | *Membantu memenuhi kebutuhan project dan masyarakat terdampak* |
-| US-03 | *Donatur* | *Melihat perkembangan penggunaan donasi* | *Memastikan bantuan tersalurkan secara transparan dan tepat sasaran* |
-| US-04 | *Penggalang Donasi* | *Membuat dan mengelola campaign penggalangan dana* | *Mengumpulkan bantuan untuk mendukung climate action project* |
-| US-05 | *Penggalang Donasi* | *Menentukan target dan kebutuhan campaign* | *Memberikan informasi kebutuhan yang jelas kepada calon donatur* |
-| US-06 | *Penggalang Donasi* | *Memantau dan melaporkan perkembangan campaign* | *Mengetahui pencapaian target dan meningkatkan transparansi kepada donatur* |
-| US-07 | *Pemilik/Pembuat Project* | *Membuat dan mengelola climate action project* | *Mengorganisasi kegiatan penanganan atau mitigasi perubahan iklim secara terstruktur* |
-| US-08 | *Pemilik/Pembuat Project* | *Menentukan kebutuhan dana, logistik, dan volunteer* | *Memastikan seluruh kebutuhan project dapat dipenuhi* |
-| US-09 | *Pemilik/Pembuat Project* | *Memperbarui perkembangan project secara berkala* | *Memberikan informasi secara up-to-date kepada donatur dan volunteer* |
-| US-10 | *Volunteer* | *Melihat project yang membutuhkan volunteer* | *Menemukan kesempatan untuk berkontribusi sesuai minat dan kemampuan* |
-| US-11 | *Volunteer* | *Melihat informasi jadwal, lokasi, dan tugas project* | *Mempersiapkan diri sebelum mengikuti kegiatan* |
-| US-12 | *Volunteer* | *Mendaftarkan diri pada project yang dipilih* | *Berpartisipasi secara langsung dalam climate action project* |
-| US-13 | *Admin Sistem* | *Memverifikasi pengguna, campaign, dan project* | *Memastikan data dan project yang tersedia terpercaya* |
-| US-14 | *Admin Sistem* | *Memantau aktivitas pengguna dan project* | *Menjaga keamanan dan kelancaran sistem* |
-| US-15 | *Penyalur Donasi (Pihak Ketiga)* | *Memproses transaksi donasi* | *Memastikan transaksi donasi berjalan aman dan akurat* |
-| US-16 | *Mitra/Sponsor (Pihak Ketiga)* | *Melihat dan memberikan dukungan kepada project* | *Menemukan project yang sesuai untuk diberikan pendanaan atau sumber daya* |
-| US-17 | *Pemerintah/Lembaga Terkait (Pihak Ketiga)* | *Memberikan atau memvalidasi data terkait kondisi dan kebutuhan lingkungan* | *Memastikan informasi project dan kebutuhan di lapangan dapat dipertanggungjawabkan* |
+| US-01 | *Pengguna* | *Melihat daftar dan informasi climate action project* | *Menemukan project yang ingin didukung dan mengetahui kebutuhan project* |
+| US-02 | *Pengguna* | *Memberikan donasi berupa dana kepada project* | *Membantu memenuhi kebutuhan project dan masyarakat terdampak* |
+| US-03 | *Pengguna* | *Melihat perkembangan penggunaan donasi* | *Memastikan bantuan tersalurkan secara transparan dan tepat sasaran* |
+| US-04 | *Pengguna* | *Membuat dan mengelola campaign penggalangan dana* | *Mengumpulkan bantuan untuk mendukung climate action project* |
+| US-05 | *Pengguna* | *Menentukan target dan kebutuhan campaign* | *Memberikan informasi kebutuhan yang jelas kepada calon donatur* |
+| US-06 | *Pengguna* | *Memantau dan melaporkan perkembangan campaign* | *Mengetahui pencapaian target dan meningkatkan transparansi kepada donatur* |
+| US-07 | *Pengguna* | *Membuat dan mengelola climate action project* | *Mengorganisasi kegiatan penanganan atau mitigasi perubahan iklim secara terstruktur* |
+| US-08 | *Pengguna* | *Menentukan kebutuhan dana, logistik, dan volunteer pada project* | *Memastikan seluruh kebutuhan project dapat dipenuhi* |
+| US-09 | *Pengguna* | *Memperbarui perkembangan project secara berkala* | *Memberikan informasi terkini kepada pengguna lain yang terlibat dalam project* |
+| US-10 | *Pengguna* | *Melihat project yang membutuhkan volunteer* | *Menemukan kesempatan untuk berkontribusi sesuai minat dan kemampuan* |
+| US-11 | *Pengguna* | *Melihat informasi jadwal, lokasi, dan tugas project* | *Mempersiapkan diri sebelum mengikuti kegiatan* |
+| US-12 | *Pengguna* | *Mendaftarkan diri sebagai volunteer pada project yang dipilih* | *Berpartisipasi secara langsung dalam climate action project* |
+| US-13 | *Admin Sistem* | *Memverifikasi data pengguna, campaign, dan project* | *Memastikan data dan project yang tersedia terpercaya* |
+| US-14 | *Admin Sistem* | *Memantau aktivitas pengguna dan project* | *Menjaga keamanan, validitas data, dan kelancaran sistem* |
 
 ## 3.3 Deskripsi Aktivitas
 Daftar seluruh aktivitas yang terdapat dalam sistem solusi beserta hubungannya dengan *user story*:
