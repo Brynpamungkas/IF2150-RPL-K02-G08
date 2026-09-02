@@ -34,15 +34,19 @@
 | :--- | :--- | :--- | :--- | :--- | :--- | 
 | 27-08-2026 | Sahla, Neysa, Bryan, Naya | Brainstorming SDGs | 1 | Done | - | 
 | 28-08-2026 | Sahla, Neysa, Bryan, Naya | Brainstorming Topik Software | 2 | Done | - |
-| 30-08-2026 | Bryan | Mengerjakan Bab 1 | 5 | Done | - |
+| 30-08-2026 | Bryan | Mengerjakan Bab 1, serta set up repositori | 5 | Done | - |
 | 30-08-2026 | Sahla | Brainstorming Nama Software, Mengerjakan Subbab 3.1 | 1/2 | Done | - | 
 | 30-08-2026 | Neysa | Brainstorming Nama Software, Mengerjakan Subbab 3.2 | 2| Done | - | 
 | 30-08-2026 | Nathan | Mengerjakan Bab 2 | 4 | Done | - |
 | 30-08-2026 | Naya | Brainstorming Nama Software, Mengerjakan Subbab 3.3 | 3 | Done | - | 
 | 30-08-2026 | Nathan | Revisi Bab 2 | 1 | Done | - |
+| 1-09-2026 | Nathan, Sahla, Neysa, Bryan, Naya | Asistensi | <1 | Done | - |
 | 02-09-2026 | Sahla | Revisi Subbab 3.1 | 1/2 | Done | - | 
 | 02-09-2026 | Neysa | Revisi Subbab 3.2 | 1/4 | Done | - | 
-| 02-09-2026 | Naya | Revisi Subbab 3.3 & Menambahkan Subbab 3.4 | 2 | Done | - | 
+| 02-09-2026 | Naya | Revisi Subbab 3.3 & Menambahkan Subbab 3.4 | 2 | Done | - |
+|02-09-2026|	Bryan|	Menulis referensi Subbab 2.1 & dokumentasi asistensi 1	|2|	Done	|-|
+|02-09-2026|	Bryan|	Merapikan format dokumen final & menambahkan AI Usage	|<2|	Done	|-| 
+|02-09-2026|	Nathan, Neysa, Bryan, Naya|	Finalisasi sebelum rilis	|<2|	Done	|-| 
 
 **Catatan/Evaluasi Milestone 1:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
