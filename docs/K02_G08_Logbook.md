@@ -40,7 +40,7 @@
 | 30-08-2026 | Nathan | Mengerjakan Bab 2 | 4 | Done | - |
 | 30-08-2026 | Naya | Brainstorming Nama Software, Mengerjakan Subbab 3.3 | 3 | Done | - | 
 | 30-08-2026 | Nathan | Revisi Bab 2 | 1 | Done | - |
-| 1-09-2026 | Nathan, Sahla, Neysa, Bryan, Naya | Asistensi | <1 | Done | - |
+| 01-09-2026 | Nathan, Sahla, Neysa, Bryan, Naya | Asistensi | <1 | Done | - |
 | 02-09-2026 | Sahla | Revisi Subbab 3.1 | 1/2 | Done | - | 
 | 02-09-2026 | Neysa | Revisi Subbab 3.2 | 1/4 | Done | - | 
 | 02-09-2026 | Naya | Revisi Subbab 3.3 & Menambahkan Subbab 3.4 | 2 | Done | - |
