@@ -36,8 +36,8 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
 | *[Nama AI]* | *[Sertakan Tujuan Penggunaan]* | *[Tuliskan Prompt Utama]* | *[Tuliskan Keputusan Hasil Validasi]* |
-| *Gemini* | *Mengecek relasi antar class* | *"Apakah relasi antara class User dan Order dalam UML ini seharusnya composition atau aggregation?"* | *AI menyarankan composition, tapi setelah dicek kembali ke requirement, kami menggunakan aggregation karena Order masih bisa eksis di history.* |
-| | | | | |
+| Gemini | Mengecek relasi antar class | "Apakah relasi antara class User dan Order dalam UML ini seharusnya composition atau aggregation?" | AI menyarankan composition, tapi setelah dicek kembali ke requirement, kami menggunakan aggregation karena Order masih bisa eksis di history. |
+| Gemini | Pemilihan data seperti apa yang akan digunakan pada bab 1 | "aku ingin membuat latar belakang dari tugas RPL ku yang akan menyusun suatu aplikasi seperti kitabisa yang mengamalkan/mencari bantuan dengan fitur fitur yang lebih lengkap seperti ada footprint calculator, hingga tidak hanya uang melainkan bantuan fisik/tenaga, aku mengambil sdgs climate action, aku ingin ada 3 paragraf yang dari umum menuju spesifik ke aplikasi ku dengan mengangkat kasus hangat seperti gletser nepal mencair membunuh banyak orang hingga skala nasional kebakaran hutan dan gempa bumi, tuliskan ide/data lain yang dapat saya cantumkan dan darimana sumbernya" | AI memberikan list ide dan data lalu kami cek data dan sumbernya. Kami memastikan data benar-benar ada dan dari sumber terpercaya. | |
 
 ### Milestone 2
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
@@ -54,6 +54,6 @@ Kami yang bertanda tangan di bawah ini menyatakan bahwa seluruh log penggunaan A
 | :---: | :--- |
 | <img src="./assets/ttd-anggota1.png" width="100"> | **[NIM - Nama Anggota 1]** |
 | <img src="./assets/ttd-anggota2.png" width="100"> | **[NIM - Nama Anggota 2]** |
-| <img src="./assets/ttd-anggota3.png" width="100"> | **[NIM - Nama Anggota 3]** |
+| <img src="./assets/ttd-anggota3.png" width="100"> | **[13525092 - Bryan Pamungkas Prahara]** |
 | <img src="./assets/ttd-anggota4.png" width="100"> | **[NIM - Nama Anggota 4]** |
 | <img src="./assets/ttd-anggota5.png" width="100"> | **[NIM - Nama Anggota 5]** |
