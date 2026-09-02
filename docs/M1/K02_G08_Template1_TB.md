@@ -101,8 +101,6 @@ Daftar seluruh aktor (pengguna) yang akan berinteraksi langsung dengan sistem be
 
 ## 3.2 Kebutuhan Pengguna Awal
 
-## 3.2 Kebutuhan Pengguna Awal
-
 | ID | Aktor | Kebutuhan / Aktivitas | Tujuan / Nilai |
 | :--- | :--- | :--- | :--- |
 | US-01 | *Pengguna* | *Melihat daftar dan informasi climate action project* | *Menemukan project yang ingin didukung dan mengetahui kebutuhan project* |
@@ -137,10 +135,17 @@ Berikut adalah penjelasan singkat mengenai diagram alur kerja (Activity Diagram)
 <br>
 
 <p align="center">
-<img alt="Contoh Activity Diagram" src="./assets/diagram/diagram-draft.png" width="70%">
+<img alt="Activity Diagram 1 (Alur Donasi Dana)" src="./assets/diagram/diagram1.jpeg" width="70%">
 </p>
 <p align="center">
-<i>Gambar 1. Contoh Activity Diagram</i>
+<i>Gambar 1. Activity Diagram 1 (Alur Donasi Dana)</i>
+</p>
+
+<p align="center">
+<img alt="Activity Diagram 2 (Alur Pendaftaran & Aktivitas Volunteer)" src="./assets/diagram/diagram2.jpeg" width="70%">
+</p>
+<p align="center">
+<i>Gambar 2. Activity Diagram 1 (Alur Pendaftaran & Aktivitas Volunteer)</i>
 </p>
 
 <br>
