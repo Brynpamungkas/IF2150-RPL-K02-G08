@@ -32,11 +32,13 @@
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / *Blocker* | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
-| *27-08-2026* | *Sahla Nailah Salsabilla* | *Brainstorming SDGs* | *1* | *Done* | - | 
-| *28-08-2026* | *Sahla Nailah Salsabilla* | *Brainstorming Topik Software* | *2* | *Done* | - | 
-| *30-08-2026* | *Sahla Nailah Salsabilla* | *Brainstorming Nama Software, Mengerjakan Subbab 3.1* | *1/2* | *Done* | - | 
-| *02-09-2026* | *Sahla Nailah Salsabilla* | *Revisi Subbab 3.1* | *1/2* | *Done* | - | 
-| *05-05-2026* | *John Doe* | *Mendesain diagram kelas* | *3* | *Done* | *-* | 
+| *27-08-2026* | *Sahla, Neysa, Bryan, Naya* | *Brainstorming SDGs* | *1* | *Done* | - | 
+| *28-08-2026* | *Sahla, Neysa, Bryan, Naya* | *Brainstorming Topik Software* | *2* | *Done* | - | 
+| *30-08-2026* | *Sahla | *Brainstorming Nama Software, Mengerjakan Subbab 3.1* | *1/2* | *Done* | - | 
+| *30-08-2026* | *Neysa* | *Brainstorming Nama Software, Mengerjakan Subbab 3.2* | *2* | *Done* | - | 
+| *02-09-2026* | *Sahla* | *Revisi Subbab 3.1* | *1/2* | *Done* | - | 
+| *02-09-2026* | *Neysa* | *Revisi Subbab 3.2* | *1/4* | *Done* | - | 
+
 | | | | | | | |
 
 **Catatan/Evaluasi Milestone 1:**
