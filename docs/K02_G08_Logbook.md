@@ -36,6 +36,7 @@
 | *28-08-2026* | *Sahla, Neysa, Bryan, Naya* | *Brainstorming Topik Software* | *2* | *Done* | - | 
 | *30-08-2026* | *Sahla | *Brainstorming Nama Software, Mengerjakan Subbab 3.1* | *1/2* | *Done* | - | 
 | *30-08-2026* | *Neysa* | *Brainstorming Nama Software, Mengerjakan Subbab 3.2* | *2* | *Done* | - | 
+| *30-08-2026* | *Nathan* | *Mengerjakan Bab 2* | *3* | *Done* | - |
 | *30-08-2026* | *Naya* | *Brainstorming Nama Software, Mengerjakan Subbab 3.3* | *3* | *Done* | - | 
 | *02-09-2026* | *Sahla* | *Revisi Subbab 3.1* | *1/2* | *Done* | - | 
 | *02-09-2026* | *Neysa* | *Revisi Subbab 3.2* | *1/4* | *Done* | - | 
