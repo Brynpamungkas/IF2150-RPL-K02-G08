@@ -4,10 +4,10 @@
 
 | Informasi | Keterangan |
 |---|---|
-| Kelas | *[Kelas]* |
-| Nomor Kelompok | *[Nomor Kelompok]* |
-| Nama Kelompok | *[Nama Kelompok]* |
-| Nama Perangkat Lunak | *[Nama P/L]* |
+| Kelas | *02* |
+| Nomor Kelompok | *08* |
+| Nama Kelompok | *BS3N* |
+| Nama Perangkat Lunak | *KlimPooL* |
 
 **Anggota Kelompok:**
 
