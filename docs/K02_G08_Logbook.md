@@ -57,6 +57,7 @@
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
+| 06-09-2026 | Neysa | Subbab 2.3 | 2,5 | Done | - | 
 | 07-09-2026 | Sahla | Subbab 2.4 | 1,5 | Done | - | 
 
 **Catatan/Evaluasi Milestone 2:**
