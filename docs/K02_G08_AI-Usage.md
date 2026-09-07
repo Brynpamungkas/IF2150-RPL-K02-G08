@@ -23,6 +23,7 @@
 
 ### Daftar Isi
 * [Milestone 1](#milestone-1)
+* [Milestone 2](#milestone-2)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -41,7 +42,7 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
 | Gemini | Validasi kesesuaian antara kebutuhan non-fungsional dengan kebutuhan umum | "Apakah kebutuhan non-fungsional yang aku buat dengan keserasiannya dengan kebutuhan umum sudah sesuai? |AI memvalidasi dan memberikan saran tambahan untuk kebutuhan non-fungsional | |
-| | | | | |
+| Gemini | Verifikasi kesesuaian kalimat kebutuhan fungsional dengan struktur dan kategori EARS | "Apakah kalimat kebutuhan fungsional yang saya buat sudah sesuai dengan kategori EARS yang ada?" | Penyesuaian ouput AI dengan ketentuan EARS dan ID Aktivitas | |
 
 ---
 ### Pernyataan Integritas dan Persetujuan
