@@ -40,7 +40,7 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 ### Milestone 2
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
-| | | | | |
+| Gemini | Validasi kesesuaian antara kebutuhan non-fungsional dengan kebutuhan umum | "Apakah kebutuhan non-fungsional yang aku buat dengan keserasiannya dengan kebutuhan umum sudah sesuai? |AI memvalidasi dan memberikan saran tambahan untuk kebutuhan non-fungsional | |
 | | | | | |
 
 ---
