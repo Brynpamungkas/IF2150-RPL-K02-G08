@@ -37,6 +37,8 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
 | Gemini | Pemilihan data seperti apa yang akan digunakan pada bab 1 | "aku ingin membuat latar belakang dari tugas RPL ku yang akan menyusun suatu aplikasi seperti kitabisa yang mengamalkan/mencari bantuan dengan fitur fitur yang lebih lengkap seperti ada footprint calculator, hingga tidak hanya uang melainkan bantuan fisik/tenaga, aku mengambil sdgs climate action, aku ingin ada 3 paragraf yang dari umum menuju spesifik ke aplikasi ku dengan mengangkat kasus hangat seperti gletser nepal mencair membunuh banyak orang hingga skala nasional kebakaran hutan dan gempa bumi, tuliskan ide/data lain yang dapat saya cantumkan dan darimana sumbernya" | AI memberikan list ide dan data lalu kami cek data dan sumbernya. Kami memastikan data benar-benar ada dan dari sumber terpercaya. | |
+| Gemini | Merapihkan alur activity diagram dengan runtut | "Saya telah membuat alur activity diagram, apakah alur yang aku kerjakan sudah sesuai dan tidak ada yang terbalik? Jika ada tolong diperbaiki dan berikan saran sebaiknya bagaimana" | AI memberikan jawaban berupa validasi alur diagram yang saya kerjakan, kami menyesuaikan kembali jawaban AI dengan peran tiap aktor yang telah dikerjakan | |
+
 
 ### Milestone 2
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
