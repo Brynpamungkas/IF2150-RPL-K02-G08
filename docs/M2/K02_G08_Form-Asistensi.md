@@ -9,7 +9,7 @@
 | **Kelas** | K02 |
 | **Nomor Kelompok** | G08 |
 | **Nama Kelompok** | BS3N  |
-| **Nama Perangkat Lunak** | *KlimPooL  |
+| **Nama Perangkat Lunak** | KlimPooL  |
 | **Dokumen** | K02_G08_RG.md  |
 
 ### Anggota Kelompok
