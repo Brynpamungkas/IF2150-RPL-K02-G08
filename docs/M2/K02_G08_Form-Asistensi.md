@@ -4,32 +4,31 @@
 
 | Informasi | Keterangan |
 | --- | --- |
-| **Hari** | *\[Hari\]* |
-| **Tanggal** | *\[DD/MM/YYYY\]* |
-| **Kelas** | *\[Kelas\]* |
-| **Nomor Kelompok** | *\[Nomor Kelompok\]*  |
-| **Nama Kelompok** | *\[Nama Kelompok\]*  |
-| **Nama Perangkat Lunak** | *\[Nama P/L\]*  |
-| **Dokumen** | *\[Nama Dokumen yang diasistensikan\]*  |
+| **Hari** | Selasa |
+| **Tanggal** | 08/09/26 |
+| **Kelas** | K02 |
+| **Nomor Kelompok** | G08 |
+| **Nama Kelompok** | BS3N  |
+| **Nama Perangkat Lunak** | *KlimPooL  |
+| **Dokumen** | K02_G08_RG.md  |
 
 ### Anggota Kelompok
 
 | NIM | Nama |
 | --- | --- |
-| *\[NIM 1\]* | *\[Nama Anggota 1\]* |
-| *\[NIM 2\]* | *\[Nama Anggota 2\]* |
-| *\[NIM 3\]* | *\[Nama Anggota 3\]* |
-| *\[NIM 4\]* | *\[Nama Anggota 4\]* |
-| *\[NIM 5\]* | *\[Nama Anggota 5\]* |
+| 13525023 | Shaquille Nathan Kalevi |
+| 13525080 | Neysa Alya Mukhbita |
+| 13525092 | Bryan Pamungkas Prahara |
+| 13525134 | Sahla Nailah Salsabilla |
+| 13525140 | Nayla Putri Ghaisani |
 
 ### Catatan
 
 | Catatan |
 | --- |
-| 1. *\[Berikan catatan hasil asistensi\]*  |
-| 2. ... |
-| 3. ... |
-| 4. ... |
+| 1. Pada bab 1, harus memuat penjelasan tentang pengguna sistem, alur kerja sistem yang diinginkan, peran manusia dan perangkat keras, serta harapan dari solusi  |
+| 2. Pada subbab 2.3, dalam satu aktivitas harus menentukan 3 role sistem bisnis dan user, dan 1 aktivitas bisa memiliki lebih dari 1 kebutuhan role |
+| 3. Pada subbab 2.4, 1 kebutuhan fungsional dapat memuat beberapa ID kebutuhan jika memang kebutuhan user dan bisnisnya sama, yang penting cocok dengan sistem |
 
 **Notes for this section:**  
 *Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja.* 
