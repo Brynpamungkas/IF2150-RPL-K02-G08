@@ -60,7 +60,18 @@
 | 06-09-2026 | Neysa | Subbab 2.3 | 2,5 | Done | - | 
 | 07-09-2026 | Sahla | Subbab 2.4 | 1,5 | Done | - | 
 | 07-09-2026 | Nathan | Subbab 1.1 | 1,5 | Halfway done | Perlu verifikasi info antar subbab agar tidak ada informasi yang salah/tidak sinkron | 
+<<<<<<< HEAD
 | 08-09-2026 | Nathan | Subbab 1.1 | 0,5 | Done | - | 
+=======
+| 07-09-2026 | Naya | Subbab 2.1 | 0,5 | Done | - | 
+| 07-09-2026 | Bryan | Subbab 2.5 | 2 | Done |-|
+| 08-09-2026 | Nathan | Subbab 1.1 | 0,5 | Done | - | 
+| 08-09-2026 | Sahla | Subbab 1.2 & 2.2 | 0,2 | Done | - | 
+| 08_09_2026 | Brayn | Revisi subbab 2.5 | 1 | Done | - | 
+| 08-09-2026 | Sahla | Revisi subbab 2.4 | 0,2 | Done | - | 
+| 09-09-2026 | Sahla | Revisi subbab 2.4 | 0,2 | Done | - | 
+
+>>>>>>> 3f5c0c3429966ec4fe81e77c81fda8ab3431cb6d
 
 **Catatan/Evaluasi Milestone 2:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
