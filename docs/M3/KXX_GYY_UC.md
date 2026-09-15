@@ -111,46 +111,136 @@ Format tabel skenario: kolom **Aksi Aktor** berisi apa yang dilakukan/diinput ak
 
 ### 3.4.1 Skenario UC01
 
-**Nama Use Case:** *Melakukan Pembayaran Digital*
+**Nama Use Case: Melakukan Pendaftaran dan Autentikasi**
 
-**Skenario Normal**
-
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| :--- | :--- | :--- |
-| 1 | *Pelanggan memilih menu checkout* | *Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran* |
-| 2 | *Pelanggan memilih metode pembayaran (misal: e-wallet)* | *Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet* |
-| 3 | *Pelanggan mengonfirmasi pembayaran* | *Sistem menerima respons pembayaran berhasil, memperbarui status pesanan menjadi "Lunas", dan menampilkan notifikasi pembayaran berhasil* |
-
-
-<br>
-
-**Skenario Alternatif 1: Otorisasi Pembayaran Gagal**
-
+#### Skenario Normal
 
 | No | Aksi Aktor | Reaksi Perangkat Lunak |
 | :--- | :--- | :--- |
-| 1 | *Pelanggan memilih menu checkout* | *Sistem menampilkan ringkasan pesanan dan pilihan metode pembayaran* |
-| 2 | *Pelanggan memilih metode pembayaran (misal: e-wallet)* | *Sistem mengarahkan pelanggan ke halaman konfirmasi e-wallet* |
-| 3 | *Pelanggan mengonfirmasi pembayaran* | *Sistem menerima respons pembayaran gagal (misal: saldo tidak cukup). Sistem menampilkan pesan error dan meminta pelanggan memilih metode pembayaran lain* |
-| 4 | *Pelanggan memilih metode pembayaran lain* | *Sistem kembali ke langkah 2 skenario normal* |
+| 1 | Pengguna memilih menu pendaftaran | Sistem menampilkan formulir pendaftaran yang berisi data yang diperlukan, seperti nama, email, dan password |
+| 2 | Pengguna mengisi data pendaftaran dan mengirimkan formulir | Sistem memvalidasi kelengkapan dan format data yang diberikan |
+| 3 | Pengguna menggunakan email yang belum terdaftar | Sistem menyimpan akun baru dan mengamankan password pengguna |
+| 4 | Pengguna memasukkan email dan password pada halaman login | Sistem memvalidasi kredensial pengguna |
+| 5 | Pengguna berhasil melakukan login | Sistem membuat sesi login dan mengarahkan pengguna ke halaman utama |
+
+#### Skenario Alternatif 1: Email Sudah Terdaftar
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna mengisi formulir pendaftaran menggunakan email yang sudah terdaftar | Sistem mendeteksi bahwa email telah digunakan |
+| 2 | Pengguna memperbaiki email atau memilih untuk login | Sistem kembali menampilkan formulir pendaftaran atau mengarahkan pengguna ke halaman login |
+
+#### Skenario Alternatif 2: Kredensial Login Tidak Valid
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna memasukkan email atau password yang salah | Sistem menolak proses login dan menampilkan pesan bahwa email atau password tidak valid |
+| 2 | Pengguna memasukkan kembali email dan password | Sistem kembali melakukan validasi kredensial |
+
+---
 
 ### 3.4.2 Skenario UC02
 
-**Nama Use Case:** *Memverifikasi Status Pembayaran*
+**Nama Use Case: Membuat Campaign Penggalangan Donasi**
 
-**Skenario Normal**
-
-| No | Aksi Aktor | Reaksi Perangkat Lunak |
-| :--- | :--- | :--- |
-| 1 | *Kasir memasukkan ID Pesanan pelanggan* | *Sistem menampilkan status pembayaran ("Lunas") beserta detail transaksi* |
-
-<br>
-
-**Skenario Alternatif 1: ID Pesanan Tidak Ditemukan**
+#### Skenario Normal
 
 | No | Aksi Aktor | Reaksi Perangkat Lunak |
 | :--- | :--- | :--- |
-| 1 | *Kasir memasukkan ID Pesanan yang salah/tidak ada* | *Sistem menampilkan pesan "ID Pesanan tidak ditemukan" dan meminta kasir memasukkan ulang* |
+| 1 | Pengguna memilih menu untuk membuat campaign penggalangan donasi | Sistem menampilkan formulir pembuatan campaign |
+| 2 | Pengguna mengisi informasi campaign, seperti judul, deskripsi, target nominal, dan periode campaign | Sistem memvalidasi kelengkapan dan format data yang dimasukkan |
+| 3 | Pengguna mengirimkan formulir campaign | Sistem memeriksa validitas target nominal dan periode campaign |
+| 4 | Data campaign dinyatakan valid | Sistem menyimpan campaign dengan status menunggu verifikasi |
+| 5 | Pengguna melihat halaman campaign yang telah dibuat | Sistem menampilkan informasi campaign beserta status verifikasinya |
 
+#### Skenario Alternatif 1: Data Campaign Tidak Lengkap
 
-<sub>*Lanjutkanlah pola 3.4.x ini untuk setiap ID UC yang telah diidentifikasi pada 3.2, sampai seluruh use case memiliki skenario normal dan skenario alternatif (tidak usah dibuat jika use case tersebut memang tidak memiliki skenario alternatif).*<sub>
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna mengirimkan formulir dengan data yang belum lengkap | Sistem menampilkan pesan kesalahan pada bagian yang belum diisi |
+| 2 | Pengguna melengkapi data yang diperlukan | Sistem kembali melakukan validasi terhadap data campaign |
+
+#### Skenario Alternatif 2: Target atau Periode Campaign Tidak Valid
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna memasukkan target nominal atau periode campaign yang tidak valid | Sistem menampilkan pesan kesalahan dan menjelaskan data yang perlu diperbaiki |
+| 2 | Pengguna memperbaiki target nominal atau periode campaign | Sistem kembali melakukan validasi terhadap data yang diperbaiki |
+
+---
+
+### 3.4.3 Skenario UC03
+
+**Nama Use Case: Membuat Project Aksi Iklim**
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna memilih menu untuk membuat project aksi iklim | Sistem menampilkan formulir pembuatan project |
+| 2 | Pengguna mengisi informasi project, seperti nama, deskripsi, lokasi, dan tujuan project | Sistem menampilkan data yang telah dimasukkan untuk diperiksa |
+| 3 | Pengguna mengisi kebutuhan project berupa dana, logistik, dan kriteria volunteer | Sistem menyimpan informasi kebutuhan project |
+| 4 | Pengguna mengirimkan formulir project | Sistem memvalidasi kelengkapan dan format data project |
+| 5 | Data project dinyatakan valid | Sistem menyimpan project dengan status menunggu verifikasi |
+| 6 | Pengguna membuka halaman project yang dibuat | Sistem menampilkan informasi project beserta status verifikasinya |
+
+#### Skenario Alternatif 1: Informasi Project Tidak Lengkap
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna mengirimkan formulir dengan informasi project yang belum lengkap | Sistem menampilkan pesan kesalahan dan menunjukkan data yang perlu dilengkapi |
+| 2 | Pengguna melengkapi informasi project | Sistem kembali melakukan validasi terhadap data project |
+
+#### Skenario Alternatif 2: Data Kebutuhan Project Tidak Valid
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna memasukkan data kebutuhan dana, logistik, atau kriteria volunteer yang tidak sesuai | Sistem menampilkan pesan kesalahan pada data yang tidak valid |
+| 2 | Pengguna memperbaiki data kebutuhan project | Sistem kembali melakukan validasi terhadap data yang diperbaiki |
+
+---
+
+### 3.4.4 Skenario UC04
+
+**Nama Use Case: Meninjau dan Memverifikasi Project**
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Admin Sistem membuka halaman daftar pengajuan campaign dan project | Sistem menampilkan daftar campaign dan project yang berstatus menunggu verifikasi |
+| 2 | Admin Sistem memilih salah satu campaign atau project | Sistem menampilkan detail informasi campaign atau project |
+| 3 | Admin Sistem memeriksa kelengkapan dan validitas informasi | Sistem menampilkan seluruh data yang diperlukan untuk proses verifikasi |
+| 4 | Admin Sistem menyetujui campaign atau project | Sistem mengubah status menjadi diterima dan mempublikasikan campaign atau project |
+| 5 | Admin Sistem kembali ke daftar pengajuan | Sistem memperbarui status campaign atau project menjadi diterima |
+
+#### Skenario Alternatif 1: Campaign atau Project Ditolak
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Admin Sistem memilih campaign atau project yang tidak memenuhi persyaratan | Sistem menampilkan detail campaign atau project |
+| 2 | Admin Sistem memilih opsi tolak dan memberikan alasan penolakan | Sistem menyimpan alasan penolakan dan mengubah status menjadi ditolak |
+| 3 | Admin Sistem kembali ke daftar pengajuan | Sistem menampilkan campaign atau project dengan status ditolak |
+
+---
+
+### 3.4.5 Skenario UC05
+
+**Nama Use Case: Mencari dan Menelusuri Project**
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna membuka halaman daftar project | Sistem menampilkan daftar campaign dan project yang telah dipublikasikan |
+| 2 | Pengguna memasukkan kata kunci atau memilih filter yang diinginkan | Sistem memproses kata kunci dan filter yang dipilih |
+| 3 | Pengguna memilih salah satu campaign atau project dari hasil pencarian | Sistem menampilkan detail campaign atau project yang dipilih |
+| 4 | Pengguna melihat informasi campaign atau project | Sistem menampilkan informasi seperti deskripsi, kebutuhan, target donasi, lokasi, dan status project |
+
+#### Skenario Alternatif 1: Project Tidak Ditemukan
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna memasukkan kata kunci atau filter tertentu | Sistem melakukan pencarian berdasarkan kata kunci atau filter |
+| 2 | Tidak terdapat campaign atau project yang sesuai | Sistem menampilkan pesan bahwa project yang sesuai tidak ditemukan |
+| 3 | Pengguna mengubah kata kunci atau filter pencarian | Sistem menampilkan hasil pencarian berdasarkan kriteria yang baru |
