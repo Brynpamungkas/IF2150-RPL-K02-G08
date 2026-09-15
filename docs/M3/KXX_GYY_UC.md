@@ -86,21 +86,16 @@ Daftarkan seluruh aktor yang terlibat dalam use case yang akan dimodelkan. Aktor
 | UC10 | Melihat Riwayat dan Penelusuran | Pengguna mengakses riwayat lengkap terkait transaksi donasi dan melacak perubahan progres project berdasarkan urutan waktu. | Pengguna Umum (Pembuat Project, Donatur, Volunteer) | KF27 |
 
 ## 3.3 Use Case Diagram
-Buatlah **satu** use case diagram yang mencakup seluruh aktor dan use case. Sertakan relasi *include*/*extend* apabila ada use case yang saling bergantung.
 <br>
 <p align="center">
-<img alt="Contoh Activity Diagram" src="./assets/diagram/contoh-uc-diagram.webp" width="70%">
+<img alt="Use Case Diagram" src="./assets/diagram/use-case-diagram.png" width="70%">
 </p>
 <p align="center">
-<i>Gambar 1. Contoh Use Case Diagram</i>
+<i>Gambar 1. Use Case Diagram</i>
 </p>
 <br>
 
-Hal-hal yang perlu diperhatikan dalam pembuatan use case diagram:
-- Pastikan notasi UML use case (aktor, oval use case, garis asosiasi, *include/extend*) digambar dengan benar.
-- Seluruh aktor dan use case yang telah didefinisikan harus muncul di diagram, tidak ada yang terlewat maupun berlebih.
-- Hindari garis yang saling bersilangan tanpa alasan jelas, susun diagram agar mudah dibaca.
-- Hindari istilah solusi teknis (misalnya nama tabel database, nama endpoint API) muncul di dalam diagram use case karena use case menjelaskan *interaksi fungsional*, bukan detail implementasi.
+Seluruh use case pada diagram terhubung langsung ke aktornya melalui relasi asosiasi. Relasi include dan extend tidak digunakan karena tidak terdapat perilaku yang wajib dijalankan bersama oleh beberapa use case, maupun perilaku opsional yang cukup besar untuk dimodelkan sebagai use case perluasan. Kondisi kegagalan seperti penolakan donasi atau penolakan pendaftaran relawan dimodelkan sebagai skenario alternatif pada subbab 3.4. Relasi generalisasi digunakan pada aktor Pembuat Project, Donatur, dan Volunteer yang mewarisi asosiasi dari aktor Pengguna Umum.
 
 ## 3.4 Skenario Use Case
 Buat skenario untuk **setiap** use case yang telah diidentifikasi pada 3.2. Setiap skenario dapat terdiri dari dua jenis alur:
