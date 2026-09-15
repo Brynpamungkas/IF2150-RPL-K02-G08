@@ -240,3 +240,82 @@ Format tabel skenario: kolom **Aksi Aktor** berisi apa yang dilakukan/diinput ak
 | 1 | Pengguna memasukkan kata kunci atau filter tertentu | Sistem melakukan pencarian berdasarkan kata kunci atau filter |
 | 2 | Tidak terdapat campaign atau project yang sesuai | Sistem menampilkan pesan bahwa project yang sesuai tidak ditemukan |
 | 3 | Pengguna mengubah kata kunci atau filter pencarian | Sistem menampilkan hasil pencarian berdasarkan kriteria yang baru |
+
+### 3.4.6 Skenario UC06
+
+*Nama Use Case: Melakukan Transaksi Donasi*
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Donatur memilih campaign / project yang ingin didukung dan menekan tombol donasi | Sistem memastikan Donatur telah login dan menampilkan formulir masukan nominal donasi beserta saldo Donatur yang tersedia |
+| 2 | 	Donatur memasukkan nominal donasi dan mengonfirmasi pembayaran | Sistem memvalidasi kelayakan saldo dan mengirimkan permintaan donasi disertai idempotency key unik. Sistem menampilkan bukti transaksi berhasil kepada Donatur |
+
+#### Skenario Alternatif 1: Saldo Tidak Mencukupi / Kegagalan Transaksi 
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Donatur mengonfirmasi pembayaran dengan nominal melebihi saldo atau terjadi gangguan sistem saat pemrosesan | Sistem membatalkan seluruh proses transaksi (atomic rollback), tidak mengoperasikan perubahan saldo, dan menampilkan pesan kegagalan transaksi |
+
+#### Skenario Alternatif 2: Duplikasi Permintaan Transaksi (Idempotency Key)
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Donatur secara tidak sengaja menekan tombol konfirmasi pembayaran lebih dari satu kali | Sistem mendeteksi idempotency key yang sudah terdaftar, menolak pemrosesan transaksi berulang, dan menampilkan status transaksi sebelumnya |
+
+### 3.4.7 Skenario UC07
+
+*Nama Use Case: Mendaftar Sebagai Relawan*
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Volunteer memilih project aksi iklim dan menekan tombol daftar relawan | Sistem memastikan pengguna telah login dan menampilkan formulir pendaftaran relawan |
+| 2 | Volunteer mengisi formulir (data diri, keahlian, pengalaman, dan ketersediaan jadwal) lalu mengirimkan pendaftaran | Sistem memvalidasi kelengkapan formulir pendaftaran dan menyimpan status pendaftaran untuk diteruskan ke Pembuat Project |
+
+#### Skenario Alternatif 1: Formulir Tidak Lengkap atau Pendaftaran Ganda
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | 	Volunteer mengosongkan salah satu bidang wajib atau mendaftar kembali pada project yang sama | Sistem mendeteksi kelengkapan data yang kurang atau status pendaftaran ganda, menolak pengiriman formulir, dan menampilkan pesan peringatan | 
+
+### 3.4.8 Skenario UC08
+
+*Nama Use Case: Mengelola Pendaftaran Relawan*
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pembuat Project membuka menu kelola relawan pada project miliknya | Sistem menampilkan daftar pendaftar volunteer beserta detail data diri, keahlian, pengalaman, dan ketersediaan jadwal |
+| 2 | Pembuat Project meninjau data dan memilih keputusan (Terima / Tolak) untuk pendaftar tersebut | Sistem menyimpan keputusan dan memperbarui status pendaftaran secara otomatis (accepted / rejected) dan memperbarui tampilan bagi Volunteer: menampilkan informasi penerimaan beserta instruksi lokasi dan jadwal (jika diterima) atau status penolakan |
+
+### 3.4.9 Skenario UC09
+
+*Nama Use Case: Memperbarui Progres Project*
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pembuat Project atau Admin Sistem membuka halaman pembaruan progres pada project terkait | Sistem memvalidasi hak akses pengguna terhadap project tersebut dan menampilkan formulir pembaruan progres |
+| 2 | Aktor mengisi data pembaruan milestone, status pelaksanaan, dan mengunggah dokumentasi | Sistem mengunggah dokumentasi, mencatat riwayat pembaruan beserta stempel waktu (timestamp), dan menghubungkannya dengan project |
+
+#### Skenario Alternatif 1: Akses Ditolak (Bukan Pembuat Project / Admin)
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna yang tidak memiliki hak akses mencoba mengakses fitur perubahan progres project | Sistem menolak izin akses dan menampilkan pesan bahwa tindakan tidak diizinkan |
+
+### 3.4.10 Skenario UC10
+
+*Nama Use Case: Melihat Riwayat dan Penelusuran*
+
+#### Skenario Normal
+
+| No | Aksi Aktor | Reaksi Perangkat Lunak |
+| :--- | :--- | :--- |
+| 1 | Pengguna membuka menu riwayat dan penelusuran aktivitas | Sistem menampilkan daftar riwayat transaksi donasi dan pembaruan progres project yang pernah didukung/dikelola secara urut waktu (chronological order) |
+| 2 | Pengguna memilih salah satu entitas riwayat transaksi atau laporan progres | Sistem menampilkan detail informasi transaksi (nominal, waktu, status) atau rincian laporan penggunaan dana dan perkembangan project |
