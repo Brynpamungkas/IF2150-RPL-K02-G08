@@ -52,8 +52,7 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 ### Milestone 3
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
-| Claude | Revisi format tabel Skenario Use Case | "Perbaiki format tabel Skenario Use Case yang saya punya menjadi seperti contoh yang saya upload dalam syntax github .md" | Double checking alur skenario di format tabel baru dan format lama |
-| Gemini | Double check apakah ada edge case skenario yang terlewat | "Apakah masih ada edge case yang belum menjadi skenario alternatif use case" | Double-checking apakah edge case yang disarankan sesuai dengan rancangan sistem atau tidak |
+| Gemini | Double check apakah ada edge case skenario use case yang terlewat | "Apakah masih ada edge case yang belum menjadi skenario alternatif use case" | Double-checking apakah edge case yang disarankan sesuai dengan rancangan sistem atau tidak |
 
 ---
 ### Pernyataan Integritas dan Persetujuan
