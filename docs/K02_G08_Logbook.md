@@ -78,6 +78,8 @@
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
+| 14-09-2026 | Naya | Subbab 3.2 | 1 | Done | - | 
+| 15-09-2026 | Naya | Revisi Subbab 3.2 | 0,5 | Done | - | 
 | 15-09-2026 | Sahla | Subbab 3.4.6 - 3.4.10 | 2,5 | Done | - | 
 | 16-09-2026 | Sahla | Revisi Subbab 3.4.6 - 3.4.10 | 2 | Done | - | 
 
