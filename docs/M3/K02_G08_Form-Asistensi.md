@@ -36,7 +36,7 @@
 
 <!-- ![](./assets/foto-asistensi.jpg) -->
 <p align="center">
-  <img src="./assets/foto-asistensi_MS3.jpg" width="100%">
+  <img src="./assets/foto-asistensi_MS3.jpeg" width="100%">
 </p>
 
 <p align="center">
