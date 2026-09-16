@@ -26,8 +26,8 @@
 
 | Catatan |
 | --- |
-| 1. *Skenario use case: tambahkan precondition dan postcondition, buat kolom tiap aktor yang terlibat, revisi format tabel menjadi selang-seling antar aktivitas dan reaksi P/L*  |
-| 2. ... |
+| 1. Skenario use case: tambahkan precondition dan postcondition, buat kolom tiap aktor yang terlibat, revisi format tabel menjadi selang-seling antar aktivitas dan reaksi P/L  |
+| 2. Diagram: tidak ada istilah exclude dalam diagram, diganti menjadi extend |
 
 **Notes for this section:**  
 *Catatan dapat dituliskan dalam bentuk paragraf atau poin-poin, disesuaikan saja.* 
