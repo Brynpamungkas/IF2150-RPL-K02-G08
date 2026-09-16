@@ -82,7 +82,7 @@
 | 15-09-2026 | Naya | Revisi Subbab 3.2 | 0,5 | Done | - | 
 | 15-09-2026 | Neysa | Subbab 3.4.1 - 3.4.5 | 2 | Done | - |
 | 15-09-2026 | Sahla | Subbab 3.4.6 - 3.4.10 | 2,5 | Done | - | 
-| 15-09-2026 | Nathan | Subbab 3.3 | 3 | Not finished yet | - | 
+| 16-09-2026 | Nathan | Subbab 3.3 | 3 | Not finished yet | - | 
 | 16-09-2026 | Bryan | Mengerjakan diagram UC 3.3 | 4 | Done | - |
 | 16-09-2026 | Sahla | Revisi Subbab 3.4.6 - 3.4.10 | 2 | Done | - |
 | 16-09-2026 | Neysa | Revisi Subbab 3.4.1 - 3.4.5 | 1 | Done | - |
