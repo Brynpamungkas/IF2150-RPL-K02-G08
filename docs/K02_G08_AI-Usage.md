@@ -24,6 +24,7 @@
 ### Daftar Isi
 * [Milestone 1](#milestone-1)
 * [Milestone 2](#milestone-2)
+* [Milestone 3](#milestone-3)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -46,6 +47,13 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | Gemini | Validasi kesesuaian antara kebutuhan non-fungsional dengan kebutuhan umum | "Apakah kebutuhan non-fungsional yang aku buat dengan keserasiannya dengan kebutuhan umum sudah sesuai? |AI memvalidasi dan memberikan saran tambahan untuk kebutuhan non-fungsional | |
 | Gemini | Verifikasi kesesuaian kalimat kebutuhan fungsional dengan struktur dan kategori EARS | "Apakah kalimat kebutuhan fungsional yang saya buat sudah sesuai dengan kategori EARS yang ada?" | Penyesuaian ouput AI dengan ketentuan EARS dan ID Aktivitas | |
 | ChatGPT | Mencari tahu konsep/algoritma yang sesuai untuk digunakan pada perangkat lunak (untuk system requirements) | "Pada perangkat lunak kami, akan diimplementasikan requirements pada password, transaksi saldo internal (tanpa payment API gateway), dan cara implementasi supaya user dapat melakukan aksi sesuai role. Apa algoritma yang dapat digunakan?" | Melakukan double checking pada jawaban yang dihasilkan dengan mencari di sumber internet terkait implementasi perangkat lunak dengan algoritma yang diberikan | |
+
+
+### Milestone 3
+| Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
+| :--- | :--- | :--- | :--- |
+| Claude | Revisi format tabel Skenario Use Case | "Perbaiki format tabel Skenario Use Case yang saya punya menjadi seperti contoh yang saya upload dalam syntax github .md" | Double checking alur skenario di format tabel baru dan format lama |
+| Gemini | Double check apakah ada edge case skenario yang terlewat | "Apakah masih ada edge case yang belum menjadi skenario alternatif use case" | Double-checking apakah edge case yang disarankan sesuai dengan rancangan sistem atau tidak |
 
 ---
 ### Pernyataan Integritas dan Persetujuan
