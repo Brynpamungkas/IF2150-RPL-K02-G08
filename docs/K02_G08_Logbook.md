@@ -72,7 +72,17 @@
 **Catatan/Evaluasi Milestone 2:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 
+### Milestone 3
+**Periode:** 9 September 2026 - 16 September 2026
 
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 15-09-2026 | Sahla | Subbab 3.4.6 - 3.4.10 | 2,5 | Done | - | 
+| 16-09-2026 | Sahla | Revisi Subbab 3.4.6 - 3.4.10 | 2 | Done | - | 
+
+
+**Catatan/Evaluasi Milestone 2:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
 
