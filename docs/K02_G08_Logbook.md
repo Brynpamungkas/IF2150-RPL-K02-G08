@@ -91,6 +91,18 @@
 
 **Catatan/Evaluasi Milestone 3:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+
+### Milestone 4
+**Periode:** 16 September 2026 - 23 September 2026
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 19-09-2026 | Bryan | *set-up* file dan persiapan pembuatan diagram | 1 | Done | - | 
+| 20-09-2026 | Bryan | Mengerjakan CD Skenario 05, 06, 07 | 2,5 | Done | - | 
+
+
+**Catatan/Evaluasi Milestone 3:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
 
