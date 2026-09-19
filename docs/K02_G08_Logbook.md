@@ -98,7 +98,7 @@
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
 | 19-09-2026 | Bryan | *set-up* file dan persiapan pembuatan diagram | 1 | Done | - | 
-| 20-09-2026 | Bryan | Mengerjakan CD Skenario 05, 06, 07 | 2,5 | Done | - | 
+| 20-09-2026 | Bryan | Mengerjakan CD Skenario UC 05, 06, 07 | 2,5 | Done | - | 
 
 
 **Catatan/Evaluasi Milestone 3:**
