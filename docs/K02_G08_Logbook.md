@@ -101,6 +101,7 @@
 | 20-09-2026 | Bryan | Mengerjakan CD Skenario UC 05, 06, 07 | 2,5 | Done | - | 
 | 20-09-2026 | Neysa | Menyesuaikan isi MS 4 dengan MS 3 (menyalin skenario) | 0,25 | Done | - | 
 | 21-09-2026 | Neysa | Mengerjakan CD Skenario UC 02, 03, 04 | 2 | Done | - | 
+| 22-09-2026 | Nathan | Mengerjakan CD Skenario UC 01 | 2 | Done | - | 
 
 
 **Catatan/Evaluasi Milestone 3:**
