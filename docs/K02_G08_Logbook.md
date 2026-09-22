@@ -24,6 +24,7 @@
 * [Milestone 1](#milestone-1)
 * [Milestone 2](#milestone-2)
 * [Milestone 3](#milestone-3)
+* [Milestone 4](#milestone-4)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 
@@ -100,11 +101,13 @@
 | 19-09-2026 | Bryan | *set-up* file dan persiapan pembuatan diagram | 1 | Done | - | 
 | 20-09-2026 | Bryan | Mengerjakan CD Skenario UC 05, 06, 07 | 2,5 | Done | - | 
 | 20-09-2026 | Neysa | Menyesuaikan isi MS 4 dengan MS 3 (menyalin skenario) | 0,25 | Done | - | 
+| 20-09-2026 | Sahla | Menyalin M3 untuk subbab 3.4.8-3.4.10 M4 | 0,2 | Done | - | 
+| 20-09-2026 | Sahla | Mengerjakan CD Skenario UC 08, 09, 10 | 2 | Done | - |
 | 21-09-2026 | Neysa | Mengerjakan CD Skenario UC 02, 03, 04 | 2 | Done | - | 
 | 22-09-2026 | Nathan | Mengerjakan CD Skenario UC 01 | 2 | Done | - | 
 
 
-**Catatan/Evaluasi Milestone 3:**
+**Catatan/Evaluasi Milestone 4:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
