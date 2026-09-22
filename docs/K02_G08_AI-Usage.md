@@ -25,6 +25,7 @@
 * [Milestone 1](#milestone-1)
 * [Milestone 2](#milestone-2)
 * [Milestone 3](#milestone-3)
+* [Milestone 4](#milestone-4)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -54,6 +55,10 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | :--- | :--- | :--- | :--- |
 | Gemini | Double check apakah ada edge case skenario use case yang terlewat | "Apakah masih ada edge case yang belum menjadi skenario alternatif use case" | Double-checking apakah edge case yang disarankan sesuai dengan rancangan sistem atau tidak |
 | ChatGPT | Mengubah format untuk skenario tanpa mengubah isinya | "Berikut adalah skenario yang dibuat untuk masing-masing use case pada perangkat lunak. Ada revisi terkait format tabelnya, aktor menjadi dipisah dan selang-seling antara aksi dan reaksi p/l. Tolong disesuaikan" | Double-checking supaya AI hanya membantu melakukan perubahan format (daripada melakukan manual secara repetitif) dan memastikan tidak ada isi yang tiba-tiba diubah dan tidak sesuai |
+
+### Milestone 4
+| Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
+| :--- | :--- | :--- | :--- |
 
 ---
 ### Pernyataan Integritas dan Persetujuan
