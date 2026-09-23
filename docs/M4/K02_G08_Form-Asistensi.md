@@ -4,8 +4,8 @@
 
 | Informasi | Keterangan |
 | --- | --- |
-| **Hari** | |
-| **Tanggal** | |
+| **Hari** | Jumat |
+| **Tanggal** | 18 September 2026 |
 | **Kelas** | K02 |
 | **Nomor Kelompok** | G08 |
 | **Nama Kelompok** | BS3N  |
