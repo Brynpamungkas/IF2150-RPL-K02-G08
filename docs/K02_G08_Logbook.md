@@ -104,7 +104,8 @@
 | 20-09-2026 | Sahla | Menyalin M3 untuk subbab 3.4.8-3.4.10 M4 | 0,2 | Done | - | 
 | 20-09-2026 | Sahla | Mengerjakan CD Skenario UC 08, 09, 10 | 2 | Done | - |
 | 21-09-2026 | Neysa | Mengerjakan CD Skenario UC 02, 03, 04 | 2 | Done | - | 
-| 22-09-2026 | Nathan | Mengerjakan CD Skenario UC 01 | 2 | Done | - | 
+| 22-09-2026 | Nathan | Mengerjakan CD Skenario UC 01 | 0,5 | Done | - | 
+| 23-09-2026 | Nathan | Mengerjakan Diagram Keseluruhan 4.3 | 2 | Done | - | 
 
 
 **Catatan/Evaluasi Milestone 4:**
