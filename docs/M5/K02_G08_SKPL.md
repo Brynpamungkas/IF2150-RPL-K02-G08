@@ -108,6 +108,20 @@ Melalui penerapan sistem ini, diharapkan partisipasi masyarakat dalam aksi iklim
 | 5 | Pelaksanaan kegiatan sesuai jadwal dan lokasi | Pemilik Project, Volunteer | Lapangan |
 | 6 | Pembaruan progres dan laporan penggunaan dana | Pemilik Project | Aplikasi |
 
+<p align="center">
+<img alt="Activity Diagram 1 (Alur Donasi Dana)" src="./assets/diagram/diagram1.jpeg" width="70%">
+</p>
+<p align="center">
+<i>Gambar 1. Activity Diagram 1 (Alur Donasi Dana)</i>
+</p>
+
+<p align="center">
+<img alt="Activity Diagram 2 (Alur Pendaftaran & Aktivitas Volunteer)" src="./assets/diagram/diagram2.jpeg" width="70%">
+</p>
+<p align="center">
+<i>Gambar 2. Activity Diagram 2 (Alur Pendaftaran & Aktivitas Volunteer)</i>
+</p>
+
 ## 2.2 Deskripsi Umum Perangkat Lunak
 Diisi dengan deskripsi umum perangkat lunak untuk mendukung proses bisnis yang telah diuraikan pada sub-bab sebelumnya. Uraian harus menunjukkan lingkup perangkat lunak, mencakup keterkaitan perangkat lunak dengan sistem lain di luar (misalnya *Payment Gateway* atau layanan pihak ketiga lain yang dipakai).
 
@@ -220,7 +234,7 @@ Tabel 3.2. Kebutuhan Non-Fungsional
 | UC05 | Mencari dan Menelusuri Project | Pengguna mencari, menyaring, dan melihat detail informasi campaign atau project yang berstatus telah dipublikasikan. | Pengguna Umum (Pembuat Project, Donatur, Volunteer) | KF13, KF14 |
 | UC06 | Melakukan Transaksi Donasi | Donatur mengirimkan dana donasi yang diproses secara konsisten (atomic), mencegah duplikasi, dan otomatis memperbarui total dana campaign. | Donatur | KF15, KF16, KF17, KF18, KF26 |
 | UC07 | Mendaftar Sebagai Volunteer | Pengguna mendaftar menjadi volunteer pada project aksi iklim dengan melengkapi data diri dan keahlian secara lengkap. | Volunteer | KF19, KF20 |
-| UC08 | Mengelola Pendaftaran Volunteer | Pembuat Project meninjau pendaftaran volunteer, memberikan keputusan (terima/tolak), dan sistem menampilkan instruksi kegiatan. | Pembuat Project | KF21, KF22 |
+| UC08 | Mengelola Pendaftaran Relawan | Pembuat Project meninjau pendaftaran volunteer, memberikan keputusan (terima/tolak), dan sistem menampilkan instruksi kegiatan. | Pembuat Project | KF21, KF22 |
 | UC09 | Memperbarui Progres Project | Pembuat Project atau Admin mengunggah pembaruan kegiatan dan dokumentasi progres yang terhubung langsung dengan project. | Pembuat Project, Admin Sistem | KF23, KF24, KF25 |
 | UC10 | Melihat Riwayat dan Penelusuran | Pengguna mengakses riwayat lengkap terkait transaksi donasi dan melacak perubahan progres project berdasarkan urutan waktu. | Pengguna Umum (Pembuat Project, Donatur, Volunteer) | KF27 |
 
@@ -607,7 +621,7 @@ Salin ulang skenario **setiap** use case (skenario normal dan alternatif) dari B
 
 ### 4.4.8 Skenario UC08
 
-**Nama Use Case: Mengelola Pendaftaran Volunteer**
+**Nama Use Case: Mengelola Pendaftaran Relawan**
 
 #### Skenario Normal
 
@@ -865,7 +879,7 @@ Salin ulang skenario **setiap** use case (skenario normal dan alternatif) dari B
 
 ### 5.2.8 Use Case UC08
 
-**Nama Use Case:** *Mengelola Pendaftaran Volunteer*
+**Nama Use Case:** *Mengelola Pendaftaran Relawan*
 
 <p align="center">
 <img alt="Class Diagram UC08" src="./assets/diagram/CD UC 08.png" width="25%">
@@ -946,17 +960,17 @@ Salin ulang skenario **setiap** use case (skenario normal dan alternatif) dari B
 
 | ID Kelas | ID Use Case | ID KF |
 | :--- | :--- | :--- |
-| C00 | UC01, UC05, UC10 | KF01, KF02, KF03, KF04, KF13, KF14, KF27 |
-| C01 | UC05 | KF13, KF14 |
-| C02 | UC03, UC04, UC05, UC06, UC07, UC08, UC09, UC10 | KF08, KF09, KF10, KF11, KF12, KF13, KF14, KF15, KF16, KF17, KF18, KF26, KF19, KF20, KF21, KF22, KF23, KF24, KF25, KF27 |
-| C03 | UC02, UC04, UC05, UC06 | KF05, KF06, KF07, KF11, KF12, KF13, KF14, KF15, KF16, KF17, KF18, KF26 |
+| C00 | UC05, UC10 | KF13, KF14 |
+| C01 | UC02, UC05 | KF05, KF06, KF07, KF13, KF14 |
+| C02 | UC03, UC04, UC05, UC06, UC07, UC08, UC09 UC10 | KF08, KF09, KF10, KF11, KF12, KF13, KF14, KF15, KF16, KF17, KF18, KF26, KF19, KF20,  KF21, KF22. KF23, KF24, KF25, KF27 |
+| C03 | UC02, UC04, UC05, UC06 | KF08, KF09, KF10, KF11, KF12, KF13, KF14, KF15, KF16, KF17, KF18, KF26 |
 | C04 | UC06 | KF15, KF16, KF17, KF18, KF26 |
-| C05 | UC06, UC07 | KF15, KF16, KF17, KF18, KF19, KF20, KF26 |
+| C05 | UC06, UC07 | KF15, KF16, KF17, KF18, KF26, KF19, KF20 |
 | C06 | UC06, UC10 | KF15, KF16, KF17, KF18, KF26, KF27 |
-| C07 | UC06 | KF15, KF16, KF17, KF18, KF26 |
-| C08 | UC07, UC08 | KF19, KF20, KF21, KF22 |
-| C09 | UC07, UC08 | KF19, KF20, KF21, KF22 |
-| C10 | UC02, UC03, UC04, UC07, UC08, UC09 | KF05, KF06, KF07, KF08, KF09, KF10, KF11, KF12, KF19, KF20, KF21, KF22, KF23, KF24, KF25 |
+| C07 | UC04, UC06 | KF11, KF12, KF15, KF16, KF17, KF18, KF26 |
+| C08 | UC04, UC07, UC08 | KF11, KF12,  KF19, KF20, KF21, KF22 |
+| C09 | UC04, UC07, UC08 | KF11, KF12,  KF19, KF20, KF21, KF22 |
+| C10 | UC02, UC03, UC04, UC07, UC08, UC09  | KF05, KF06, KF07, KF08, KF09, KF10,  KF19, KF20,  KF21, KF22, KF23, KF24, KF25 |
 | C11 | UC04 | KF11, KF12 |
 | C12 | UC01 | KF01, KF02, KF03 |
 | C13 | UC01 | KF04 |

@@ -111,6 +111,17 @@
 
 **Catatan/Evaluasi Milestone 4:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+
+### Milestone 4
+**Periode:** 16 September 2026 - 23 September 2026
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 27-09-2026 | Bryan | menyalin bab 2 hingga bab 7 | 2,5 | Done | - | 
+
+
+**Catatan/Evaluasi Milestone 4:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
 
