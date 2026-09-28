@@ -156,11 +156,19 @@ Diisi dengan deskripsi umum perangkat lunak untuk mendukung proses bisnis yang t
 | *Admin Sistem* | *Pengguna harus mengelola dan mengawasi keberjalanan sistem, termasuk memverifikasi pengguna dan project yang terdaftar dengan mengutamakan keamanan, validitas data, dan keteraturan sistem.* |
 
 ## 2.4 Batasan Perangkat Lunak
-Batasan yang harus dituliskan, di antaranya:
-1. *P/L harus memakai file data/API dari sistem lain (sebutkan, misal Payment Gateway dummy).*
-2. *P/L harus memakai format data yang sama dengan sistem lain.*
-3. *P/L harus berfungsi pada platform tertentu (misal: web browser modern, atau desktop Windows dan Linux).*
-4. *...*
+Batasan yang berlaku pada pengembangan P/L ini, di antaranya:
+1. P/L harus berupa aplikasi berbasis web yang dapat dijalankan melalui peramban modern (Chrome, Firefox, Edge, atau Safari versi terkini) tanpa pemasangan perangkat lunak tambahan pada perangkat pengguna.
+2. P/L harus memakai antarmuka gerbang pembayaran tiruan (*dummy payment gateway*) untuk proses pengisian saldo, serta tidak boleh memproses transaksi keuangan secara mandiri maupun terhubung ke penyedia layanan pembayaran yang sebenarnya.
+3. P/L harus memakai format data JSON melalui protokol HTTP dalam pertukaran data dengan gerbang pembayaran tiruan dan layanan unggah dokumentasi progres.
+4. P/L harus memakai data tiruan yang disusun oleh tim untuk data project, campaign, dan pengguna, serta tidak terhubung ke basis data lembaga eksternal seperti BNPB maupun SIDIK Kementerian Lingkungan Hidup dan Kehutanan.
+5. P/L harus memperlakukan nominal saldo pengguna dan dana project sebagai data simulasi yang tidak merepresentasikan nilai keuangan sebenarnya.
+6. P/L harus menyimpan kata sandi pengguna menggunakan algoritma *password hashing* Argon2id atau bcrypt, serta tidak boleh menyimpannya dalam bentuk *plaintext* maupun dengan fungsi hash tanpa *salt*.
+7. P/L harus mengirimkan seluruh data antara peramban pengguna dan peladen melalui HTTPS dengan TLS minimum versi 1.2.
+8. P/L harus memproses dan menyimpan data pribadi pengguna sesuai Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi.
+9. P/L harus mewajibkan setiap campaign dan project melewati verifikasi Admin Sistem sebelum dipublikasikan, serta tidak menyediakan mekanisme penyaluran donasi tanpa akun terdaftar.
+10. P/L harus membatasi cakupan data lokasi kegiatan pada wilayah administratif Republik Indonesia, sehingga peta interaktif tidak menampilkan kegiatan di luar teritori tersebut.
+11. P/L tidak menangani aspek operasional kegiatan di lapangan, seperti pengelolaan logistik fisik dan penjadwalan kegiatan secara terperinci, karena hal tersebut menjadi tanggung jawab Pemilik Project di luar sistem.
+12. P/L tidak menyajikan materi edukasi mitigasi iklim pada tahap pengembangan ini, dan penyajiannya dipertimbangkan sebagai pengembangan lanjutan.
 
 ## 2.5 Lingkungan Operasi Perangkat Lunak
 Spesifikasi *operating system* atau lingkungan yang dibutuhkan P/L untuk beroperasi. Bagian ini digunakan untuk memastikan pengguna memiliki spesifikasi yang cukup untuk menjalankan P/L. Misalnya mencakup komponen server, client, OS, DBMS, tetapi tidak menutupi kemungkinan komponen lain.
