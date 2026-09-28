@@ -142,9 +142,26 @@ Melalui penerapan sistem ini, diharapkan partisipasi masyarakat dalam aksi iklim
 </p>
 
 ## 2.2 Deskripsi Umum Perangkat Lunak
-Diisi dengan deskripsi umum perangkat lunak untuk mendukung proses bisnis yang telah diuraikan pada sub-bab sebelumnya. Uraian harus menunjukkan lingkup perangkat lunak, mencakup keterkaitan perangkat lunak dengan sistem lain di luar (misalnya *Payment Gateway* atau layanan pihak ketiga lain yang dipakai).
+# KlimPooL
 
-*Contoh narasi:* "*[Nama P/L]* merupakan aplikasi *[deskripsi singkat]* yang berinteraksi dengan *Payment Gateway (dummy)* untuk memproses otorisasi pembayaran. Sistem menerima input dari *Pelanggan* melalui antarmuka aplikasi dan mengirimkan permintaan transaksi ke *Payment Gateway* setiap kali pelanggan melakukan checkout."
+KlimPooL merupakan aplikasi berbasis web yang menghubungkan masyarakat dengan kegiatan aksi iklim dan penanganan bencana di berbagai wilayah Indonesia melalui peta interaktif. Melalui peta tersebut, pengguna dapat menelusuri kegiatan di wilayah tertentu, membaca kebutuhan yang belum terpenuhi, lalu berkontribusi dalam bentuk dana atau tenaga sebagai relawan. Setiap pengguna juga dapat menginisiasi penggalangan dana atau rekrutmen relawan untuk kegiatannya sendiri. Seluruh pengajuan diverifikasi oleh Admin Sistem sebelum dipublikasikan.
+
+Perangkat lunak ini mendukung proses bisnis pada sub-bab 2.1, yaitu pengajuan campaign dan project, verifikasi, publikasi pada peta dan katalog, penyaluran donasi, pendaftaran dan seleksi relawan, serta pelaporan progres dan penggunaan dana. Sistem menerima masukan dari empat aktor melalui antarmuka web, yaitu Pembuat Project, Donatur, Volunteer, dan Admin Sistem. Setiap pengguna memiliki dua jenis saldo yang terpisah: saldo pribadi untuk berdonasi, dan saldo penggalangan dana yang menampung donasi masuk pada kegiatan yang ia buka. Seluruh data akun, campaign, project, saldo, transaksi, pendaftaran relawan, dan riwayat progres disimpan pada basis data internal sistem.
+
+Lingkup perangkat lunak mencakup:
+
+1. Pendaftaran akun dan autentikasi pengguna.
+2. Pembuatan campaign penggalangan donasi dan project aksi iklim.
+3. Peninjauan dan verifikasi pengajuan oleh Admin Sistem.
+4. Pencarian dan penelusuran kegiatan melalui peta interaktif dan katalog.
+5. Transaksi donasi berbasis saldo di dalam aplikasi.
+6. Pendaftaran dan pengelolaan relawan.
+7. Pembaruan progres dan dokumentasi kegiatan.
+8. Penelusuran riwayat transaksi dan progres.
+
+KlimPooL tidak terhubung dengan sistem eksternal, baik lembaga keuangan maupun basis data lembaga lain. Data kegiatan yang ditampilkan merupakan data tiruan yang disusun tim pengembang. Pengisian saldo pengguna hanya disimulasikan di dalam aplikasi, layaknya *Payment Gateway* (dummy), sehingga tidak ada perpindahan dana yang nyata. Ketika Donatur mengonfirmasi donasi, sistem memvalidasi saldo, mengurangi saldo Donatur, menambahkan dana ke saldo tujuan, dan mencatat transaksi dalam satu *database transaction* yang bersifat atomik. Bila salah satu tahap gagal, seluruh perubahan dibatalkan.
+
+Di luar lingkup perangkat lunak terdapat pelaksanaan kegiatan di lapangan (penanaman, distribusi logistik, pemulihan lingkungan), pengelolaan logistik fisik, dan penjadwalan kegiatan yang terperinci. Perangkat lunak hanya mencatat, mengoordinasikan, dan melaporkan kegiatan tersebut. Cakupan wilayah terbatas pada Indonesia, dan materi edukasi mitigasi iklim tidak termasuk dalam tahap ini.
 
 ## 2.3 Pengguna dan Kebutuhan Pengguna Perangkat Lunak
 
