@@ -40,10 +40,10 @@ Dipersiapkan oleh:
 # BAB 1: Pendahuluan
 
 ## 1.1 Tujuan Penulisan Dokumen
-Tuliskan dengan ringkas tujuan dokumen SKPL ini dibuat dan siapa saja yang akan menggunakan dokumen ini.
+Dokumen Spesifikasi Kebutuhan Perangkat Lunak (SKPL) ini bertujuan untuk mendefinisikan secara komprehensif dan rinci seluruh kebutuhan fungsional, kebutuhan non-fungsional, batasan sistem, serta pemodelan perangkat lunak dari aplikasi KlimPooL. Dokumen ini berfungsi sebagai acuan teknis dan panduan utama bagi tim pengembang (Kelompok 08) dalam merancang, membangun, menguji, dan memelihara perangkat lunak agar sesuai dengan spesifikasi yang telah ditetapkan. Selain itu, dokumen ini juga ditujukan bagi evaluator atau pemberi tugas (Made Branenda Jordhy) serta pihak-pihak berkepentingan lainnya guna memastikan adanya pemahaman yang selaras mengenai ruang lingkup, alur kerja, dan fungsionalitas sistem secara menyeluruh sebelum tahap implementasi dilanjutkan.
 
 ## 1.2 Lingkup Masalah
-Tuliskan dengan ringkas nama aplikasi dan deskripsi singkatnya. Bagian ini maksimal berisi satu paragraf, dapat diringkas dari BAB 1 *Analisis Permasalahan* pada dokumen *Topic Brainstorming*.
+KlimPooL adalah perangkat lunak berbasis web yang dirancang sebagai platform terpusat untuk mengoordinasikan aksi mitigasi perubahan iklim dan penanganan bencana alam. Aplikasi ini menjembatani pemilik project atau penggalang donasi dengan masyarakat luas yang ingin berkontribusi, baik melalui penyaluran dana finansial secara aman, penyediaan pasokan logistik, maupun pendaftaran sebagai relawan (volunteer) guna mewujudkan penanggulangan dampak iklim yang transparan dan terstruktur.
 
 ## 1.3 Definisi, Istilah, dan Singkatan
 Semua definisi dan singkatan yang digunakan dalam dokumen ini beserta penjelasannya.
