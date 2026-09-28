@@ -58,7 +58,8 @@ Tabel 1.3. Definisi Istilah dan Singkatan
 | *KNF* | *Singkatan dari Kebutuhan Non-Fungsional.* |
 | *UC* | *Singkatan dari Use Case.* |
 | *EARS* | *Easy Approach to Requirements Syntax, yaitu pola penulisan kebutuhan agar konsisten dan mudah diuji.* |
-| *...* | *...* |
+| *TLS* | *Singkatan dari Transport Layer Security, yaitu sebuah protokol keamanan digital yang bertugas menyamarkan dan melindungi data saat dikirimkan melalui internet.*|
+| *C* | *Singkatan dari Class/Kelas.* |
 
 ## 1.4 Aturan Penomoran
 Tuliskan aturan penomoran (ID) yang digunakan dalam dokumen ini. Gunakan pola ID yang **sama** dengan yang sudah dipakai pada dokumen-dokumen sebelumnya, jangan membuat pola baru di dokumen ini.
@@ -75,7 +76,14 @@ Tabel 1.4. Aturan Penomoran
 | *...* | *...* |
 
 ## 1.5 Referensi
-Dokumentasi P/L yang dirujuk oleh dokumen ini. Referensi dapat berupa buku, panduan, ataupun dokumentasi lain yang dipakai dalam pengembangan P/L ini.
+- IPCC, 2023: Laporan Climate Change 2023: Synthesis Report dari Intergovernmental Panel on Climate Change. Tautan resmi: https://www.ipcc.ch/report/ar6/syr/
+- Kasus Pencairan Gletser Nepal: Laporan kolaboratif Thame Valley Glacial Lake Outburst Flood 2024 dan identifikasi danau glasial oleh International Centre for Integrated Mountain Development (ICIMOD) bersama UNDP. Tautan publikasi: https://lib.icimod.org/records/8g9ze-1r153 dan https://www.undp.org/nepal/press-releases/report-icimod-and-undp-identifies-potentially-dangerous-glacial-lakes-koshi-gandaki-and-karnali-river-basins
+- Tujuan Pembangunan Berkelanjutan (SDGs): Agenda resmi PBB Transforming our world: the 2030 Agenda for Sustainable Development yang merinci 17 target utama, termasuk Climate Action (SDG 13). Tautan resmi: https://sdgs.un.org/2030agenda
+- Data Statistik Bencana Nasional: Portal Data Informasi Bencana Indonesia (DIBI) kelolaan Badan Nasional Penanggulangan Bencana (BNPB). Tautan resmi: https://dibi.bnpb.go.id/
+- Analisis Tren Donasi Digital: Portal informasi dan repositori dari Perhimpunan Filantropi Indonesia yang merangkum dinamika donasi dan crowdfunding di tingkat nasional. Tautan resmi: https://filantropi.or.id/ aku ingin cara buka ini langsung ke informasi yang kita pake gimana
+- Platform Crowdfunding Eksisting: PT Kita Bisa Indonesia. Kitabisa: Platform Galang Dana dan Donasi Online. Diakses melalui https://kitabisa.com/ (Sebagai rujukan analisis sistem donasi digital yang saat ini terfokus pada penggalangan dana moneter).
+- Peta Interaktif Kerentanan Iklim: Kementerian Lingkungan Hidup dan Kehutanan (KemenLHK) Republik Indonesia. Sistem Informasi Data Indeks Kerentanan (SIDIK). Diakses melalui https://sidik.kemenlh.go.id/ (Sebagai purwarupa rujukan visual dan fungsional sistem pemetaan dampak lingkungan interaktif).
+- Diagram UML: https://www.drawio.com/, https://staruml.io/
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
 Dokumen Spesifikasi Kebutuhan Perangkat Lunak (SKPL) KlimPooL ini disusun dalam enam bab dengan sistematika sebagai berikut.
