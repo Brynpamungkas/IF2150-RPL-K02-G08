@@ -118,9 +118,11 @@
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
-| 27-09-2026 | Bryan | menyalin bab 2 hingga bab 7 | 2,5 | Done | - | 
-| 28-09-2026 | Sahla | mengisi subbab 1.3, 1.5, dan merevisi subbab 2.3 | 0,5 | Done | - | 
-| 28-09-2026 | Nathan | mengisi subbab 2.4 | 1 | Done | - | 
+| 27-09-2026 | Bryan | Menyalin bab 2 hingga bab 7 | 2,5 | Done | - | 
+| 28-09-2026 | Sahla | Mengisi subbab 1.3, 1.5, dan merevisi subbab 2.3 | 0,5 | Done | - | 
+| 28-09-2026 | Nathan | Mengisi subbab 2.4 | 1 | Done | - | 
+| 28-09-2026 | Neysa | Mengisi subbab 1.6 | 0,5 | Done | - | 
+| 29-09-2026 | Neysa | Mengisi subbab 2.2 | 1 | Done | - | 
 
 
 **Catatan/Evaluasi Milestone 5:**
