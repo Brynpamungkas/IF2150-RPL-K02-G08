@@ -78,7 +78,19 @@ Tabel 1.4. Aturan Penomoran
 Dokumentasi P/L yang dirujuk oleh dokumen ini. Referensi dapat berupa buku, panduan, ataupun dokumentasi lain yang dipakai dalam pengembangan P/L ini.
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
-Tuliskan sistematika pembahasan dokumen SKPL ini secara runut (misalnya: BAB 2 membahas deskripsi umum P/L, BAB 3 membahas kebutuhan fungsional dan non-fungsional, dst).
+Dokumen Spesifikasi Kebutuhan Perangkat Lunak (SKPL) KlimPooL ini disusun dalam enam bab dengan sistematika sebagai berikut.
+
+BAB 1 Pendahuluan membahas tujuan penulisan dokumen, lingkup masalah, definisi, istilah, dan singkatan, aturan penomoran, referensi, serta deskripsi umum dokumen.
+
+BAB 2 Deskripsi Perangkat Lunak membahas deskripsi umum sistem dan alur kerjanya, deskripsi umum perangkat lunak beserta lingkup dan keterkaitannya dengan sistem lain, pengguna dan kebutuhan pengguna, batasan perangkat lunak, serta lingkungan operasi perangkat lunak.
+
+BAB 3 Deskripsi Kebutuhan Perangkat Lunak membahas kebutuhan fungsional (KF) dan kebutuhan non-fungsional (KNF) yang harus dipenuhi perangkat lunak.
+
+BAB 4 Pemodelan Use Case membahas identifikasi aktor, identifikasi use case, use case diagram, serta skenario normal dan alternatif untuk setiap use case.
+
+BAB 5 Pemodelan Kelas membahas identifikasi kelas, diagram kelas untuk setiap use case, serta diagram kelas keseluruhan.
+
+BAB 6 Traceability membahas keterkaitan antara kelas, use case, dan kebutuhan fungsional agar seluruh kebutuhan dapat ditelusuri sampai ke rancangannya.
 
 ---
 
