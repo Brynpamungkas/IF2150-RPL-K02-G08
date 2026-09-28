@@ -57,7 +57,6 @@ Tabel 1.3. Definisi Istilah dan Singkatan
 | *KF* | *Singkatan dari Kebutuhan Fungsional.* |
 | *KNF* | *Singkatan dari Kebutuhan Non-Fungsional.* |
 | *UC* | *Singkatan dari Use Case.* |
-| *EARS* | *Easy Approach to Requirements Syntax, yaitu pola penulisan kebutuhan agar konsisten dan mudah diuji.* |
 | *TLS* | *Singkatan dari Transport Layer Security, yaitu sebuah protokol keamanan digital yang bertugas menyamarkan dan melindungi data saat dikirimkan melalui internet.*|
 | *C* | *Singkatan dari Class/Kelas.* |
 
@@ -151,8 +150,10 @@ Diisi dengan deskripsi umum perangkat lunak untuk mendukung proses bisnis yang t
 
 | Pengguna | Kebutuhan |
 | :--- | :--- |
-| *Pengguna* | *Pengguna dapat bertindak sebagai donatur proyek, relawan proyek, pembuka penggalangan donasi proyek, atau pembuat dan pengelola proyek. Karakteristik dari pengguna adalah kemudahan dalam berdonasi baik sebagai donatur ataupun relawan, transparansi penggunaan dana dan pelaksanaan proyek, serta kemudahan dalam membuat campaign dan mengelola informasi.* |
-| *Admin Sistem* | *Pengguna ini bertindak sebagai pihak yang mengelola dan mengawasi keberjalanan sistem, termasuk memverifikasi pengguna dan project yang terdaftar. Karakteristik dari pengguna ini adalah mengutamakan keamanan, validitas data, dan keteraturan sistem.* |
+| *Pembuat Project* | *Pengguna harus dapat menciptakan, mengelola, dan menjalankan climate action project dengan sistem sebagai sarana untuk mengelola serta menyampaikan perkembangan project.* |
+| *Donatur* | *Pengguna harus dapat memberikan dana untuk mendukung climate action project melalui sistem dengan mengutamakan transparansi penggunaan dana, keamanan transaksi, dan kemudahan dalam berdonasi.* |
+| *Volunteer* | *Pengguna harus dapat memberikan kontribusi secara langsung dalam pelaksanaan climate action project melalui waktu, tenaga, atau keahliannya dengan sistem sebagai sarana kebutuhan informasi project, jadwal, lokasi, dan proses pendaftaran yang jelas dan mudah.* |
+| *Admin Sistem* | *Pengguna harus mengelola dan mengawasi keberjalanan sistem, termasuk memverifikasi pengguna dan project yang terdaftar dengan mengutamakan keamanan, validitas data, dan keteraturan sistem.* |
 
 ## 2.4 Batasan Perangkat Lunak
 Batasan yang harus dituliskan, di antaranya:
