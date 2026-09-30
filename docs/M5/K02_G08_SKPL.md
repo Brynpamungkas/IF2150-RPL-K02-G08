@@ -180,7 +180,7 @@ Batasan yang berlaku pada pengembangan P/L ini, di antaranya:
 4. P/L harus memakai data tiruan yang disusun oleh tim untuk data project, campaign, dan pengguna, serta tidak terhubung ke basis data lembaga eksternal seperti BNPB maupun SIDIK Kementerian Lingkungan Hidup dan Kehutanan.
 5. P/L harus memperlakukan nominal saldo pengguna dan dana project sebagai data simulasi yang tidak merepresentasikan nilai keuangan sebenarnya.
 6. P/L harus menyimpan kata sandi pengguna menggunakan algoritma *password hashing* Argon2id atau bcrypt, serta tidak boleh menyimpannya dalam bentuk *plaintext* maupun dengan fungsi hash tanpa *salt*.
-7. P/L harus mengirimkan seluruh data antara peramban pengguna dan peladen melalui HTTPS dengan TLS minimum versi 1.2.
+7. P/L harus mengirimkan seluruh data antara peramban pengguna dan server melalui HTTPS dengan TLS minimum versi 1.2.
 8. P/L harus memproses dan menyimpan data pribadi pengguna sesuai Undang-Undang Nomor 27 Tahun 2022 tentang Pelindungan Data Pribadi.
 9. P/L harus mewajibkan setiap campaign dan project melewati verifikasi Admin Sistem sebelum dipublikasikan, serta tidak menyediakan mekanisme penyaluran donasi tanpa akun terdaftar.
 10. P/L harus membatasi cakupan data lokasi kegiatan pada wilayah administratif Republik Indonesia, sehingga peta interaktif tidak menampilkan kegiatan di luar teritori tersebut.
@@ -188,15 +188,16 @@ Batasan yang berlaku pada pengembangan P/L ini, di antaranya:
 12. P/L tidak menyajikan materi edukasi mitigasi iklim pada tahap pengembangan ini, dan penyajiannya dipertimbangkan sebagai pengembangan lanjutan.
 
 ## 2.5 Lingkungan Operasi Perangkat Lunak
-Spesifikasi *operating system* atau lingkungan yang dibutuhkan P/L untuk beroperasi. Bagian ini digunakan untuk memastikan pengguna memiliki spesifikasi yang cukup untuk menjalankan P/L. Misalnya mencakup komponen server, client, OS, DBMS, tetapi tidak menutupi kemungkinan komponen lain.
 
 | Komponen | Spesifikasi |
 | :--- | :--- |
-| *Server* | *[contoh: Node.js v20, dijalankan pada layanan cloud]* |
-| *Client* | *[contoh: Web Browser modern (Chrome, Firefox terbaru)]* |
-| *DBMS* | *[contoh: PostgreSQL 15]* |
-| *OS* | *[contoh: Cross-platform (Windows/Linux/MacOS) melalui browser]* |
-| *...* | *...* |
+| *Server* | P/L harus dijalankan pada server yang tersedia secara berkelanjutan dan mampu melayani permintaan pengguna secara bersamaan. Teknologi dan versi *runtime*, serta penyedia layanan *hosting*, akan ditentukan pada tahap implementasi. |
+| *Client* | P/L dapat diakses melalui peramban web versi terkini, seperti Chrome, Firefox, Edge, atau Safari, pada perangkat desktop, tablet, maupun *smartphone* tanpa pemasangan perangkat lunak tambahan. Pengguna harus memiliki koneksi internet yang memadai. |
+| *DBMS* | P/L harus menyimpan data akun, campaign, project, saldo, transaksi, pendaftaran relawan, dan riwayat progres pada basis data internal. DBMS yang digunakan harus mendukung transaksi atomik (*ACID*) untuk pemrosesan donasi. Jenis dan versi DBMS akan ditentukan pada tahap implementasi. |
+| *OS Client* | P/L dapat diakses melalui sistem operasi apa pun yang mendukung peramban web modern, sehingga pengguna tidak dibatasi pada sistem operasi tertentu. |
+| *OS Server* | Sistem operasi server akan ditentukan sesuai dengan teknologi *runtime* dan lingkungan *hosting* yang dipilih pada tahap implementasi. |
+| *Jaringan dan Protokol* | Komunikasi antara peramban dan server harus menggunakan HTTPS dengan TLS versi 1.2 atau lebih tinggi. Pertukaran data melalui API harus menggunakan format JSON. |
+| *Kapasitas Operasional* | Server harus mendukung 1.000 pengguna aktif secara simultan dengan waktu tanggap maksimal 3 detik untuk setiap permintaan. Ketersediaan layanan harus mencapai minimal 99% per bulan, di luar jadwal pemeliharaan rutin. |
 
 ---
 

@@ -124,7 +124,7 @@
 | 28-09-2026 | Neysa | Mengisi subbab 1.6 | 0,5 | Done | - | 
 | 28-09-2026 | Naya | Mengisi subbab 1.1 dan 1.2 | 0,5 | Done | - | 
 | 29-09-2026 | Neysa | Mengisi subbab 2.2 | 1 | Done | - | 
-
+| 30-09-2026 | Bryan | Mengerjakan subbab 2.5 | 2 | Done | - | 
 
 **Catatan/Evaluasi Milestone 5:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
