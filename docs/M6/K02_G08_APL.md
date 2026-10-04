@@ -78,6 +78,7 @@ Tabel berikut disalin dari subbab 2.5 *Lingkungan Operasi Perangkat Lunak* pada 
 
 
 Dikarenakan pada subbab 2.5 file K02_G08_SKPL.md, kami menentukan spesifikasi rinci pada tabel 1.2 ini 
+
 Tabel 1.2. Spesifikasi Implementasi
 | Komponen | Spesifikasi |
 | :--- | :--- |
