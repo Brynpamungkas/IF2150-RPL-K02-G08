@@ -65,7 +65,6 @@ Layered Architecture sesuai karena KlimPooL mencakup alur autentikasi, verifikas
 Kedua pola ini menjadi acuan rancangan KlimPooL.
 
 Tabel 1.1. Lingkungan Operasi Perangkat Lunak
-
 | Komponen | Spesifikasi |
 | :--- | :--- |
 | *Server* | P/L harus dijalankan pada server yang tersedia secara berkelanjutan dan mampu melayani permintaan pengguna secara bersamaan. Teknologi dan versi *runtime*, serta penyedia layanan *hosting*, akan ditentukan pada tahap implementasi. |
@@ -77,10 +76,9 @@ Tabel 1.1. Lingkungan Operasi Perangkat Lunak
 | *Kapasitas Operasional* | Server harus mendukung 1.000 pengguna aktif secara simultan dengan waktu tanggap maksimal 3 detik untuk setiap permintaan. Ketersediaan layanan harus mencapai minimal 99% per bulan, di luar jadwal pemeliharaan rutin. |
 Tabel berikut disalin dari subbab 2.5 *Lingkungan Operasi Perangkat Lunak* pada SKPL.
 
-Tabel 1.2. Spesifikasi Implementasi
 
 Dikarenakan pada subbab 2.5 file K02_G08_SKPL.md, kami menentukan spesifikasi rinci pada tabel 1.2 ini 
-
+Tabel 1.2. Spesifikasi Implementasi
 | Komponen | Spesifikasi |
 | :--- | :--- |
 | *Server* | Node.js 22 LTS dengan Next.js *full-stack* (frontend dan API dalam satu proyek), di-deploy ke Vercel dengan arsitektur *serverless* dan *autoscaling*. Deployment otomatis dari repositori Git dengan region Singapura. |
