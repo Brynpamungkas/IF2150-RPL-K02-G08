@@ -88,7 +88,7 @@ Tabel 1.2. Spesifikasi Implementasi
 | *OS Client* | Tidak dibatasi; dapat diakses dari Windows, macOS, Linux, Android, dan iOS selama memiliki browser modern. |
 | *OS Server* | Dikelola penyedia hosting Vercel dengan lingkungan *serverless* berbasis Linux. |
 | *Jaringan dan Protokol* | HTTPS dengan TLS 1.2 atau lebih tinggi menggunakan sertifikat otomatis dari Vercel; HTTP dialihkan ke HTTPS. API REST menggunakan format JSON. |
-| *Kapasitas Operasional* | *Autoscaling serverless*. Target 1.000 pengguna aktif secara simultan, waktu tanggap maksimal 3 detik per permintaan, dan ketersediaan minimal 99% per bulan di luar pemeliharaan rutin mengikuti SKPL dan perlu divalidasi melalui pengujian beban serta pemantauan operasional. |
+| *Kapasitas Operasional* | *Autoscaling serverless*.|
 
 ---
 
