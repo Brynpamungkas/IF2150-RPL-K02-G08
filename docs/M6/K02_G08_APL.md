@@ -7,25 +7,25 @@ ARSITEKTUR PERANGKAT LUNAK (APL)
 </h1>
 <br>
 
-## *Nama Perangkat Lunak*
+## KlimPooL
 
-### Untuk: *[Nama Asisten]*
+### Untuk: Made Branenda Jordhy
 
 Dipersiapkan oleh:
 
+Dipersiapkan oleh:
 | Informasi | Keterangan |
 | --- | --- |
-| Kelas | *\[Kelas\]* |
-| Kelompok | *\[Nomor Kelompok\]*  |
-| Nama Kelompok | *\[Nama Kelompok\]*  |
+| Kelas | 02 |
+| Kelompok | 08  |
 
-| NIM       | Nama               |
-| --------- | ------------------ |
-| *[NIM 1]* | *[Nama Anggota 1]* |
-| *[NIM 2]* | *[Nama Anggota 2]* |
-| *[NIM 3]* | *[Nama Anggota 3]* |
-| *[NIM 4]* | *[Nama Anggota 4]* |
-| *[NIM 5]* | *[Nama Anggota 5]* |
+| NIM | Nama |
+|---|---|
+| 13525023 | Shaquille Nathan Kalevi |
+| 13525080 | Neysa Alya Mukhbita |
+| 13525092 | Bryan Pamungkas Prahara |
+| 13525134 | Sahla Nailah Salsabilla |
+| 13525140 | Nayla Putri Ghaisani |
 
 ---
 
@@ -34,33 +34,62 @@ Dipersiapkan oleh:
 
 # BAB 1: Style/Pattern Arsitektur Acuan
 
-Pada bagian ini, tentukan *architectural style* atau *pattern* yang menjadi acuan untuk aplikasi yang Anda kembangkan. Misalnya *layered architecture*, *client-server*, *repository*, *pipe and filter architecture*, atau MVC (*Model-View-Controller*).
+KlimPooL menggunakan kombinasi **Client-Server Architecture** dan **Layered Architecture**. Client-Server menjelaskan komunikasi antara browser pengguna dan aplikasi web yang berjalan di Vercel. Layered Architecture menjelaskan pembagian tanggung jawab di dalam aplikasi Next.js *full-stack*. Frontend dan API berada dalam satu proyek Next.js, sedangkan MySQL menjadi DBMS internal untuk penyimpanan data.
+
+Pada **Client-Server Architecture**, browser modern pada perangkat pengguna menjalankan antarmuka KlimPooL yang dibangun menggunakan Next.js (React) dan Tailwind CSS. Browser mengirim permintaan ke API REST pada aplikasi Next.js di Vercel. Aplikasi serverless memproses permintaan dan mengakses MySQL, lalu mengirim respons kembali ke browser. Komunikasi browser-server menggunakan HTTPS dengan TLS versi 1.2 atau lebih tinggi, sedangkan pertukaran data API menggunakan JSON.
+
+Di dalam aplikasi **Layered Architecture** memisahkan tanggung jawab secara logis menjadi:
+
+1. **Lapisan Presentasi** dibangun dengan Next.js (React) dan Tailwind CSS untuk menampilkan antarmuka web pada browser.
+2. **Lapisan API/Aplikasi** menggunakan API REST pada Next.js untuk menerima permintaan JSON dan mengoordinasikan use case, seperti autentikasi, pengelolaan campaign/project, pencarian, donasi, relawan, progres, dan riwayat.
+3. **Lapisan Domain/Bisnis** menerapkan aturan dan validasi inti, termasuk hak akses, status publikasi, kelayakan donasi, pencegahan transaksi berulang, dan aturan pendaftaran relawan.
+4. **Lapisan Akses Data** menjalankan operasi baca/tulis ke MySQL. MySQL menggunakan storage engine InnoDB untuk transaksi ACID; perubahan saldo dan pencatatan donasi dilakukan atomik dan dibatalkan seluruhnya jika proses gagal.
+
+Vercel menjalankan aplikasi Next.js dalam lingkungan *serverless* dengan *autoscaling*. Deployment dilakukan otomatis dari repositori Git dan menggunakan region Singapura. Pemisahan lapisan di bawah merupakan pemisahan tanggung jawab logis dalam satu proyek full-stack, bukan pernyataan bahwa setiap lapisan dideploy sebagai server terpisah.
+
+Diagram berikut menunjukkan browser sebagai *client*, aplikasi Next.js sebagai *server*, dan MySQL sebagai penyimpanan data. Operasi basis data menggunakan koneksi/driver MySQL; JSON digunakan pada API browser-server, bukan sebagai pengganti akses basis data.
+
+
 
 <p align="center">
-<img alt="Contoh Arsitektur MVC" src="./assets/diagram/contoh-arsitektur-mvc.webp" width="70%">
-</p>
-<p align="center">
-<i>Gambar 1. Contoh Arsitektur MVC</i>
+<img src="./assets/diagram/Diagram%201.png" alt="Diagram 1. Arsitektur Client-Server dan Layered KlimPooL" width="100%">
 </p>
 
-Isi bab ini dengan hal-hal berikut:
-1. **Style/pattern yang dipilih** beserta penjelasan singkat peran setiap bagiannya. Untuk MVC, jelaskan peran *Model*, *View*, dan *Controller*.
-2. **Alasan pemilihan** berdasarkan karakteristik P/L Anda, misalnya jenis pengguna, alur proses bisnis, serta KF dan KNF pada dokumen SKPL.
-3. **Gambar style/pattern yang diterapkan pada P/L Anda.** Jangan hanya menyalin Gambar 1. Isi setiap bagian pattern dengan komponen milik P/L Anda. Misalnya, kotak *Controller* berisi daftar *controller* yang ada di aplikasi dan kotak *Model* berisi daftar *model* yang ada di aplikasi.
+**Gambar 1. Client-Server dan lapisan internal KlimPooL**
 
-Selain *style/pattern*, tuliskan juga lingkungan operasi P/L. Tabel berikut **disalin dari subbab 2.5 *Lingkungan Operasi Perangkat Lunak* pada dokumen SKPL** tanpa perubahan. Setelah tabel, jelaskan kaitan teknologi yang dipakai dengan *style/pattern* yang dipilih. Contohnya, Django (Python) secara bawaan mengikuti pola MVT (*Model-View-Template*), yaitu varian dari MVC.
+
+Client-Server sesuai dengan bentuk KlimPooL sebagai aplikasi web yang diakses oleh Pembuat Project, Donatur, Volunteer, dan Admin Sistem melalui browser tanpa pemasangan aplikasi khusus. Next.js menyediakan antarmuka dan API dalam satu proyek, sedangkan deployment serverless di Vercel melayani permintaan dari browser. HTTPS/TLS dan JSON memenuhi batasan komunikasi pada SKPL.
+
+Layered Architecture sesuai karena KlimPooL mencakup alur autentikasi, verifikasi campaign/project, pencarian, donasi, pendaftaran relawan, pembaruan progres, dan riwayat dengan aturan bisnis dan data yang saling terkait. Pemisahan presentasi, aplikasi/API, domain, dan akses data membantu menjaga modularitas (KNF11). Aturan transaksi donasi dapat dijalankan terpisah dari antarmuka; MySQL/InnoDB mendukung kebutuhan transaksi atomik dan konsistensi pada KF15–KF18. Pemisahan ini juga membantu menjaga aturan akses Admin Sistem, validasi pengajuan, dan pengelolaan relawan agar tidak bergantung langsung pada tampilan.
+
+Kedua pola ini menjadi acuan rancangan KlimPooL.
 
 Tabel 1.1. Lingkungan Operasi Perangkat Lunak
 
 | Komponen | Spesifikasi |
 | :--- | :--- |
-| *Server* | *[contoh: Node.js v20 dengan Next.js, dijalankan secara lokal (localhost)]* |
-| *Client* | *[contoh: Web Browser modern (Chrome, Firefox terbaru)]* |
-| *DBMS* | *[contoh: PostgreSQL 15 pada Supabase sebagai basis data terpusat]* |
-| *OS* | *[contoh: Cross-platform (Windows/Linux/MacOS) melalui browser]* |
-| *...* | *...* |
+| *Server* | P/L harus dijalankan pada server yang tersedia secara berkelanjutan dan mampu melayani permintaan pengguna secara bersamaan. Teknologi dan versi *runtime*, serta penyedia layanan *hosting*, akan ditentukan pada tahap implementasi. |
+| *Client* | P/L dapat diakses melalui peramban web versi terkini, seperti Chrome, Firefox, Edge, atau Safari, pada perangkat desktop, tablet, maupun *smartphone* tanpa pemasangan perangkat lunak tambahan. Pengguna harus memiliki koneksi internet yang memadai. |
+| *DBMS* | P/L harus menyimpan data akun, campaign, project, saldo, transaksi, pendaftaran relawan, dan riwayat progres pada basis data internal. DBMS yang digunakan harus mendukung transaksi atomik (*ACID*) untuk pemrosesan donasi. Jenis dan versi DBMS akan ditentukan pada tahap implementasi. |
+| *OS Client* | P/L dapat diakses melalui sistem operasi apa pun yang mendukung peramban web modern, sehingga pengguna tidak dibatasi pada sistem operasi tertentu. |
+| *OS Server* | Sistem operasi server akan ditentukan sesuai dengan teknologi *runtime* dan lingkungan *hosting* yang dipilih pada tahap implementasi. |
+| *Jaringan dan Protokol* | Komunikasi antara peramban dan server harus menggunakan HTTPS dengan TLS versi 1.2 atau lebih tinggi. Pertukaran data melalui API harus menggunakan format JSON. |
+| *Kapasitas Operasional* | Server harus mendukung 1.000 pengguna aktif secara simultan dengan waktu tanggap maksimal 3 detik untuk setiap permintaan. Ketersediaan layanan harus mencapai minimal 99% per bulan, di luar jadwal pemeliharaan rutin. |
+Tabel berikut disalin dari subbab 2.5 *Lingkungan Operasi Perangkat Lunak* pada SKPL.
 
-<sub><b><i>Catatan</i></b>: <i>Style/pattern yang dipilih di bab ini menjadi acuan untuk BAB 2 (pengelompokan komponen) dan BAB 3 (model arsitektur). Contoh pada dokumen ini memakai MVC secara konsisten dari BAB 1 sampai BAB 3. Kelompok boleh memakai pattern lain selama alasannya dijelaskan dan BAB 2 serta BAB 3 disesuaikan. Tabel 1.1 harus sama persis dengan subbab 2.5 dokumen SKPL; jangan menambah atau mengubah isinya karena SKPL sudah final.</i></sub>
+Tabel 1.2. Spesifikasi Implementasi
+
+Dikarenakan pada subbab 2.5 file K02_G08_SKPL.md, kami menentukan spesifikasi rinci pada tabel 1.2 ini 
+
+| Komponen | Spesifikasi |
+| :--- | :--- |
+| *Server* | Node.js 22 LTS dengan Next.js *full-stack* (frontend dan API dalam satu proyek), di-deploy ke Vercel dengan arsitektur *serverless* dan *autoscaling*. Deployment otomatis dari repositori Git dengan region Singapura. |
+| *Client* | Antarmuka menggunakan Next.js (React) dan Tailwind CSS, diakses melalui Chrome, Firefox, Edge, atau Safari versi terkini. |
+| *DBMS* | MySQL dengan storage engine InnoDB untuk mendukung transaksi ACID pada pemrosesan donasi. |
+| *OS Client* | Tidak dibatasi; dapat diakses dari Windows, macOS, Linux, Android, dan iOS selama memiliki browser modern. |
+| *OS Server* | Dikelola penyedia hosting Vercel dengan lingkungan *serverless* berbasis Linux. |
+| *Jaringan dan Protokol* | HTTPS dengan TLS 1.2 atau lebih tinggi menggunakan sertifikat otomatis dari Vercel; HTTP dialihkan ke HTTPS. API REST menggunakan format JSON. |
+| *Kapasitas Operasional* | *Autoscaling serverless*. Target 1.000 pengguna aktif secara simultan, waktu tanggap maksimal 3 detik per permintaan, dan ketersediaan minimal 99% per bulan di luar pemeliharaan rutin mengikuti SKPL dan perlu divalidasi melalui pengujian beban serta pemantauan operasional. |
 
 ---
 

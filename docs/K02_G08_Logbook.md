@@ -128,6 +128,16 @@
 
 **Catatan/Evaluasi Milestone 5:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+
+### Milestone 6
+**Periode:** 30 September 2026 - 7 September 2026
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 3-10-2026 | Bryan | Mempersiapkan dokumen | 0,5 | Done | - | 
+| 3-10-2026 | Bryan |  mengerjakan bab 1 | 3 | Done | - | 
+**Catatan/Evaluasi Milestone 5:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
 
