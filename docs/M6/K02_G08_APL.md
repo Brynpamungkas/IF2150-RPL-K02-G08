@@ -104,20 +104,32 @@ Tabel 2.1. Identifikasi Komponen/Modul/Subsistem
 | Nama Komponen/Modul/Subsistem | Jenis | Penjelasan |
 | :--- | :--- | :--- |
 | `LoginView` | **PRESENTATION LAYER** | Menampilkan formulir login dan meneruskan data autentikasi pengguna ke komponen aplikasi. |
-| `CampaignProjectView` | **PRESENTATION LAYER** | Menampilkan informasi campaign dan project serta menyediakan antarmuka untuk membuat dan mengelola pengajuan. |
+| `CampaignProjectView` | **PRESENTATION LAYER** | Menampilkan informasi campaign dan project serta menyediakan antarmuka untuk membuat dan mengelola pengajuan, serta untuk peninjauan dan verifikasi oleh Admin Sistem. |
 | `KatalogPetaView` | **PRESENTATION LAYER** | Menampilkan kegiatan pada katalog dan peta interaktif serta menerima interaksi pengguna untuk menelusuri kegiatan. |
 | `DonasiView` | **PRESENTATION LAYER** | Menampilkan informasi saldo dan formulir donasi serta meneruskan permintaan donasi pengguna. |
 | `RelawanView` | **PRESENTATION LAYER** | Menampilkan informasi project dan formulir pendaftaran relawan. |
 | `ProgresView` | **PRESENTATION LAYER** | Menampilkan progres kegiatan dan menyediakan antarmuka untuk memperbarui progres. |
 | `RiwayatView` | **PRESENTATION LAYER** | Menampilkan riwayat transaksi dan progres pengguna. |
 | `AutentikasiController` | **APPLICATION/API LAYER** | Memproses permintaan pendaftaran dan autentikasi pengguna melalui API. |
-| `CampaignProjectController` | **APPLICATION/API LAYER** | Memproses permintaan pembuatan, pengelolaan, dan pengajuan campaign/project. |
+| `CampaignProjectController` | **APPLICATION/API LAYER** | Memproses permintaan pembuatan, pengelolaan, dan pengajuan campaign/project, serta peninjauan dan verifikasi (diterima/ditolak) oleh Admin Sistem. |
 | `PencarianController` | **APPLICATION/API LAYER** | Memproses permintaan pencarian dan penelusuran campaign/project. |
 | `DonasiController` | **APPLICATION/API LAYER** | Memproses permintaan donasi dan mengoordinasikan proses transaksi donasi. |
 | `RelawanController` | **APPLICATION/API LAYER** | Memproses pendaftaran dan pengelolaan relawan pada project. |
 | `ProgresController` | **APPLICATION/API LAYER** | Memproses pembaruan dan pengambilan data progres kegiatan. |
 | `RiwayatController` | **APPLICATION/API LAYER** | Memproses permintaan data riwayat transaksi dan progres. |
-| *...*                         | *...*                 | *...*                                                                                                                |
+| `AutentikasiService` | **DOMAIN/BUSINESS LAYER** | Mewadahi PenggunaUmum (C00), Akun (C12), dan SesiLogin (C13). Memvalidasi input dan ketersediaan email, memverifikasi kredensial, mengelola sesi login, dan menerapkan hak akses berdasarkan peran. |
+| `CampaignProjectService` | **DOMAIN/BUSINESS LAYER** | Mewadahi PembuatProject (C10), Campaign (C03), Project (C02), dan AdminSistem (C11). Memvalidasi data, target, periode, dan kebutuhan, serta mengelola status publikasi dan verifikasi (diterima/ditolak beserta alasan) yang hanya dapat dilakukan Admin Sistem. |
+| `PencarianService` | **DOMAIN/BUSINESS LAYER** | Mewadahi Katalog (C01) dan PetaWilayah (C05). Memproses kata kunci dan filter, serta hanya mengembalikan campaign/project berstatus dipublikasikan. |
+| `DonasiService` | **DOMAIN/BUSINESS LAYER** | Mewadahi Donatur (C04), TransaksiDonasi (C06), dan BuktiTransaksi (C07). Memeriksa kelayakan donasi (nominal, saldo, status campaign/project), mencegah transaksi berulang, memproses donasi secara atomik, memperbarui dana terkumpul, dan menghasilkan bukti transaksi. |
+| `RelawanService` | **DOMAIN/BUSINESS LAYER** | Mewadahi Volunteer (C08) dan PendaftaranRelawan (C09). Menerapkan aturan pendaftaran relawan (kelengkapan formulir, kuota, pendaftaran ganda) dan memperbarui status keputusan Pembuat Project. |
+| `ProgresService` | **DOMAIN/BUSINESS LAYER** | Menangani bagian progres pada Project (C02) dan PembuatProject (C10). Memvalidasi hak akses pembaruan, menyimpan milestone dan dokumentasi, serta mencatat timestamp. |
+| `RiwayatService` | **DOMAIN/BUSINESS LAYER** | Menyusun riwayat TransaksiDonasi (C06) dan progres Project (C02) milik PenggunaUmum (C00) secara kronologis. |
+| `UserRepository` | **DATA ACCESS LAYER** | Operasi baca/tulis data pengguna, akun, dan sesi (C00, C08, C10, C11, C12, C13) ke MySQL. |
+| `CampaignProjectRepository` | **DATA ACCESS LAYER** | Operasi baca/tulis data Campaign (C03) dan Project (C02), termasuk status verifikasi, alasan penolakan, dan dana terkumpul, ke MySQL. |
+| `DonasiRepository` | **DATA ACCESS LAYER** | Operasi baca/tulis saldo Donatur (C04), TransaksiDonasi (C06), dan BuktiTransaksi (C07) ke MySQL dalam transaksi ACID. |
+| `RelawanRepository` | **DATA ACCESS LAYER** | Operasi baca/tulis data PendaftaranRelawan (C09) beserta statusnya ke MySQL. |
+| `ProgresRepository` | **DATA ACCESS LAYER** | Operasi baca/tulis milestone, status pelaksanaan, dokumentasi, dan timestamp progres Project (C02) ke MySQL. |
+| `DatabaseConnection` | **DATA ACCESS LAYER** | Mengelola koneksi/driver MySQL dan batas transaksi yang dipakai bersama seluruh repository. |
 
 Ketentuan pengisian Tabel 2.1:
 1. Kolom **Jenis** mengikuti pengelompokan pada *style/pattern* di BAB 1. Untuk MVC, jenisnya adalah *Model*, *View*, dan *Controller*. Jenis lain boleh ditambahkan, misalnya *Pendukung* untuk komponen bantu yang dipakai bersama, atau *Integrasi Eksternal* untuk penghubung ke sistem di luar P/L yang disebutkan pada subbab 2.2 dokumen SKPL. Kolom ini juga boleh diisi dengan *Subsistem*, *Modul*, atau *Komponen* apabila komponen dikelompokkan berdasarkan fungsinya. Tuliskan subsistem terlebih dahulu, lalu komponen penyusunnya di baris-baris berikutnya.
