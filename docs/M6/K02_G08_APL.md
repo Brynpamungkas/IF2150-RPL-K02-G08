@@ -101,23 +101,22 @@ Setiap komponen memiliki tanggung jawab tertentu dalam mendukung fungsionalitas 
 
 Tabel 2.1. Identifikasi Komponen/Modul/Subsistem
 
-| Nama Komponen/Modul/Subsistem | Jenis                 | Penjelasan                                                                                                           |
-| :---------------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------------- |
-| *KatalogView*                 | *View*                | *Menampilkan daftar produk dan meneruskan aksi pelanggan (misalnya "Tambah ke Keranjang") ke KatalogController.*     |
-| *KeranjangView*               | *View*                | *Menampilkan isi keranjang pelanggan beserta tombol checkout.*                                                       |
-| *CheckoutView*                | *View*                | *Menampilkan ringkasan pesanan dan pilihan metode pembayaran kepada pelanggan.*                                      |
-| *RiwayatPesananView*          | *View*                | *Menampilkan daftar pesanan yang pernah dibuat pelanggan beserta statusnya.*                                         |
-| *KatalogController*           | *Controller*          | *Memproses permintaan daftar produk dan penambahan produk ke keranjang.*                                             |
-| *KeranjangController*         | *Controller*          | *Memproses perubahan isi keranjang dan membuat pesanan baru saat checkout.*                                          |
-| *PembayaranController*        | *Controller*          | *Memproses pemilihan metode pembayaran dan meneruskan permintaan otorisasi ke PaymentGatewayAdapter.*                |
-| *PesananController*           | *Controller*          | *Memproses permintaan riwayat pesanan milik pelanggan.*                                                              |
-| *Produk*                      | *Model*               | *Merepresentasikan data produk beserta stoknya serta metode untuk mengakses dan mengubahnya.*                        |
-| *Keranjang*                   | *Model*               | *Merepresentasikan item yang dipilih pelanggan sebelum checkout serta metode untuk mengakses dan mengubahnya.*       |
-| *Pesanan*                     | *Model*               | *Merepresentasikan data pesanan beserta status pembayarannya serta metode untuk mengakses dan mengubahnya.*          |
-| *Pelanggan*                   | *Model*               | *Merepresentasikan data akun pelanggan serta metode untuk mengakses dan mengubahnya.*                                |
-| *Validasi*                    | *Pendukung*           | *Memvalidasi input pelanggan sebelum diproses oleh controller.*                                                      |
-| *PaymentGatewayAdapter*       | *Integrasi Eksternal* | *Mengirim permintaan otorisasi ke payment gateway (dummy) dan meneruskan status pembayaran ke PembayaranController.* |
-| *Database*                    | *Penyimpanan Data*    | *Menyimpan seluruh data model secara persisten, baik lokal (misalnya SQLite) maupun terpusat (misalnya Supabase).*   |
+| Nama Komponen/Modul/Subsistem | Jenis | Penjelasan |
+| :--- | :--- | :--- |
+| `LoginView` | **PRESENTATION LAYER** | Menampilkan formulir login dan meneruskan data autentikasi pengguna ke komponen aplikasi. |
+| `CampaignProjectView` | **PRESENTATION LAYER** | Menampilkan informasi campaign dan project serta menyediakan antarmuka untuk membuat dan mengelola pengajuan. |
+| `KatalogPetaView` | **PRESENTATION LAYER** | Menampilkan kegiatan pada katalog dan peta interaktif serta menerima interaksi pengguna untuk menelusuri kegiatan. |
+| `DonasiView` | **PRESENTATION LAYER** | Menampilkan informasi saldo dan formulir donasi serta meneruskan permintaan donasi pengguna. |
+| `RelawanView` | **PRESENTATION LAYER** | Menampilkan informasi project dan formulir pendaftaran relawan. |
+| `ProgresView` | **PRESENTATION LAYER** | Menampilkan progres kegiatan dan menyediakan antarmuka untuk memperbarui progres. |
+| `RiwayatView` | **PRESENTATION LAYER** | Menampilkan riwayat transaksi dan progres pengguna. |
+| `AutentikasiController` | **APPLICATION/API LAYER** | Memproses permintaan pendaftaran dan autentikasi pengguna melalui API. |
+| `CampaignProjectController` | **APPLICATION/API LAYER** | Memproses permintaan pembuatan, pengelolaan, dan pengajuan campaign/project. |
+| `PencarianController` | **APPLICATION/API LAYER** | Memproses permintaan pencarian dan penelusuran campaign/project. |
+| `DonasiController` | **APPLICATION/API LAYER** | Memproses permintaan donasi dan mengoordinasikan proses transaksi donasi. |
+| `RelawanController` | **APPLICATION/API LAYER** | Memproses pendaftaran dan pengelolaan relawan pada project. |
+| `ProgresController` | **APPLICATION/API LAYER** | Memproses pembaruan dan pengambilan data progres kegiatan. |
+| `RiwayatController` | **APPLICATION/API LAYER** | Memproses permintaan data riwayat transaksi dan progres. |
 | *...*                         | *...*                 | *...*                                                                                                                |
 
 Ketentuan pengisian Tabel 2.1:
