@@ -142,35 +142,76 @@ Ketentuan pengisian Tabel 2.1:
 
 # BAB 3: Model Arsitektur Perangkat Lunak
 
-*Architectural View* adalah bagaimana cara kita melihat/mendeskripsikan arsitektur sebuah sistem dari sudut pandang tertentu. Dalam perancangan arsitektur aplikasi, dibutuhkan *Architectural View* yang dapat mempermudah pemahaman dari proses aplikasi yang akan dikembangkan. Tujuan dari *Architectural View* adalah menjadi bahan komunikasi, pemisahan masalah, mempermudah analisis, dan pemandu saat eksekusi pengembangan sistem tersebut.
+## 3.1 Logical View
 
-Buatlah model arsitektur dari aplikasi yang akan dirancang dalam bentuk *view*. Model arsitektur ini berfungsi untuk memperlihatkan bagaimana setiap komponen, modul, dan subsistem saling berinteraksi serta berkolaborasi dalam menjalankan fungsi utama sistem secara keseluruhan. Anda dapat membuat satu atau lebih *view* tergantung kebutuhan dalam bentuk gambar. Pilihlah notasi yang sesuai. Contoh *view* yang dapat digunakan antara lain ***Logical View***, ***Process View***, ***Development View***, serta ***Physical View***.
+*Logical View* mendeskripsikan abstraksi utama perangkat lunak beserta hubungan
+antarabstraksi tersebut dalam mendukung kebutuhan fungsional. View ini menjawab
+pertanyaan "layanan apa saja yang disediakan sistem dan bagaimana bagian-bagiannya
+saling terhubung". Pada dokumen ini *Logical View* disajikan dalam bentuk *block
+diagram* yang memuat seluruh komponen pada Tabel 2.1 beserta relasi berlabel di
+antaranya.
 
-Ketentuan pengisian BAB 3:
-1. Setiap view menggambarkan **keseluruhan sistem**, bukan satu use case atau satu fitur saja.
-2. Buat **minimal satu view**. Setiap view dituliskan dalam subbab tersendiri (3.1, 3.2, dan seterusnya). Tidak perlu membuat keempat view, pilih yang paling membantu menjelaskan P/L Anda, lalu jelaskan alasan pemilihannya.
-3. Setiap view harus **konsisten dengan BAB 2**. Seluruh komponen pada Tabel 2.1 harus muncul dengan nama yang sama, dan tidak boleh ada komponen pada view yang tidak terdaftar di Tabel 2.1.
-4. Setiap view harus **mencerminkan style/pattern pada BAB 1**. Misalnya, jika memilih MVC, pembagian *Model*, *View*, dan *Controller* harus terlihat jelas pada diagram.
-5. Jika membuat lebih dari satu view, setiap view harus menggambarkan sistem yang sama dari sudut pandang berbeda. View tambahan melengkapi view pertama, bukan mengulanginya.
-6. Beri label pada setiap garis atau panah yang menghubungkan komponen agar hubungan antarkomponen dapat dipahami tanpa penjelasan tambahan.
-7. Jika membuat *Physical View*, gambarkan lingkungan operasi pada Tabel 1.1.
+*Logical View* dipilih karena tiga alasan berikut.
 
-## 3.1 XXX View
+Pertama, KlimPooL memiliki tujuh alur layanan yang berdiri sendiri, yaitu
+autentikasi, pengelolaan campaign dan project, pencarian, donasi, relawan,
+progres, serta riwayat. Ketujuhnya memakai pembagian tanggung jawab yang sama,
+sehingga pemetaan komponen ke dalam lapisan menjadi cara paling langsung untuk
+memperlihatkan keseluruhan sistem dalam satu gambar tanpa menonjolkan salah satu
+use case.
 
-Tuliskan secara singkat mengenai model arsitektur perangkat lunak yang Anda pilih dan sertakan alasan mengapa model arsitektur tersebut cocok untuk aplikasi Anda.
+Kedua, BAB 1 menetapkan *Layered Architecture* sebagai salah satu pola acuan.
+*Logical View* memperlihatkan pembagian lapisan tersebut secara eksplisit melalui
+pengelompokan komponen ke dalam *Presentation Layer*, *Application/API Layer*,
+*Domain/Business Layer*, dan *Data Access Layer*, sekaligus menunjukkan bahwa
+pemanggilan hanya berjalan dari lapisan atas ke lapisan di bawahnya. Batas antara
+kotak *Client* dan *Server* pada gambar sekaligus memperlihatkan pola
+*Client-Server* yang juga ditetapkan pada BAB 1.
+
+Ketiga, Gambar 1 pada BAB 1 baru menggambarkan arsitektur pada tingkat lapisan dan
+teknologi, belum pada tingkat komponen. *Logical View* melengkapinya dengan
+menampilkan seluruh 27 komponen Tabel 2.1 beserta namanya, sehingga pembaca dapat
+menelusuri kebutuhan fungsional pada SKPL sampai ke komponen yang mewujudkannya.
 
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-logical-view.webp" width="100%">
+<img alt="Logical View KlimPooL" src="./assets/diagram/Logical View.png" width="100%">
 </p>
 <p align="center">
-<i>Gambar 2. Contoh Logical View pada P/L E-Commerce</i>
+<i>Gambar 2. Logical View KlimPooL</i>
 </p>
+<br>
 
-Gambar 2 adalah contoh *Logical View* dalam bentuk *block diagram*. Seluruh komponen pada Tabel 2.1 digambarkan dan dikelompokkan sesuai pola MVC (*View*, *Controller*, *Model*), ditambah komponen pendukung dan basis data. Sistem di luar P/L, seperti *Payment Gateway (dummy)*, digambarkan dengan garis putus-putus dan tidak perlu dimasukkan ke Tabel 2.1. Setiap garis diberi label: "Memanggil" untuk *View* yang memanggil *Controller*, "akses" untuk *Controller* yang mengakses *Model*, serta agregasi dan komposisi untuk hubungan antar-*Model*.
+Gambar 2 memuat seluruh komponen pada Tabel 2.1 yang dikelompokkan ke dalam empat
+lapisan sesuai pola pada BAB 1. Lapisan *Presentation* berada di dalam kotak
+*Client* karena dijalankan pada peramban pengguna, sedangkan tiga lapisan lainnya
+berada di dalam kotak *Server* karena dijalankan pada aplikasi Next.js di Vercel.
+MySQL digambarkan dengan garis putus-putus karena merupakan basis data pada
+lingkungan operasi Tabel 1.1, bukan komponen perangkat lunak pada Tabel 2.1.
 
-<sub><b><i>Catatan</i></b>: <i>Ganti XXX dengan nama view yang dibuat, misalnya Logical View. Gambar 2 hanya contoh untuk P/L e-commerce, ganti dengan view milik kelompok Anda yang memuat seluruh komponen pada Tabel 2.1. Jenis view dan notasinya boleh berbeda dari contoh. Jika membuat view tambahan, lanjutkan pola 3.x ini (3.2, 3.3, dan seterusnya).</i></sub>
+Relasi antarkomponen pada gambar dibaca sebagai berikut.
 
----
+| Label relasi | Makna |
+| :--- | :--- |
+| memanggil API | Komponen *Presentation* mengirim permintaan ke komponen *Application/API* melalui API REST berformat JSON di atas HTTPS dengan TLS 1.2 atau lebih tinggi. |
+| meminta layanan | Komponen *Application/API* meneruskan permintaan ke komponen *Domain/Business* yang menerapkan aturan dan validasi inti. |
+| membaca/menulis data | Komponen *Domain/Business* memakai komponen *Data Access* untuk membaca maupun menulis data yang dibutuhkannya. |
+| memakai koneksi | Setiap *repository* memakai `DatabaseConnection` untuk memperoleh koneksi dan batas transaksi yang sama. |
+| query/simpan | `DatabaseConnection` menjalankan perintah baca/tulis ke MySQL. |
+
+Sebagian komponen *Domain/Business* terhubung ke lebih dari satu *repository*
+karena aturan bisnisnya memang menyentuh lebih dari satu kelompok data.
+`DonasiService` memperbarui dana terkumpul pada campaign atau project sehingga
+memakai `CampaignProjectRepository` selain `DonasiRepository`. `RelawanService`
+memeriksa kuota relawan yang tersimpan pada data project sehingga memakai
+`CampaignProjectRepository` selain `RelawanRepository`. `RiwayatService` menyusun
+riwayat transaksi dan progres sekaligus sehingga memakai `DonasiRepository` dan
+`ProgresRepository`. Seluruh keterhubungan tersebut mengikuti deskripsi tanggung
+jawab masing-masing komponen pada Tabel 2.1.
+
+Perlu diperhatikan bahwa tidak terdapat relasi dari lapisan bawah ke lapisan di
+atasnya maupun relasi yang melompati lapisan. Hal ini sesuai dengan ketentuan
+*Layered Architecture* pada BAB 1, yaitu setiap lapisan hanya memakai layanan dari
+lapisan tepat di bawahnya.
 
 # Referensi
 

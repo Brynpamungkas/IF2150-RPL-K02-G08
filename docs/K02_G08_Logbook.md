@@ -137,7 +137,9 @@
 | 3-10-2026 | Bryan | Mempersiapkan dokumen | 0,5 | Done | - | 
 | 3-10-2026 | Bryan |  Mengerjakan bab 1 | 3 | Done | - | 
 | 5-10-2026 | Neysa |  Mengerjakan bab 2 (presentation & API layer) | 2 | Done | - | 
-**Catatan/Evaluasi Milestone 5:**
+| 6-10-2026 | Nathan |  Mengerjakan bab 3 bagian 3.1 Logical View | 3 | Done | - | 
+
+**Catatan/Evaluasi Milestone 6:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
