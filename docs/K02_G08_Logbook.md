@@ -26,6 +26,7 @@
 * [Milestone 3](#milestone-3)
 * [Milestone 4](#milestone-4)
 * [Milestone 5](#milestone-5)
+* [Milestone 6](#milestone-6)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 
@@ -135,10 +136,11 @@
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
 | 3-10-2026 | Bryan | Mempersiapkan dokumen | 0,5 | Done | - | 
-| 3-10-2026 | Bryan |  Mengerjakan bab 1 | 3 | Done | - | 
-| 5-10-2026 | Neysa |  Mengerjakan bab 2 (presentation & API layer) | 2 | Done | - | 
-| 6-10-2026 | Nathan |  Mengerjakan bab 3 bagian 3.1 Logical View | 3 | Done | - | 
-| 6-10-2026 | Naya |  Mengerjakan bab 2 (Domain or business layer & data access layer) | 3 | Done | - | 
+| 3-10-2026 | Bryan | Mengerjakan bab 1 | 3 | Done | - | 
+| 5-10-2026 | Neysa | Mengerjakan bab 2 (presentation & API layer) | 2 | Done | - | 
+| 6-10-2026 | Nathan | Mengerjakan bab 3 bagian 3.1 Logical View | 3 | Done | - | 
+| 6-10-2026 | Naya | Mengerjakan bab 2 (Domain or business layer & data access layer) | 3 | Done | - | 
+| 7-10-2026 | Sahla | Mengerjakan bab 3 bagian 3.2 Process View | 3 | Done | - | 
 
 **Catatan/Evaluasi Milestone 6:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
