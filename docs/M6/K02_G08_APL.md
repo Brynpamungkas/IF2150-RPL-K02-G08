@@ -12,8 +12,6 @@ ARSITEKTUR PERANGKAT LUNAK (APL)
 ### Untuk: Made Branenda Jordhy
 
 Dipersiapkan oleh:
-
-Dipersiapkan oleh:
 | Informasi | Keterangan |
 | --- | --- |
 | Kelas | 02 |
@@ -190,6 +188,8 @@ lingkungan operasi Tabel 1.1, bukan komponen perangkat lunak pada Tabel 2.1.
 
 Relasi antarkomponen pada gambar dibaca sebagai berikut.
 
+Tabel 3.1. Elemen Relasi Antarkomponen Diagram
+
 | Label relasi | Makna |
 | :--- | :--- |
 | memanggil API | Komponen *Presentation* mengirim permintaan ke komponen *Application/API* melalui API REST berformat JSON di atas HTTPS dengan TLS 1.2 atau lebih tinggi. |
@@ -212,6 +212,71 @@ Perlu diperhatikan bahwa tidak terdapat relasi dari lapisan bawah ke lapisan di
 atasnya maupun relasi yang melompati lapisan. Hal ini sesuai dengan ketentuan
 *Layered Architecture* pada BAB 1, yaitu setiap lapisan hanya memakai layanan dari
 lapisan tepat di bawahnya.
+
+## 3.2 Process View
+
+*Process View* mendeskripsikan proses pada saat sistem berjalan, termasuk komunikasi, konkurensi, dan koordinasi antarproses. View ini menjawab pertanyaan "bagaimana sistem berjalan secara bersamaan dan saling berkomunikasi". Jika *Logical View* (subbab 3.1) memperlihatkan komponen apa saja yang ada dan siapa memanggil siapa, *Process View* memperlihatkan urutan pemanggilan, percabangan keputusan, dan titik sinkronisasi ketika komponen-komponen tersebut dijalankan. Pada dokumen ini *Process View* disajikan dalam bentuk *sequence diagram*, dengan seluruh partisipan memakai nama komponen yang sama persis dengan Tabel 2.1.
+
+*Process View* dipilih karena tiga alasan berikut.
+
+Pertama, KlimPooL memiliki alur yang urutannya menentukan kebenaran data. Pada transaksi donasi, pemeriksaan nominal, status campaign, dan transaksi ganda harus selesai sebelum saldo diubah, dan perubahan saldo, dana campaign, serta transaksi harus berhasil bersama atau dibatalkan seluruhnya (KF15–KF18). Urutan seperti ini tidak terlihat pada *Logical View* yang bersifat struktural.
+
+Kedua, KlimPooL berjalan pada lingkungan *serverless* dengan *autoscaling* (Tabel 1.2) dan harus melayani 1.000 pengguna aktif secara simultan (KNF09). Beberapa donasi dapat berjalan bersamaan, sehingga perlu terlihat di titik mana pemeriksaan dan transaksi atomik mengoordinasikannya.
+
+Ketiga, *sequence diagram* paling sesuai untuk menganalisis alur *runtime* karena menunjukkan kapan dan dalam urutan apa sebuah pesan dikirim antarkomponen, dibaca dari atas ke bawah. Alur donasi (UC06) dipilih sebagai representasi karena merupakan alur paling kritis pada SKPL: melibatkan seluruh lapisan, memiliki percabangan validasi, dan memuat transaksi atomik.
+
+### 3.2.1 Sequence Diagram
+
+*Sequence diagram* adalah diagram interaksi UML yang menunjukkan urutan pesan antarpartisipan berdasarkan waktu. Fokusnya adalah kapan dan dalam urutan apa sebuah pesan dikirim, sehingga cocok untuk menganalisis alur *runtime*, sinkronisasi, dan titik penyempitan (*bottleneck*).
+
+<p align="center">
+<img alt="Process View KlimPooL" src="./assets/diagram/Process View.png" width="100%">
+</p>
+<p align="center">
+<i>Gambar 3. Process View KlimPooL</i>
+</p>
+<br>
+
+Tabel 3.2. Elemen Notasi Sequence Diagram
+
+| Elemen | Makna |
+| ------ | ----- |
+| *Frame* diagram | Bingkai berjudul yang membungkus seluruh interaksi, di sini "Melakukan Transaksi Donasi (UC06)" |
+| *Actor / Lifeline* | Partisipan interaksi: aktor (Donatur) dan komponen pada Tabel 2.1. Kotak di bagian atas adalah nama partisipan, garis putus-putus vertikal di bawahnya adalah garis hidup |
+| *Activation bar* | Kotak tipis pada *lifeline* yang menandakan partisipan sedang memproses |
+| *Synchronous message* (garis penuh, panah tertutup) | Pengirim menunggu balasan sebelum melanjutkan. Diberi nomor urut (1–12) sesuai urutan eksekusi |
+| *Reply message* (garis putus-putus, panah terbuka) | Nilai atau respons yang dikembalikan. Tidak diberi nomor |
+| *Self message* | Pesan yang dikirim partisipan kepada dirinya sendiri, misalnya `validasiNominal()` (5) dan `cetakBukti()` (12) |
+| *Combined fragment* `alt` | Percabangan alur. Dapat bersarang, seperti pada pemeriksaan saldo di dalam validasi lolos |
+| *Guard* `[kondisi]` | Kondisi yang harus benar agar operand dijalankan. Operand dipisahkan garis putus-putus panjang |
+
+Tidak ada pesan asinkron pada diagram ini. Kepala panah terbuka hanya dipakai pada pesan balasan. Nomor 9a menandai cabang kegagalan dari langkah 9. `MySQL` tidak digambar sebagai *lifeline* sendiri karena bukan komponen pada Tabel 2.1 (konsisten dengan *Logical View*); akses data digambar sebagai pesan dari repository ke `DatabaseConnection`.
+
+#### 3.2.1.1 Transaksi Donasi (UC06)
+
+Alur donasi berjalan dengan urutan berikut.
+
+1. `DonasiController` memastikan Donatur sudah login (`cekStatusLogin` pada `AutentikasiService`), lalu meneruskan permintaan ke `DonasiService` (`prosesDonasi`).
+2. `DonasiService` memvalidasi nominal (`validasiNominal`), memeriksa status campaign/project melalui `CampaignProjectRepository` (`cekStatusProject`/`cekStatusCampaign`), dan memeriksa ID transaksi melalui `DonasiRepository` (`validasiDuplikasi`). Kegagalan pada salah satunya menghentikan alur dengan pesan penolakan: nominal tidak valid, campaign ditutup, atau transaksi ganda (KF18).
+3. Bila lolos, saldo Donatur dibaca (`getSaldo`). Bila saldo tidak mencukupi atau terjadi gangguan, seluruh perubahan dibatalkan dan saldo tidak berubah (KF16, KNF04).
+4. Bila saldo mencukupi, saldo dikurangi (`kurangiSaldo`), dana campaign/project ditambah (`tambahDana`), dan transaksi dibuat (`buatTransaksi`). Ketiga langkah ini berada dalam satu *database transaction* yang atomik, sehingga tidak mungkin saldo berkurang tetapi dana campaign tidak bertambah (KF15, KF26).
+5. Bukti transaksi dibuat (`cetakBukti`), dikembalikan melalui `DonasiController` ke `DonasiView`, dan ditampilkan kepada Donatur (KF17).
+
+### 3.2.2 Konkurensi dan Sinkronisasi
+
+Tabel berikut merangkum bagaimana permintaan yang berjalan bersamaan dikoordinasikan dan di mana mekanismenya terlihat pada diagram.
+
+Tabel 3.3. Aspek Konkurensi dan Sinkronisasi
+
+| Aspek | Mekanisme | Terlihat pada | Kebutuhan |
+| ----- | --------- | ------------- | --------- |
+| Banyak pengguna mengakses bersamaan | Lingkungan *serverless* dengan *autoscaling*; status bersama disimpan di MySQL | Seluruh diagram | KNF09, Tabel 1.2 |
+| Perubahan saldo, dana campaign, dan transaksi donasi | Satu *database transaction* yang atomik | Gambar 3, langkah 9–11 | KF15 |
+| Permintaan donasi yang dikirim ulang atau ganda | Pemeriksaan ID transaksi (`validasiDuplikasi`) sebelum donasi diproses | Gambar 3, langkah 7 | KF18 |
+| Kegagalan di tengah transaksi (saldo kurang, gangguan sistem) | Seluruh perubahan dibatalkan | Gambar 3, langkah 9a | KF16, KNF04 |
+
+Seluruh pemanggilan pada diagram mengikuti aturan *Layered Architecture* pada BAB 1: `View` hanya memanggil `Controller`, `Controller` hanya memanggil `Service`, `Service` hanya memanggil `Repository`, dan `Repository` hanya memakai `DatabaseConnection`. Panah putus-putus hanyalah pengembalian hasil.
+
 
 # Referensi
 
