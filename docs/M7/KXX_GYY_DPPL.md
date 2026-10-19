@@ -208,11 +208,178 @@ Pada diagram, pastikan:
 - Semua operasi yang dipanggil pada sequence diagram 3.1.2 (skenario normal dan alternatif) ada pada kelas yang bersangkutan.
 - Kelas yang sama dengan kelas di use case lain memakai nama, atribut, dan metode yang konsisten.
 
-## 3.2 Use Case XX
+## 3.2 Use Case Membuat Campaign Penggalangan Donasi
 
-Silahkan lanjutkan untuk  *use case* berikutnya dengan content yang sama dengan 3.1
+**ID Use Case:** UC02  
+**Nama Use Case:** Membuat Campaign Penggalangan Donasi
 
-<br>
+### 3.2.1 Identifikasi Kelas
+
+Realisasi UC02 melibatkan satu kelas pada lapisan presentasi, satu pada lapisan API, dua pada lapisan domain/bisnis, satu entitas domain, serta kelas akses data. Kelas aktor pada tahap analisis (PembuatProject) dipetakan ke `CampaignProjectView` dan `CampaignProjectController` sebagai antarmuka dan pengendali permintaan.
+
+Tabel 3.2. Identifikasi Kelas Use Case UC02
+
+| No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+|:--- | :--- | :--- |
+| 1 | CampaignProjectView | PembuatProject (C10) |
+| 2 | CampaignProjectController | PembuatProject (C10) |
+| 3 | AutentikasiService | SesiLogin (C13) |
+| 4 | CampaignProjectService | PembuatProject (C10), Campaign (C03) |
+| 5 | Campaign | Campaign (C03) |
+| 6 | CampaignProjectRepository | Campaign (C03) |
+| 7 | DatabaseConnection | - (kelas baru pada tahap perancangan) |
+
+### 3.2.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC02 - Skenario Normal" src="./assets/diagram/sequence-uc02-normal.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.2.1. Sequence Diagram UC02 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Data Campaign Tidak Lengkap**
+
+<p align="center">
+<img alt="Sequence Diagram UC02 - Data Campaign Tidak Lengkap" src="./assets/diagram/sequence-uc02-alt1.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.2.2. Sequence Diagram UC02 - Data Campaign Tidak Lengkap</i>
+</p>
+
+- **Skenario Alternatif 2: Target atau Periode Campaign Tidak Valid**
+
+<p align="center">
+<img alt="Sequence Diagram UC02 - Target atau Periode Campaign Tidak Valid" src="./assets/diagram/sequence-uc02-alt2.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.2.3. Sequence Diagram UC02 - Target atau Periode Campaign Tidak Valid</i>
+</p>
+
+### 3.2.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC02" src="./assets/diagram/class-uc02.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.2.4. Diagram Kelas Membuat Campaign Penggalangan Donasi (UC02)</i>
+</p>
+
+---
+
+## 3.3 Use Case Membuat Project Aksi Iklim
+
+**ID Use Case:** UC03  
+**Nama Use Case:** Membuat Project Aksi Iklim
+
+### 3.3.1 Identifikasi Kelas
+
+Realisasi UC03 memakai pembagian lapisan yang sama dengan UC02. Perbedaannya, entitas domain yang dikelola adalah `Project` dan terdapat validasi kebutuhan project (dana, logistik, dan kriteria volunteer) yang dijalankan sebelum formulir dikirim.
+
+Tabel 3.3. Identifikasi Kelas Use Case UC03
+
+| No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+|:--- | :--- | :--- |
+| 1 | CampaignProjectView | PembuatProject (C10) |
+| 2 | CampaignProjectController | PembuatProject (C10) |
+| 3 | AutentikasiService | SesiLogin (C13) |
+| 4 | CampaignProjectService | PembuatProject (C10), Project (C02) |
+| 5 | Project | Project (C02) |
+| 6 | CampaignProjectRepository | Project (C02) |
+| 7 | DatabaseConnection | - (kelas baru pada tahap perancangan) |
+
+### 3.3.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC03 - Skenario Normal" src="./assets/diagram/sequence-uc03-normal.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.3.1. Sequence Diagram UC03 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Informasi Project Tidak Lengkap**
+
+<p align="center">
+<img alt="Sequence Diagram UC03 - Informasi Project Tidak Lengkap" src="./assets/diagram/sequence-uc03-alt1.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.3.2. Sequence Diagram UC03 - Informasi Project Tidak Lengkap</i>
+</p>
+
+- **Skenario Alternatif 2: Data Kebutuhan Project Tidak Valid**
+
+<p align="center">
+<img alt="Sequence Diagram UC03 - Data Kebutuhan Project Tidak Valid" src="./assets/diagram/sequence-uc03-alt2.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.3.3. Sequence Diagram UC03 - Data Kebutuhan Project Tidak Valid</i>
+</p>
+
+### 3.3.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC03" src="./assets/diagram/class-uc03.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.3.4. Diagram Kelas Membuat Project Aksi Iklim (UC03)</i>
+</p>
+
+---
+
+## 3.4 Use Case Meninjau dan Memverifikasi Project
+
+**ID Use Case:** UC04  
+**Nama Use Case:** Meninjau dan Memverifikasi Project
+
+### 3.4.1 Identifikasi Kelas
+
+Realisasi UC04 melibatkan dua aktor, yaitu Pembuat Project yang mengajukan verifikasi dan Admin Sistem yang meninjau pengajuan. Kelas aktor pada tahap analisis (PembuatProject dan AdminSistem) dipetakan ke `CampaignProjectView`, `CampaignProjectController`, dan `CampaignProjectService`. Pembatasan bahwa verifikasi hanya dapat dilakukan Admin Sistem ditangani oleh `AutentikasiService` melalui pemeriksaan hak akses berdasarkan peran.
+
+Tabel 3.4. Identifikasi Kelas Use Case UC04
+
+| No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
+|:--- | :--- | :--- |
+| 1 | CampaignProjectView | PembuatProject (C10), AdminSistem (C11) |
+| 2 | CampaignProjectController | PembuatProject (C10), AdminSistem (C11) |
+| 3 | AutentikasiService | SesiLogin (C13), AdminSistem (C11) |
+| 4 | CampaignProjectService | PembuatProject (C10), AdminSistem (C11) |
+| 5 | Campaign | Campaign (C03) |
+| 6 | Project | Project (C02) |
+| 7 | CampaignProjectRepository | Campaign (C03), Project (C02) |
+| 8 | DatabaseConnection | - (kelas baru pada tahap perancangan) |
+
+### 3.4.2 Sequence Diagram
+
+- **Skenario Normal**
+
+<p align="center">
+<img alt="Sequence Diagram UC04 - Skenario Normal" src="./assets/diagram/sequence-uc04-normal.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.4.1. Sequence Diagram UC04 - Skenario Normal</i>
+</p>
+
+- **Skenario Alternatif 1: Campaign atau Project Ditolak**
+
+<p align="center">
+<img alt="Sequence Diagram UC04 - Campaign atau Project Ditolak" src="./assets/diagram/sequence-uc04-alt1.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.4.2. Sequence Diagram UC04 - Campaign atau Project Ditolak</i>
+</p>
+
+### 3.4.3 Diagram Kelas
+
+<p align="center">
+<img alt="Diagram Kelas UC04" src="./assets/diagram/class-uc04.png" width="50%">
+</p>
+<p align="center">
+<i>Gambar 3.4.3. Diagram Kelas Meninjau dan Memverifikasi Project (UC04)</i>
+</p>
 
 ---
 
