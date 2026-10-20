@@ -131,7 +131,7 @@
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 
 ### Milestone 6
-**Periode:** 30 September 2026 - 7 September 2026
+**Periode:** 30 September 2026 - 7 Oktober 2026
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
@@ -143,6 +143,19 @@
 | 7-10-2026 | Sahla | Mengerjakan bab 3 bagian 3.2 Process View | 3 | Done | - | 
 
 **Catatan/Evaluasi Milestone 6:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+---
+
+### Milestone 7
+**Periode:** 7 Oktober 2026 - 21 Oktober 2026
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 19-10-2026 | Neysa | Mengerjakan CD & Sequence Diagram UC 02 - 04 | 3.5 | Done | - | 
+| 20-10-2026 | Neysa | Revisi CD & Sequence Diagram UC 02 - 04 | 1 | Done | - | 
+
+
+**Catatan/Evaluasi Milestone 7:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
