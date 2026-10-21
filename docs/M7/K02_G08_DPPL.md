@@ -683,7 +683,7 @@ Berkas sumber seluruh diagram UC05–UC07 yang dapat diedit di draw.io tersedia 
 
 ### 3.8.1 Identifikasi Kelas
 
-Realisasi UC08 memisahkan antarmuka pengelolaan pendaftar yang dipakai Pembuat Project dari antarmuka status pendaftaran yang dilihat Volunteer menjadi dua kelas *boundary*, yaitu `FormVolunteerManagementView` dan `DetailStatusPendaftaranView`. Keduanya berinteraksi dengan `RelawanController`, yaitu kelas *control* yang sudah dipakai pada UC07 dan kini juga mengoordinasikan peninjauan pendaftar serta pengambilan keputusan terima/tolak. Pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PembuatProject (C10) dan Volunteer (C08) berperan sebagai aktor sekaligus pemilik data, sehingga tindakan antarmukanya (membuka menu, meninjau, memilih keputusan, melihat instruksi) dipindahkan ke kelas *boundary*, sedangkan data pengguna tetap berada pada kelas *entity* `PembuatProject` dan `Volunteer`. `Project` menampung daftar pendaftaran yang masuk dan memeriksa apakah sudah ada pendaftar, sedangkan data formulir pendaftar beserta status keputusannya (`pending`, `accepted`, `rejected`) tetap menjadi tanggung jawab `PendaftaranRelawan` sesuai deskripsi C09. Setelah status diperbarui, `DetailStatusPendaftaranView` menampilkan hasil keputusan kepada Volunteer, disertai instruksi lokasi dan jadwal apabila pendaftaran diterima.
+Realisasi UC08 memisahkan antarmuka pengelolaan pendaftar yang dipakai Pembuat Project dari antarmuka status pendaftaran yang dilihat Volunteer menjadi dua kelas *boundary*, yaitu `FormVolunteerManagementView` dan `DetailStatusPendaftaranView`. Keduanya berinteraksi dengan `RelawanController`, yaitu kelas *control* yang sudah dipakai pada UC07 dan kini juga mengoordinasikan peninjauan pendaftar serta pengambilan keputusan terima/tolak. Pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PembuatProject (C10) dan Volunteer (C08) berperan sebagai aktor sekaligus pemilik data, sehingga tindakan antarmukanya (membuka menu, meninjau, memilih keputusan, melihat instruksi) diwujudkan melalui kelas *boundary*, sedangkan data pengguna beserta operasi analisisnya tetap berada pada kelas *entity* `PembuatProject` dan `Volunteer`. Setelah status diperbarui, `DetailStatusPendaftaranView` menampilkan hasil keputusan kepada Volunteer, disertai instruksi lokasi dan jadwal apabila pendaftaran diterima.
 
 Tabel 3.8. Identifikasi Kelas Use Case UC08
 
@@ -740,7 +740,7 @@ Alur berjalan sama dengan skenario normal sampai pemeriksaan pendaftar. `cekAdaP
 
 ### 3.9.1 Identifikasi Kelas
 
-Realisasi UC09 memakai satu kelas *boundary*, yaitu `FormProgresProjectView`, yang menerima data milestone, status pelaksanaan, dan berkas dokumentasi dari Pembuat Project serta menampilkan pesan kesalahan atau notifikasi keberhasilan. `ProgresController` berperan sebagai kelas *control* yang mengoordinasikan pembukaan halaman, pemeriksaan hak akses, dan penyimpanan pembaruan. Pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PembuatProject (C10) berperan sebagai aktor sekaligus pemilik data, sehingga tindakan antarmukanya (membuka halaman, mengisi milestone, mengunggah dokumentasi) dipindahkan ke `FormProgresProjectView`, sedangkan data pengguna tetap berada pada kelas *entity* `PembuatProject`. Validasi hak akses, validasi format dan ukuran dokumentasi, penyimpanan pembaruan progres, serta pencatatan stempel waktu tetap menjadi tanggung jawab `Project` sesuai deskripsi C02. Peran Admin Sistem yang memastikan pengguna adalah Pembuat Project pada skenario diimplementasikan sebagai pemeriksaan otomatis `validasiHakAkses()` pada `Project`, sehingga tidak menjadi kelas tersendiri.
+Realisasi UC09 memakai satu kelas *boundary*, yaitu `FormProgresProjectView`, yang menerima data milestone, status pelaksanaan, dan berkas dokumentasi dari Pembuat Project serta menampilkan pesan kesalahan atau notifikasi keberhasilan. `ProgresController` berperan sebagai kelas *control* yang mengoordinasikan pembukaan halaman, pemeriksaan hak akses, dan penyimpanan pembaruan. Pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PembuatProject (C10) berperan sebagai aktor sekaligus pemilik data, sehingga tindakan antarmukanya (membuka halaman, mengisi milestone, mengunggah dokumentasi) diwujudkan melalui `FormProgresProjectView`, sedangkan data pengguna beserta operasi analisisnya tetap berada pada kelas *entity* `PembuatProject`. Validasi hak akses, validasi format dan ukuran dokumentasi, penyimpanan pembaruan progres, serta pencatatan stempel waktu tetap menjadi tanggung jawab `Project` sesuai deskripsi C02. Peran Admin Sistem yang memastikan pengguna adalah Pembuat Project pada skenario diimplementasikan sebagai pemeriksaan otomatis `validasiHakAkses()` pada `Project`, sehingga tidak menjadi kelas tersendiri.
 
 Tabel 3.9. Identifikasi Kelas Use Case UC09
 
@@ -763,7 +763,7 @@ Tabel 3.9. Identifikasi Kelas Use Case UC09
 <i>Gambar 3.9.1. Sequence Diagram UC09 - Skenario Normal</i>
 </p>
 
-Pembuat Project membuka halaman pembaruan progres melalui `FormProgresProjectView`. `ProgresController` memeriksa status login melalui `SesiLogin.cekStatusLogin()`, kemudian meminta `Project` menjalankan `validasiHakAkses()` untuk memastikan pengguna adalah Pembuat Project dari project tersebut. Setelah lolos, `tampilkanFormulir()` menampilkan formulir pembaruan progres. Pembuat Project mengisi milestone dan status pelaksanaan, mengunggah dokumentasi, lalu mengirim formulir. `ProgresController` memanggil `validasiDokumentasi()` dan `simpanPembaruanProgres()` pada `Project`, lalu `catatTimestamp()` mencatat riwayat pembaruan beserta stempel waktunya dan menghubungkannya dengan project. `FormProgresProjectView` menampilkan notifikasi keberhasilan.
+Pembuat Project membuka halaman pembaruan progres melalui `FormProgresProjectView`. `ProgresController` memeriksa status login melalui `SesiLogin.cekStatusLogin()`, kemudian meminta `Project` menjalankan `validasiHakAkses()` untuk memastikan pengguna adalah Pembuat Project dari project tersebut. Setelah lolos, `tampilkanFormulir()` menampilkan formulir pembaruan progres. Pembuat Project mengisi milestone dan status pelaksanaan, mengunggah dokumentasi, lalu mengirim formulir. `ProgresController` memanggil `simpanPembaruanProgres()` pada `Project`, yang memeriksa format dan ukuran berkas dokumentasi sebelum menyimpan milestone, status pelaksanaan, dan dokumentasi progres. Setelah tersimpan, `catatTimestamp()` mencatat riwayat pembaruan beserta stempel waktunya dan menghubungkannya dengan project. `FormProgresProjectView` menampilkan notifikasi keberhasilan.
 
 - **Skenario Alternatif 1: Akses Ditolak (Bukan Pembuat Project)**
 
@@ -785,7 +785,7 @@ Alur berjalan sama dengan skenario normal sampai pemeriksaan hak akses. `validas
 <i>Gambar 3.9.3. Sequence Diagram UC09 - Gagal Mengunggah Dokumentasi Progres</i>
 </p>
 
-Alur berjalan sama dengan skenario normal sampai pengiriman formulir. `validasiDokumentasi()` pada `Project` mengembalikan `false` karena format atau ukuran berkas tidak valid, atau pengunggahan terputus akibat kesalahan jaringan. `simpanPembaruanProgres()` dan `catatTimestamp()` tidak dipanggil, sehingga pembaruan progres dibatalkan dan dokumen tidak tersimpan. `ProgresController` menyediakan pesan melalui `getPesanKesalahan()`, lalu `FormProgresProjectView` menampilkannya sebagai pesan kesalahan unggah berkas.
+Alur berjalan sama dengan skenario normal sampai pengiriman formulir. `simpanPembaruanProgres()` pada `Project` mengembalikan `false` karena format atau ukuran berkas tidak valid, atau pengunggahan terputus akibat kesalahan jaringan. Data tidak disimpan dan `catatTimestamp()` tidak dipanggil, sehingga pembaruan progres dibatalkan dan dokumen tidak tersimpan. `ProgresController` menyediakan pesan melalui `getPesanKesalahan()`, lalu `FormProgresProjectView` menampilkannya sebagai pesan kesalahan unggah berkas.
 
 ### 3.9.3 Diagram Kelas
 
@@ -805,7 +805,7 @@ Alur berjalan sama dengan skenario normal sampai pengiriman formulir. `validasiD
 
 ### 3.10.1 Identifikasi Kelas
 
-Realisasi UC10 memisahkan antarmuka daftar riwayat dari antarmuka detail riwayat menjadi dua kelas *boundary*. `FormRiwayatView` menampilkan menu dan daftar riwayat secara kronologis atau pesan bahwa riwayat belum tersedia, sedangkan `DetailRiwayatView` menampilkan rincian transaksi donasi (nominal, waktu, status) atau rincian laporan progres project. Keduanya berinteraksi dengan `RiwayatController` sebagai kelas *control* yang mengoordinasikan pengambilan riwayat dan detail, dengan pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PenggunaUmum (C00) tetap dipertahankan sebagai kelas *entity* untuk data pengguna (termasuk perannya sebagai Pembuat Project, Donatur, atau Volunteer), sementara tindakan membuka menu riwayat ditangani oleh antarmuka. Catatan transaksi donasi tetap berada pada `TransaksiDonasi` sesuai deskripsi C06, sedangkan riwayat pembaruan progres (milestone dan status pelaksanaan) tetap berada pada `Project` sesuai deskripsi C02.
+Realisasi UC10 memisahkan antarmuka daftar riwayat dari antarmuka detail riwayat menjadi dua kelas *boundary*. `FormRiwayatView` menampilkan menu dan daftar riwayat secara kronologis atau pesan bahwa riwayat belum tersedia, sedangkan `DetailRiwayatView` menampilkan rincian transaksi donasi (nominal, waktu, status) atau rincian laporan progres project. Keduanya berinteraksi dengan `RiwayatController` sebagai kelas *control* yang mengoordinasikan pengambilan riwayat dan detail, dengan pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PenggunaUmum (C00) tetap dipertahankan sebagai kelas *entity* untuk data pengguna (termasuk perannya sebagai Pembuat Project, Donatur, atau Volunteer) beserta operasi `bukaMenuRiwayat()`, sementara tampilan menu dan daftar riwayat diwujudkan melalui `FormRiwayatView`. Catatan transaksi donasi tetap berada pada `TransaksiDonasi` sesuai deskripsi C06, sedangkan riwayat pembaruan progres (milestone dan status pelaksanaan) tetap berada pada `Project` sesuai deskripsi C02.
 
 Tabel 3.10. Identifikasi Kelas Use Case UC10
 
@@ -871,18 +871,18 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
 | ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
 | :--- | :--- | :--- | :--- |
-| C00 | PenggunaUmum | `idPengguna`, `nama`, `peran`, `email` | `buatAkun()`, `bukaKatalog()` |
+| C00 | PenggunaUmum | `idPengguna`, `nama`, `peran`, `email` | `buatAkun()`, `bukaKatalog()`, `bukaMenuRiwayat()` |
 | C12 | Akun | `idAkun`, `email`, `passwordHash`, `statusAkun`, `tanggalDibuat` | `validasiKelengkapanInput()`, `cekKetersediaanEmail()`, `simpanAkun()`, `validasiKredensial()` |
 | C13 | SesiLogin | `idSesi`, `idPengguna`, `waktuMulai`, `waktuKedaluwarsa`, `statusSesi` | `buatSesi()`, `cekStatusLogin()`, `akhiriSesi()` |
 | C14 | FormPendaftaranView | - | `pilihMenuPendaftaran()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
 | C15 | FormLoginView | - | `isiKredensial()`, `kirimKredensial()`, `tampilkanPesanKesalahan()`, `arahkanKeHalamanUtama()` |
 | C16 | AutentikasiController | `pesanKesalahan` | `daftarAkun()`, `login()`, `getPesanKesalahan()` |
-| C10 | PembuatProject | `idPembuat`, `nama`, `email` | `buatCampaign()`, `buatProject()`, `ajukanVerifikasi()`, `terimaNotifikasiPendaftaran()`, `tinjauPendaftaran()` |
+| C10 | PembuatProject | `idPembuat`, `nama`, `email` | `buatCampaign()`, `buatProject()`, `ajukanVerifikasi()`, `bukaMenuVolunteerManagement()`, `tinjauPendaftar()`, `buatKeputusan()`, `bukaHalamanProgres()`, `isiPembaruanMilestone()`, `unggahDokumentasi()` |
 | C03 | Campaign | `idCampaign`, `judul`, `deskripsi`, `targetNominal`, `periodeMulai`, `periodeSelesai`, `status`, `alasanPenolakan`, `kebutuhan`, `lokasi`, `danaTerkumpul` | `validasiData()`, `validasiTarget()`, `validasiPeriode()`, `simpanCampaign()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()`, `cekStatusCampaign()`, `tambahDana()` |
 | C17 | FormCampaignView | - | `pilihMenuBuatCampaign()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
 | C18 | DetailCampaignView | - | `bukaHalamanCampaign()`, `tampilkanDetail()` |
 | C19 | CampaignController | `pesanKesalahan` | `buatCampaign()`, `getPesanKesalahan()`, `getDetailCampaign()` |
-| C02 | Project | `idProject`, `nama`, `deskripsi`, `lokasi`, `tujuan`, `kebutuhanDana`, `kebutuhanLogistik`, `kriteriaVolunteer`, `status`, `alasanPenolakan`, `danaTerkumpul`, `kuotaRelawan`, `statusPendaftaranProject`, `idPembuat`, `milestone`, `statusPelaksanaan`, `dokumentasiProgres`, `timestampPembaruan` | `setInformasi()`, `setKebutuhan()`, `validasiData()`, `validasiKebutuhan()`, `simpanProject()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()`, `cekStatusProject()`, `tambahDana()`, `cekKuota()`, `cekStatusPendaftaran()`, `cekAdaPendaftar()`, `getDaftarPendaftar()`, `validasiHakAkses()`, `validasiDokumentasi()`, `simpanPembaruanProgres()`, `catatTimestamp()`, `getRiwayatProgres()`, `getDetailProgres()` |
+| C02 | Project | `idProject`, `nama`, `deskripsi`, `lokasi`, `tujuan`, `kebutuhanDana`, `kebutuhanLogistik`, `kriteriaVolunteer`, `status`, `alasanPenolakan`, `milestone`, `statusPelaksanaan`, `dokumentasiProgres`, `timestampPembaruan` | `setInformasi()`, `setKebutuhan()`, `validasiData()`, `validasiKebutuhan()`, `simpanProject()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()`, `cekAdaPendaftar()`, `getDaftarPendaftar()`, `validasiHakAkses()`, `simpanPembaruanProgres()`, `catatTimestamp()`, `getRiwayatProgres()`, `getDetailProgres()` |
 | C20 | FormProjectView | - | `pilihMenuBuatProject()`, `tampilkanFormulir()`, `isiInformasiProject()`, `tampilkanInformasi()`, `isiKebutuhan()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
 | C21 | DetailProjectView | - | `bukaHalamanProject()`, `tampilkanDetail()` |
 | C22 | ProjectController | `pesanKesalahan` | `simpanInformasiDasar()`, `perbaruiInformasi()`, `isiKebutuhan()`, `kirimProject()`, `getPesanKesalahan()`, `getDetailProject()` |
@@ -906,7 +906,13 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 | C32 | DonasiController | `pesanKesalahan` | `getSebaran()`, `bukaFormDonasi()`, `konfirmasiDonasi()`, `getBuktiTransaksi()`, `getPesanKesalahan()` |
 | C33 | FormPendaftaranRelawanView | - | `tekanDaftar()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimPendaftaran()`, `tampilkanPesanKesalahan()`, `tampilkanStatus()` |
 | C34 | RelawanController | `pesanKesalahan` | `getSebaranProject()`, `bukaFormPendaftaran()`, `daftarRelawan()`, `getPesanKesalahan()`, `getDaftarPendaftar()`, `buatKeputusan()`, `getStatusPendaftaran()` |
-| ... | *[Kelas perancangan UC08–UC10 dari Sahla]* | ... | ... |
+| C35 | FormVolunteerManagementView | - | `pilihMenuVolunteerManagement()`, `tampilkanDaftarPendaftar()`, `pilihPendaftar()`, `pilihKeputusan()`, `tampilkanNotifikasiBerhasil()`, `tampilkanPesanBelumAdaPendaftar()` |
+| C36 | DetailStatusPendaftaranView | - | `bukaHalamanStatusPendaftaran()`, `tampilkanStatus()`, `tampilkanInstruksiKegiatan()` |
+| C37 | FormProgresProjectView | - | `pilihMenuProgres()`, `tampilkanFormulir()`, `isiPembaruanMilestone()`, `unggahDokumentasi()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
+| C38 | ProgresController | `pesanKesalahan` | `bukaHalamanProgres()`, `perbaruiProgres()`, `getPesanKesalahan()` |
+| C39 | FormRiwayatView | - | `pilihMenuRiwayat()`, `tampilkanDaftarRiwayat()`, `pilihRiwayat()`, `tampilkanPesanRiwayatKosong()` |
+| C40 | DetailRiwayatView | - | `tampilkanDetailTransaksi()`, `tampilkanDetailProgres()` |
+| C41 | RiwayatController | - | `getRiwayat()`, `getDetailTransaksi()`, `getDetailProgres()` |
 
 <br>
 
