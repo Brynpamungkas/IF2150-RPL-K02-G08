@@ -473,14 +473,20 @@ Tabel 3.4. Identifikasi Kelas Use Case UC04
 
 ### 3.5.1 Identifikasi Kelas
 
-*[Bryan: satu paragraf pengantar, lalu isi tabel. Nama kelas perancangan memakai pola yang sama dengan UC01-UC04, yaitu Form…View / Detail…View untuk boundary, …Controller untuk control, dan nama kelas analisis apa adanya untuk entity.]*
+Realisasi UC05 memisahkan antarmuka pencarian dari antarmuka detail campaign dan project. `FormPencarianView` menerima kata kunci dan filter serta menampilkan hasil pencarian, sedangkan `DetailCampaignView` dan `DetailProjectView` digunakan kembali untuk menampilkan informasi kegiatan yang dipilih. Ketiga kelas *boundary* tersebut berinteraksi dengan `PencarianController` sebagai kelas *control* yang mengoordinasikan pencarian dan pengambilan detail. Kelas analisis PenggunaUmum (C00) tetap dipertahankan sebagai kelas *entity* untuk data pengguna, sementara tindakan pencariannya ditangani oleh antarmuka. Parameter pencarian dan penyaringan tetap menjadi tanggung jawab `Katalog` sesuai deskripsi C01, sedangkan informasi kegiatan tetap berada pada `Project` dan `Campaign`. Hasil pencarian dibatasi pada campaign dan project yang telah dipublikasikan sesuai KF13–KF14; apabila tidak ada hasil yang sesuai, antarmuka menampilkan pesan agar pengguna dapat mengubah kata kunci atau filter.
 
 Tabel 3.5. Identifikasi Kelas Use Case UC05
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| ... | *...* | *...* |
+| 1 | FormPencarianView | PenggunaUmum (C00), Katalog (C01) |
+| 2 | DetailCampaignView | Campaign (C03) |
+| 3 | DetailProjectView | Project (C02) |
+| 4 | PencarianController | PenggunaUmum (C00), Katalog (C01) |
+| 5 | PenggunaUmum | PenggunaUmum (C00) |
+| 6 | Katalog | Katalog (C01) |
+| 7 | Project | Project (C02) |
+| 8 | Campaign | Campaign (C03) |
 
 ### 3.5.2 Sequence Diagram
 
@@ -520,14 +526,23 @@ Tabel 3.5. Identifikasi Kelas Use Case UC05
 
 ### 3.6.1 Identifikasi Kelas
 
-*[Bryan: satu paragraf pengantar, lalu isi tabel. Nama kelas perancangan memakai pola yang sama dengan UC01-UC04, yaitu Form…View / Detail…View untuk boundary, …Controller untuk control, dan nama kelas analisis apa adanya untuk entity.]*
+Realisasi UC06 memisahkan antarmuka peta, formulir donasi, dan tampilan bukti transaksi menjadi tiga kelas *boundary*, yaitu `FormPetaWilayahView`, `FormDonasiView`, dan `DetailBuktiTransaksiView`. `DonasiController` mengoordinasikan alur donasi, termasuk pemeriksaan status login melalui `SesiLogin`. Kelas analisis `PetaWilayah` tetap menyimpan parameter wilayah dan menyediakan data sebaran kegiatan, sedangkan `Donatur` menyimpan data pengguna beserta saldonya. Validasi nominal, pemeriksaan duplikasi berdasarkan *idempotency key*, serta pemrosesan dan pencatatan donasi tetap menjadi tanggung jawab `TransaksiDonasi` sesuai deskripsi C06. `Project` atau `Campaign` menjadi tujuan dana yang diperiksa statusnya dan diperbarui dana terkumpul serta persentase pencapaian targetnya. Pengurangan saldo, penambahan dana tujuan, dan pencatatan transaksi dijalankan secara atomik, sehingga seluruh perubahan dibatalkan apabila salah satu tahap gagal sesuai KF15–KF18 dan KF26. Setelah transaksi berhasil, `BuktiTransaksi` menghasilkan rincian bukti untuk ditampilkan kepada Donatur.
 
 Tabel 3.6. Identifikasi Kelas Use Case UC06
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| ... | *...* | *...* |
+| 1 | FormPetaWilayahView | PetaWilayah (C05) |
+| 2 | FormDonasiView | Donatur (C04), TransaksiDonasi (C06) |
+| 3 | DetailBuktiTransaksiView | BuktiTransaksi (C07) |
+| 4 | DonasiController | Donatur (C04), TransaksiDonasi (C06) |
+| 5 | SesiLogin | SesiLogin (C13) |
+| 6 | PetaWilayah | PetaWilayah (C05) |
+| 7 | Donatur | Donatur (C04) |
+| 8 | TransaksiDonasi | TransaksiDonasi (C06) |
+| 9 | Project | Project (C02) |
+| 10 | Campaign | Campaign (C03) |
+| 11 | BuktiTransaksi | BuktiTransaksi (C07) |
 
 ### 3.6.2 Sequence Diagram
 
@@ -594,14 +609,21 @@ Tabel 3.6. Identifikasi Kelas Use Case UC06
 
 ### 3.7.1 Identifikasi Kelas
 
-*[Bryan: satu paragraf pengantar, lalu isi tabel. Nama kelas perancangan memakai pola yang sama dengan UC01-UC04, yaitu Form…View / Detail…View untuk boundary, …Controller untuk control, dan nama kelas analisis apa adanya untuk entity.]*
+Realisasi UC07 memakai kembali `FormPetaWilayahView` untuk menampilkan sebaran project dan menambahkan `FormPendaftaranRelawanView` sebagai kelas *boundary* untuk menerima data diri, keahlian, pengalaman, dan ketersediaan jadwal Volunteer. `RelawanController` mengoordinasikan pembukaan formulir dan pengiriman pendaftaran, dengan pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Data pengguna dan parameter wilayah tetap berada pada kelas *entity* `Volunteer` dan `PetaWilayah`, sedangkan data formulir, validasi kelengkapan, pemeriksaan pendaftaran ganda, serta penyimpanan status tetap menjadi tanggung jawab `PendaftaranRelawan` sesuai deskripsi C09 dan KF19–KF20. Ketersediaan kuota dan status pembukaan pendaftaran diperiksa melalui `Project` sesuai skenario alternatif UC07. Pendaftaran yang memenuhi ketentuan disimpan dengan status awal `pending` dan diteruskan kepada `PembuatProject` untuk ditinjau; keputusan penerimaan atau penolakan ditangani pada UC08.
 
 Tabel 3.7. Identifikasi Kelas Use Case UC07
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| ... | *...* | *...* |
+| 1 | FormPetaWilayahView | PetaWilayah (C05) |
+| 2 | FormPendaftaranRelawanView | Volunteer (C08), PendaftaranRelawan (C09) |
+| 3 | RelawanController | Volunteer (C08), PendaftaranRelawan (C09) |
+| 4 | SesiLogin | SesiLogin (C13) |
+| 5 | PetaWilayah | PetaWilayah (C05) |
+| 6 | Volunteer | Volunteer (C08) |
+| 7 | PendaftaranRelawan | PendaftaranRelawan (C09) |
+| 8 | Project | Project (C02) |
+| 9 | PembuatProject | PembuatProject (C10) |
 
 ### 3.7.2 Sequence Diagram
 
@@ -649,6 +671,8 @@ Tabel 3.7. Identifikasi Kelas Use Case UC07
 <p align="center">
 <i>Gambar 3.7.5. Diagram Kelas Mendaftar Sebagai Volunteer (UC07)</i>
 </p>
+
+Berkas sumber seluruh diagram UC05–UC07 yang dapat diedit di draw.io tersedia pada [XML Diagram UC05–UC07](./assets/diagram/uc05-uc07.xml), dengan satu diagram pada setiap tab.
 
 ---
 

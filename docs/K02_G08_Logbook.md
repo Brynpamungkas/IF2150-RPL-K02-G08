@@ -154,6 +154,7 @@
 | 19-10-2026 | Neysa | Mengerjakan CD & Sequence Diagram UC 02 - 04 | 3.5 | Done | - | 
 | 20-10-2026 | Neysa | Revisi CD & Sequence Diagram UC 02 - 04 | 1 | Done | - | 
 | 20-10-2026 | Nathan | Mengerjakan CD & Sequence Diagram UC 01 | 3 | Done | - | 
+| 21-10-2026 | Bryan | Mengerjakan subbab 3.4 hingga 3.7 | 7 | Done | -
 
 
 **Catatan/Evaluasi Milestone 7:**
