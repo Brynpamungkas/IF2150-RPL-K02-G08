@@ -156,6 +156,7 @@
 | 20-10-2026 | Nathan | Mengerjakan CD & Sequence Diagram UC 01 | 3 | Done | - | 
 | 21-10-2026 | Bryan | Mengerjakan subbab 3.4 hingga 3.7 | 7 | Done | -
 | 21-10-2026 | Sahla | Mengerjakan subbab 3.8 hingga 3.10 | 5 | Done | -
+| 21-10-2026 | Naya | Mengerjakan bab 5 terkait UC05-0C10 | 3 | Done | -
 
 **Catatan/Evaluasi Milestone 7:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
