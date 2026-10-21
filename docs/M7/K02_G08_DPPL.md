@@ -899,26 +899,26 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 ---
 # BAB 5: Matriks Kerunutan
 
-Tabel berikut memetakan setiap kelas perancangan pada BAB 4 terhadap use case yang direalisasikannya, dilanjutkan hingga **UC07 (Mendaftar Sebagai Volunteer)** berdasarkan kelas *boundary*, *control*, dan *entity* yang terlibat pada perancangan UC05–UC07.
+Tabel berikut memetakan setiap kelas perancangan pada BAB 4 terhadap use case yang direalisasikannya secara keseluruhan dari **UC01 hingga UC10**. Acuan keterkaitan diambil dari BAB 6 *Traceability* dokumen SKPL, lalu disesuaikan dengan realisasi use case pada BAB 3.
 
-Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case (Lanjutan UC05–UC07)
+Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case (Keseluruhan UC01–UC10)
 
 | Kelas | Use Case Terkait |
 | :--- | :--- |
-| C00 - PenggunaUmum | UC01 - Melakukan Pendaftaran dan Autentikasi, UC05 - Mencari dan Menelusuri Project |
+| C00 - PenggunaUmum | UC01 - Melakukan Pendaftaran dan Autentikasi, UC05 - Mencari dan Menelusuri Project, UC10 - Melihat Riwayat dan Penelusuran |
 | C01 - Katalog | UC05 - Mencari dan Menelusuri Project |
-| C02 - Project | UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
+| C02 - Project | UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project, UC10 - Melihat Riwayat dan Penelusuran |
 | C03 - Campaign | UC02 - Membuat Campaign Penggalangan Donasi, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi |
 | C04 - Donatur | UC06 - Melakukan Transaksi Donasi |
 | C05 - PetaWilayah | UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
-| C06 - TransaksiDonasi | UC06 - Melakukan Transaksi Donasi |
+| C06 - TransaksiDonasi | UC06 - Melakukan Transaksi Donasi, UC10 - Melihat Riwayat dan Penelusuran |
 | C07 - BuktiTransaksi | UC06 - Melakukan Transaksi Donasi |
-| C08 - Volunteer | UC07 - Mendaftar Sebagai Volunteer |
-| C09 - PendaftaranRelawan | UC07 - Mendaftar Sebagai Volunteer |
-| C10 - PembuatProject | UC02 - Membuat Campaign Penggalangan Donasi, UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC07 - Mendaftar Sebagai Volunteer |
+| C08 - Volunteer | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
+| C09 - PendaftaranRelawan | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
+| C10 - PembuatProject | UC02 - Membuat Campaign Penggalangan Donasi, UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project |
 | C11 - AdminSistem | UC04 - Meninjau dan Memverifikasi Project |
 | C12 - Akun | UC01 - Melakukan Pendaftaran dan Autentikasi |
-| C13 - SesiLogin | UC01 - Melakukan Pendaftaran dan Autentikasi, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
+| C13 - SesiLogin | UC01 - Melakukan Pendaftaran dan Autentikasi, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project, UC10 - Melihat Riwayat dan Penelusuran |
 | C14 - FormPendaftaranView | UC01 - Melakukan Pendaftaran dan Autentikasi |
 | C15 - FormLoginView | UC01 - Melakukan Pendaftaran dan Autentikasi |
 | C16 - AutentikasiController | UC01 - Melakukan Pendaftaran dan Autentikasi |
@@ -939,5 +939,11 @@ Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case (Lanjutan UC05–UC07)
 | C31 - DetailBuktiTransaksiView | UC06 - Melakukan Transaksi Donasi |
 | C32 - DonasiController | UC06 - Melakukan Transaksi Donasi |
 | C33 - FormPendaftaranRelawanView | UC07 - Mendaftar Sebagai Volunteer |
-| C34 - RelawanController | UC07 - Mendaftar Sebagai Volunteer |
-| ... | *[Baris untuk kelas UC08–UC10 oleh Sahla]* |
+| C34 - RelawanController | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
+| C35 - FormVolunteerManagementView | UC08 - Mengelola Pendaftaran Relawan |
+| C36 - DetailStatusPendaftaranView | UC08 - Mengelola Pendaftaran Relawan |
+| C37 - FormProgresProjectView | UC09 - Memperbarui Progres Project |
+| C38 - ProgresController | UC09 - Memperbarui Progres Project |
+| C39 - FormRiwayatView | UC10 - Melihat Riwayat dan Penelusuran |
+| C40 - DetailRiwayatView | UC10 - Melihat Riwayat dan Penelusuran |
+| C41 - RiwayatController | UC10 - Melihat Riwayat dan Penelusuran |
