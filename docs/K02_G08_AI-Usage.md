@@ -77,6 +77,7 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 ### Milestone 7
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
+| Claude | Membantu menuliskan sintaks XML agar rancangan CD & Sequence Diagram yang sudah saya susun dapat diimpor ke draw.io | "Bantu ubah alur proses berikut menjadi XML draw.io | Alur proses, aktor, dan langkah ditentukan sendiri berdasarkan SKPL dan Bab 2 M6. Hasil XML diimpor ke draw.io, lalu label, urutan alur, dan tata letak diperiksa dan disesuaikan secara manual |
 
 ---
 ### Pernyataan Integritas dan Persetujuan
