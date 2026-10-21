@@ -869,35 +869,47 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 <br>
 
 ---
-
 # BAB 5: Matriks Kerunutan
 
-Tabel berikut memetakan setiap kelas perancangan pada BAB 4 terhadap use case yang direalisasikannya. Acuan keterkaitan diambil dari BAB 6 *Traceability* dokumen SKPL, lalu disesuaikan dengan realisasi use case pada BAB 3.
+Tabel berikut memetakan setiap kelas perancangan pada BAB 4 terhadap use case yang direalisasikannya, dilanjutkan hingga **UC07 (Mendaftar Sebagai Volunteer)** berdasarkan kelas *boundary*, *control*, dan *entity* yang terlibat pada perancangan UC05–UC07.
 
-Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case
+Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case (Lanjutan UC05–UC07)
 
 | Kelas | Use Case Terkait |
 | :--- | :--- |
-| C00 - PenggunaUmum | UC01 - Melakukan Pendaftaran dan Autentikasi |
+| C00 - PenggunaUmum | UC01 - Melakukan Pendaftaran dan Autentikasi, UC05 - Mencari dan Menelusuri Project |
+| C01 - Katalog | UC05 - Mencari dan Menelusuri Project |
+| C02 - Project | UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
+| C03 - Campaign | UC02 - Membuat Campaign Penggalangan Donasi, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi |
+| C04 - Donatur | UC06 - Melakukan Transaksi Donasi |
+| C05 - PetaWilayah | UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
+| C06 - TransaksiDonasi | UC06 - Melakukan Transaksi Donasi |
+| C07 - BuktiTransaksi | UC06 - Melakukan Transaksi Donasi |
+| C08 - Volunteer | UC07 - Mendaftar Sebagai Volunteer |
+| C09 - PendaftaranRelawan | UC07 - Mendaftar Sebagai Volunteer |
+| C10 - PembuatProject | UC02 - Membuat Campaign Penggalangan Donasi, UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC07 - Mendaftar Sebagai Volunteer |
+| C11 - AdminSistem | UC04 - Meninjau dan Memverifikasi Project |
 | C12 - Akun | UC01 - Melakukan Pendaftaran dan Autentikasi |
-| C13 - SesiLogin | UC01 - Melakukan Pendaftaran dan Autentikasi |
+| C13 - SesiLogin | UC01 - Melakukan Pendaftaran dan Autentikasi, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
 | C14 - FormPendaftaranView | UC01 - Melakukan Pendaftaran dan Autentikasi |
 | C15 - FormLoginView | UC01 - Melakukan Pendaftaran dan Autentikasi |
 | C16 - AutentikasiController | UC01 - Melakukan Pendaftaran dan Autentikasi |
-| C10 - PembuatProject | UC02 - Membuat Campaign Penggalangan Donasi, UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project |
-| C03 - Campaign | UC02 - Membuat Campaign Penggalangan Donasi, UC04 - Meninjau dan Memverifikasi Project |
 | C17 - FormCampaignView | UC02 - Membuat Campaign Penggalangan Donasi |
-| C18 - DetailCampaignView | UC02 - Membuat Campaign Penggalangan Donasi |
+| C18 - DetailCampaignView | UC02 - Membuat Campaign Penggalangan Donasi, UC05 - Mencari dan Menelusuri Project |
 | C19 - CampaignController | UC02 - Membuat Campaign Penggalangan Donasi |
-| C02 - Project | UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project |
 | C20 - FormProjectView | UC03 - Membuat Project Aksi Iklim |
-| C21 - DetailProjectView | UC03 - Membuat Project Aksi Iklim |
+| C21 - DetailProjectView | UC03 - Membuat Project Aksi Iklim, UC05 - Mencari dan Menelusuri Project |
 | C22 - ProjectController | UC03 - Membuat Project Aksi Iklim |
-| C11 - AdminSistem | UC04 - Meninjau dan Memverifikasi Project |
 | C23 - PengajuanView | UC04 - Meninjau dan Memverifikasi Project |
 | C24 - DaftarPengajuanView | UC04 - Meninjau dan Memverifikasi Project |
 | C25 - DetailPengajuanView | UC04 - Meninjau dan Memverifikasi Project |
 | C26 - VerifikasiController | UC04 - Meninjau dan Memverifikasi Project |
-| ... | *[Baris untuk kelas UC05–UC10]* |
-
-> Catatan pengisian: baris C00–C26 di atas sudah final untuk UC01–UC04. Yang mengerjakan UC05–UC07 dan UC08–UC10 tinggal melanjutkan penomoran dari C27 untuk setiap kelas *boundary* dan *control* baru, dan memakai kembali ID kelas analisis (C01, C04–C09) untuk kelas *entity*-nya.
+| C27 - FormPencarianView | UC05 - Mencari dan Menelusuri Project |
+| C28 - PencarianController | UC05 - Mencari dan Menelusuri Project |
+| C29 - FormPetaWilayahView | UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
+| C30 - FormDonasiView | UC06 - Melakukan Transaksi Donasi |
+| C31 - DetailBuktiTransaksiView | UC06 - Melakukan Transaksi Donasi |
+| C32 - DonasiController | UC06 - Melakukan Transaksi Donasi |
+| C33 - FormPendaftaranRelawanView | UC07 - Mendaftar Sebagai Volunteer |
+| C34 - RelawanController | UC07 - Mendaftar Sebagai Volunteer |
+| ... | *[Baris untuk kelas UC08–UC10 oleh Sahla]* |
