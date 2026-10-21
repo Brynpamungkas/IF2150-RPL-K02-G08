@@ -871,18 +871,18 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
 | ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
 | :--- | :--- | :--- | :--- |
-| C00 | PenggunaUmum | `idPengguna`, `nama`, `peran` | `buatAkun()` |
+| C00 | PenggunaUmum | `idPengguna`, `nama`, `peran`, `email` | `buatAkun()`, `bukaKatalog()` |
 | C12 | Akun | `idAkun`, `email`, `passwordHash`, `statusAkun`, `tanggalDibuat` | `validasiKelengkapanInput()`, `cekKetersediaanEmail()`, `simpanAkun()`, `validasiKredensial()` |
 | C13 | SesiLogin | `idSesi`, `idPengguna`, `waktuMulai`, `waktuKedaluwarsa`, `statusSesi` | `buatSesi()`, `cekStatusLogin()`, `akhiriSesi()` |
 | C14 | FormPendaftaranView | - | `pilihMenuPendaftaran()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
 | C15 | FormLoginView | - | `isiKredensial()`, `kirimKredensial()`, `tampilkanPesanKesalahan()`, `arahkanKeHalamanUtama()` |
 | C16 | AutentikasiController | `pesanKesalahan` | `daftarAkun()`, `login()`, `getPesanKesalahan()` |
-| C10 | PembuatProject | `idPembuat`, `nama`, `email` | `buatCampaign()`, `buatProject()`, `ajukanVerifikasi()` |
-| C03 | Campaign | `idCampaign`, `judul`, `deskripsi`, `targetNominal`, `periodeMulai`, `periodeSelesai`, `status`, `alasanPenolakan` | `validasiData()`, `validasiTarget()`, `validasiPeriode()`, `simpanCampaign()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()` |
+| C10 | PembuatProject | `idPembuat`, `nama`, `email` | `buatCampaign()`, `buatProject()`, `ajukanVerifikasi()`, `terimaNotifikasiPendaftaran()`, `tinjauPendaftaran()` |
+| C03 | Campaign | `idCampaign`, `judul`, `deskripsi`, `targetNominal`, `periodeMulai`, `periodeSelesai`, `status`, `alasanPenolakan`, `kebutuhan`, `lokasi`, `danaTerkumpul` | `validasiData()`, `validasiTarget()`, `validasiPeriode()`, `simpanCampaign()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()`, `cekStatusCampaign()`, `tambahDana()` |
 | C17 | FormCampaignView | - | `pilihMenuBuatCampaign()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
 | C18 | DetailCampaignView | - | `bukaHalamanCampaign()`, `tampilkanDetail()` |
 | C19 | CampaignController | `pesanKesalahan` | `buatCampaign()`, `getPesanKesalahan()`, `getDetailCampaign()` |
-| C02 | Project | `idProject`, `nama`, `deskripsi`, `lokasi`, `tujuan`, `kebutuhanDana`, `kebutuhanLogistik`, `kriteriaVolunteer`, `status`, `alasanPenolakan` | `setInformasi()`, `setKebutuhan()`, `validasiData()`, `validasiKebutuhan()`, `simpanProject()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()` |
+| C02 | Project | `idProject`, `nama`, `deskripsi`, `lokasi`, `tujuan`, `kebutuhanDana`, `kebutuhanLogistik`, `kriteriaVolunteer`, `status`, `alasanPenolakan`, `danaTerkumpul`, `kuotaRelawan`, `statusPendaftaranProject`, `idPembuat`, `milestone`, `statusPelaksanaan`, `dokumentasiProgres`, `timestampPembaruan` | `setInformasi()`, `setKebutuhan()`, `validasiData()`, `validasiKebutuhan()`, `simpanProject()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()`, `cekStatusProject()`, `tambahDana()`, `cekKuota()`, `cekStatusPendaftaran()`, `cekAdaPendaftar()`, `getDaftarPendaftar()`, `validasiHakAkses()`, `validasiDokumentasi()`, `simpanPembaruanProgres()`, `catatTimestamp()`, `getRiwayatProgres()`, `getDetailProgres()` |
 | C20 | FormProjectView | - | `pilihMenuBuatProject()`, `tampilkanFormulir()`, `isiInformasiProject()`, `tampilkanInformasi()`, `isiKebutuhan()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
 | C21 | DetailProjectView | - | `bukaHalamanProject()`, `tampilkanDetail()` |
 | C22 | ProjectController | `pesanKesalahan` | `simpanInformasiDasar()`, `perbaruiInformasi()`, `isiKebutuhan()`, `kirimProject()`, `getPesanKesalahan()`, `getDetailProject()` |
@@ -891,7 +891,21 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 | C24 | DaftarPengajuanView | - | `bukaDaftarPengajuan()`, `tampilkanDaftar()`, `pilihPengajuan()` |
 | C25 | DetailPengajuanView | `idPengajuan`, `jenis` | `tampilkanDetail()`, `setujui()`, `tolak()`, `tampilkanStatus()` |
 | C26 | VerifikasiController | - | `ajukanVerifikasi()`, `getDaftarMenunggu()`, `getDetailPengajuan()`, `setujuiPengajuan()`, `tolakPengajuan()` |
-| ... | *[Kelas perancangan UC05–UC07 dari Bryan]* | ... | ... |
+| C01 | Katalog | `kataKunci`, `filter` | `terimaKataKunci()`, `terapkanFilter()`, `cari()`, `tampilkanHasil()` |
+| C04 | Donatur | `idDonatur`, `nama`, `email`, `saldo` | `getSaldo()`, `kurangiSaldo()` |
+| C05 | PetaWilayah | `koordinatPusat`, `radius` | `tampilkanSebaranProject()`, `tampilkanSebaranCampaign()` |
+| C06 | TransaksiDonasi | `idTransaksi`, `idDonatur`, `idTujuan`, `jenisTujuan`, `idempotencyKey`, `nominal`, `tanggal`, `statusTransaksi` | `validasiNominal()`, `validasiDuplikasi()`, `prosesDonasi()`, `buatTransaksi()`, `getRiwayatTransaksi()`, `getDetailTransaksi()` |
+| C07 | BuktiTransaksi | `idBukti`, `rincian` | `cetakBukti()`, `tampilkanBukti()` |
+| C08 | Volunteer | `idVolunteer`, `nama`, `email` | `isiFormulir()`, `kirimPendaftaran()` |
+| C09 | PendaftaranRelawan | `idPendaftaran`, `idVolunteer`, `idProject`, `dataDiri`, `keahlian`, `pengalaman`, `ketersediaanJadwal`, `statusPendaftaran` | `buatPendaftaran()`, `validasiKelengkapan()`, `cekPendaftaranGanda()`, `simpanPendaftaran()`, `getDetailPendaftar()`, `perbaruiStatus()` |
+| C27 | FormPencarianView | - | `bukaKatalog()`, `masukkanKriteria()`, `tampilkanHasil()`, `tampilkanPesanKesalahan()` |
+| C28 | PencarianController | `pesanKesalahan` | `getDaftarDipublikasikan()`, `cari()`, `getDetailProject()`, `getDetailCampaign()`, `getPesanKesalahan()` |
+| C29 | FormPetaWilayahView | - | `bukaPeta()`, `tampilkanPeta()` |
+| C30 | FormDonasiView | - | `tekanDonasi()`, `tampilkanFormulir()`, `isiNominal()`, `konfirmasiPembayaran()`, `tampilkanPesanKesalahan()` |
+| C31 | DetailBuktiTransaksiView | - | `bukaBukti()`, `tampilkanBukti()` |
+| C32 | DonasiController | `pesanKesalahan` | `getSebaran()`, `bukaFormDonasi()`, `konfirmasiDonasi()`, `getBuktiTransaksi()`, `getPesanKesalahan()` |
+| C33 | FormPendaftaranRelawanView | - | `tekanDaftar()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimPendaftaran()`, `tampilkanPesanKesalahan()`, `tampilkanStatus()` |
+| C34 | RelawanController | `pesanKesalahan` | `getSebaranProject()`, `bukaFormPendaftaran()`, `daftarRelawan()`, `getPesanKesalahan()`, `getDaftarPendaftar()`, `buatKeputusan()`, `getStatusPendaftaran()` |
 | ... | *[Kelas perancangan UC08–UC10 dari Sahla]* | ... | ... |
 
 <br>

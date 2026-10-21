@@ -978,7 +978,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="660" y="1154" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n56" value="saldo tersedia" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n56" value="saldo" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="670" y="1129" width="530" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n57" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -1235,7 +1235,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="660" y="2752" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n114" value="true, idTransaksi" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n114" value="idTransaksi" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="670" y="2727" width="530" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n115" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -1403,7 +1403,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="660" y="683" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n26" value="gagal: saldo tidak mencukupi" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n26" value="&quot;&quot; (saldo tidak mencukupi)" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="670" y="658" width="530" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n27" value="" style="html=1;rounded=0;endArrow=none;endFill=0;endSize=9;strokeColor=#000000;dashed=1;dashPattern=4 4;" parent="1" edge="1">
@@ -1472,7 +1472,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="660" y="1260" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n43" value="gagal: seluruh perubahan dibatalkan" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n43" value="&quot;&quot; (seluruh perubahan dibatalkan)" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="670" y="1235" width="530" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n44" value="critical" style="shape=umlFrame;whiteSpace=wrap;html=1;pointerEvents=0;width=70;height=24;fontFamily=Arial;fontSize=14;fontStyle=1;fillColor=none;strokeColor=#000000;" parent="1" vertex="1">
@@ -1487,7 +1487,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="385" y="1391" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n47" value="false" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n47" value="&quot;&quot;" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="395" y="1366" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n48" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -1631,7 +1631,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="385" y="845" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n26" value="false" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n26" value="&quot;&quot;" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="395" y="820" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n27" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -1742,7 +1742,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="385" y="478" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n18" value="gagal" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n18" value="null (campaign telah ditutup)" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="395" y="453" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n19" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -1862,7 +1862,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="385" y="535" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n20" value="false" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n20" value="&quot;&quot;" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="395" y="510" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n21" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -1958,7 +1958,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
         <mxCell id="n17" value="" style="line;strokeWidth=1;strokeColor=#000000;" parent="n15" vertex="1">
           <mxGeometry x="0" y="79" width="470" height="0" as="geometry" />
         </mxCell>
-        <mxCell id="n18" value="+ getSebaran(): List&lt;br&gt;+ bukaFormDonasi(idDonatur: String, idTujuan: String, jenisTujuan:&lt;br&gt;String): double&lt;br&gt;+ konfirmasiDonasi(idDonatur: String, idTujuan: String, jenisTujuan:&lt;br&gt;String, nominal: double, idempotencyKey: String): Boolean&lt;br&gt;+ getBuktiTransaksi(idTransaksi: String): String&lt;br&gt;+ getPesanKesalahan(): String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=4;overflow=visible;rotatable=0;whiteSpace=nowrap;html=1;fontFamily=Arial;fontSize=14;" parent="n15" vertex="1">
+        <mxCell id="n18" value="+ getSebaran(): List&lt;br&gt;+ bukaFormDonasi(idDonatur: String, idTujuan: String, jenisTujuan:&lt;br&gt;String): double [0..1]&lt;br&gt;+ konfirmasiDonasi(idDonatur: String, idTujuan: String, jenisTujuan:&lt;br&gt;String, nominal: double, idempotencyKey: String): String&lt;br&gt;+ getBuktiTransaksi(idTransaksi: String): String&lt;br&gt;+ getPesanKesalahan(): String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=4;overflow=visible;rotatable=0;whiteSpace=nowrap;html=1;fontFamily=Arial;fontSize=14;" parent="n15" vertex="1">
           <mxGeometry x="0" y="79" width="470" height="147" as="geometry" />
         </mxCell>
         <mxCell id="n19" value="«entity»&lt;br&gt;&lt;b&gt;SesiLogin&lt;/b&gt;" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=48;horizontalStack=0;resizeParent=0;resizeLast=0;collapsible=0;html=1;fontFamily=Arial;fontSize=14;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;swimlaneFillColor=#FFFFFF;" parent="1" vertex="1">
@@ -2241,7 +2241,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="0" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n78" value="KF15-KF18 dan KF26: prosesDonasi() menjalankan perubahan saldo, dana tujuan beserta persentase pencapaian target, dan pencatatan transaksi secara atomik; kegagalan me-rollback seluruh perubahan. validasiDuplikasi() bernilai true bila key sudah terdaftar. Tepat satu tujuan dana dipilih: Project atau Campaign (xor). Transaksi berhasil&lt;br&gt;memiliki satu BuktiTransaksi; transaksi yang tidak berhasil tidak menghasilkan bukti. Rincian transaksi memuat Donatur, tujuan, nominal, waktu, dan status (KF17). FormPetaWilayahView digunakan kembali pada UC07." style="shape=note;whiteSpace=wrap;html=1;size=12;fontFamily=Arial;fontSize=14;fillColor=#FFF9D6;strokeColor=#000000;align=left;spacing=8;" parent="1" vertex="1">
+        <mxCell id="n78" value="KF15-KF18 dan KF26: prosesDonasi() menjalankan perubahan saldo, dana tujuan beserta persentase pencapaian target, dan pencatatan transaksi secara atomik; kegagalan me-rollback seluruh perubahan. validasiDuplikasi() bernilai true bila key sudah terdaftar. Tepat satu tujuan dana dipilih: Project atau Campaign (xor). Transaksi berhasil&lt;br&gt;memiliki satu BuktiTransaksi; transaksi yang tidak berhasil tidak menghasilkan bukti. Rincian transaksi memuat Donatur, tujuan, nominal, waktu, dan status (KF17). FormPetaWilayahView digunakan kembali pada UC07." style="shape=note;whiteSpace=wrap;html=1;size=12;fontFamily=Arial;fontSize=14;fillColor=#FFF9D6;strokeColor=#000000;align=left;spacing=8;" parent="1" vertex="1" tooltip="konfirmasiDonasi() mengembalikan ID transaksi saat berhasil dan string kosong saat ditolak; bukaFormDonasi() mengembalikan saldo atau null bila donasi tidak dapat dibuka.">
           <mxGeometry x="40" y="2066" width="2170" height="54" as="geometry" />
         </mxCell>
       </root>
@@ -2418,7 +2418,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="660" y="793" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n41" value="formulir dapat ditampilkan" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n41" value="true" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="670" y="768" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n42" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -2575,7 +2575,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="660" y="1567" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n75" value="true, idPendaftaran" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n75" value="idPendaftaran" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="670" y="1542" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n76" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -2686,7 +2686,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="385" y="642" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n22" value="false" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n22" value="&quot;&quot;" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="395" y="617" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n23" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -2824,7 +2824,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="385" y="685" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n24" value="false" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
+        <mxCell id="n24" value="&quot;&quot;" style="text;html=1;strokeColor=none;fillColor=white;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=visible;fontFamily=Arial;fontSize=14;fontStyle=0;spacing=0;" parent="1" vertex="1">
           <mxGeometry x="395" y="660" width="255" height="22" as="geometry" />
         </mxCell>
         <mxCell id="n25" value="" style="html=1;rounded=0;endArrow=block;endFill=1;endSize=9;strokeColor=#000000;" parent="1" edge="1">
@@ -3113,7 +3113,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
         <mxCell id="n13" value="" style="line;strokeWidth=1;strokeColor=#000000;" parent="n11" vertex="1">
           <mxGeometry x="0" y="79" width="470" height="0" as="geometry" />
         </mxCell>
-        <mxCell id="n14" value="+ getSebaranProject(): List&lt;br&gt;+ bukaFormPendaftaran(idProject: String): Boolean&lt;br&gt;+ daftarRelawan(idVolunteer: String, idProject: String, dataDiri: String,&lt;br&gt;keahlian: String, pengalaman: String, ketersediaanJadwal: String):&lt;br&gt;Boolean&lt;br&gt;+ getPesanKesalahan(): String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=4;overflow=visible;rotatable=0;whiteSpace=nowrap;html=1;fontFamily=Arial;fontSize=14;" parent="n11" vertex="1">
+        <mxCell id="n14" value="+ getSebaranProject(): List&lt;br&gt;+ bukaFormPendaftaran(idProject: String): Boolean&lt;br&gt;+ daftarRelawan(idVolunteer: String, idProject: String, dataDiri: String,&lt;br&gt;keahlian: String, pengalaman: String, ketersediaanJadwal: String):&lt;br&gt;String&lt;br&gt;+ getPesanKesalahan(): String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=8;spacingRight=6;spacingTop=4;overflow=visible;rotatable=0;whiteSpace=nowrap;html=1;fontFamily=Arial;fontSize=14;" parent="n11" vertex="1">
           <mxGeometry x="0" y="79" width="470" height="128" as="geometry" />
         </mxCell>
         <mxCell id="n15" value="«entity»&lt;br&gt;&lt;b&gt;SesiLogin&lt;/b&gt;" style="swimlane;fontStyle=0;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=48;horizontalStack=0;resizeParent=0;resizeLast=0;collapsible=0;html=1;fontFamily=Arial;fontSize=14;whiteSpace=wrap;fillColor=#FFFFFF;strokeColor=#000000;swimlaneFillColor=#FFFFFF;" parent="1" vertex="1">
@@ -3330,7 +3330,7 @@ tidak mengubah bagian tersebut ataupun menambahkan lifeline lapisan arsitektur.
             <mxPoint x="0" y="0" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="n61" value="KF19-KF20: buatPendaftaran() menyiapkan objek; penyimpanan hanya dilakukan oleh simpanPendaftaran() setelah formulir lengkap, pasangan Volunteer-Project belum terdaftar, kuota tersedia, dan pendaftaran dibuka. Status awal pending; status accepted / rejected ditetapkan pada UC08. cekPendaftaranGanda() bernilai true bila sudah&lt;br&gt;terdaftar. Aturan kuota penuh / periode pendaftaran berakhir mengacu pada skenario alternatif 3 UC07. Terusan kepada Pembuat Project mengikuti operasi terimaNotifikasiPendaftaran() pada SKPL; diagram tidak menetapkan saluran notifikasi baru." style="shape=note;whiteSpace=wrap;html=1;size=12;fontFamily=Arial;fontSize=14;fillColor=#FFF9D6;strokeColor=#000000;align=left;spacing=8;" parent="1" vertex="1">
+        <mxCell id="n61" value="KF19-KF20: buatPendaftaran() menyiapkan objek; penyimpanan hanya dilakukan oleh simpanPendaftaran() setelah formulir lengkap, pasangan Volunteer-Project belum terdaftar, kuota tersedia, dan pendaftaran dibuka. Status awal pending; status accepted / rejected ditetapkan pada UC08. cekPendaftaranGanda() bernilai true bila sudah&lt;br&gt;terdaftar. Aturan kuota penuh / periode pendaftaran berakhir mengacu pada skenario alternatif 3 UC07. Terusan kepada Pembuat Project mengikuti operasi terimaNotifikasiPendaftaran() pada SKPL; diagram tidak menetapkan saluran notifikasi baru." style="shape=note;whiteSpace=wrap;html=1;size=12;fontFamily=Arial;fontSize=14;fillColor=#FFF9D6;strokeColor=#000000;align=left;spacing=8;" parent="1" vertex="1" tooltip="daftarRelawan() mengembalikan ID pendaftaran saat berhasil dan string kosong bila ditolak.">
           <mxGeometry x="40" y="1686" width="2170" height="54" as="geometry" />
         </mxCell>
       </root>
