@@ -683,14 +683,20 @@ Berkas sumber seluruh diagram UC05–UC07 yang dapat diedit di draw.io tersedia 
 
 ### 3.8.1 Identifikasi Kelas
 
-*[Sahla: satu paragraf pengantar, lalu isi tabel. Nama kelas perancangan memakai pola yang sama dengan UC01-UC04, yaitu Form…View / Detail…View untuk boundary, …Controller untuk control, dan nama kelas analisis apa adanya untuk entity.]*
+Realisasi UC08 memisahkan antarmuka pengelolaan pendaftar yang dipakai Pembuat Project dari antarmuka status pendaftaran yang dilihat Volunteer menjadi dua kelas *boundary*, yaitu `FormVolunteerManagementView` dan `DetailStatusPendaftaranView`. Keduanya berinteraksi dengan `RelawanController`, yaitu kelas *control* yang sudah dipakai pada UC07 dan kini juga mengoordinasikan peninjauan pendaftar serta pengambilan keputusan terima/tolak. Pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PembuatProject (C10) dan Volunteer (C08) berperan sebagai aktor sekaligus pemilik data, sehingga tindakan antarmukanya (membuka menu, meninjau, memilih keputusan, melihat instruksi) dipindahkan ke kelas *boundary*, sedangkan data pengguna tetap berada pada kelas *entity* `PembuatProject` dan `Volunteer`. `Project` menampung daftar pendaftaran yang masuk dan memeriksa apakah sudah ada pendaftar, sedangkan data formulir pendaftar beserta status keputusannya (`pending`, `accepted`, `rejected`) tetap menjadi tanggung jawab `PendaftaranRelawan` sesuai deskripsi C09. Setelah status diperbarui, `DetailStatusPendaftaranView` menampilkan hasil keputusan kepada Volunteer, disertai instruksi lokasi dan jadwal apabila pendaftaran diterima.
 
 Tabel 3.8. Identifikasi Kelas Use Case UC08
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| ... | *...* | *...* |
+| 1 | FormVolunteerManagementView | PembuatProject (C10), PendaftaranRelawan (C09) |
+| 2 | DetailStatusPendaftaranView | Volunteer (C08), PendaftaranRelawan (C09) |
+| 3 | RelawanController | PembuatProject (C10), PendaftaranRelawan (C09), Volunteer (C08) |
+| 4 | SesiLogin | SesiLogin (C13) |
+| 5 | PembuatProject | PembuatProject (C10) |
+| 6 | Project | Project (C02) |
+| 7 | PendaftaranRelawan | PendaftaranRelawan (C09) |
+| 8 | Volunteer | Volunteer (C08) |
 
 ### 3.8.2 Sequence Diagram
 
@@ -703,6 +709,8 @@ Tabel 3.8. Identifikasi Kelas Use Case UC08
 <i>Gambar 3.8.1. Sequence Diagram UC08 - Skenario Normal</i>
 </p>
 
+Pembuat Project memilih menu volunteer management pada `FormVolunteerManagementView`. `RelawanController` memeriksa status login melalui `SesiLogin.cekStatusLogin()`, lalu meminta `Project` memeriksa keberadaan pendaftar dengan `cekAdaPendaftar()` dan mengambil daftarnya dengan `getDaftarPendaftar()`. Detail setiap pendaftar (data diri, keahlian, pengalaman, dan ketersediaan jadwal) diambil dari `PendaftaranRelawan` melalui `getDetailPendaftar()` dan ditampilkan oleh `tampilkanDaftarPendaftar()`. Setelah meninjau data, Pembuat Project memilih keputusan terima atau tolak. `RelawanController` memanggil `buatKeputusan()`, yang meneruskan keputusan ke `PendaftaranRelawan.perbaruiStatus()` sehingga status berubah menjadi `accepted` atau `rejected`. Selanjutnya `DetailStatusPendaftaranView` menampilkan hasil keputusan kepada Volunteer, disertai instruksi lokasi dan jadwal apabila pendaftaran diterima.
+
 - **Skenario Alternatif 1: Belum Ada Pendaftar Volunteer**
 
 <p align="center">
@@ -711,6 +719,8 @@ Tabel 3.8. Identifikasi Kelas Use Case UC08
 <p align="center">
 <i>Gambar 3.8.2. Sequence Diagram UC08 - Belum Ada Pendaftar Volunteer</i>
 </p>
+
+Alur berjalan sama dengan skenario normal sampai pemeriksaan pendaftar. `cekAdaPendaftar()` pada `Project` mengembalikan `false`, sehingga `getDaftarPendaftar()` dan `perbaruiStatus()` tidak dipanggil. `FormVolunteerManagementView` menampilkan pesan bahwa belum ada pendaftar volunteer pada project tersebut melalui `tampilkanPesanBelumAdaPendaftar()`.
 
 ### 3.8.3 Diagram Kelas
 
@@ -730,14 +740,17 @@ Tabel 3.8. Identifikasi Kelas Use Case UC08
 
 ### 3.9.1 Identifikasi Kelas
 
-*[Sahla: satu paragraf pengantar, lalu isi tabel. Nama kelas perancangan memakai pola yang sama dengan UC01-UC04, yaitu Form…View / Detail…View untuk boundary, …Controller untuk control, dan nama kelas analisis apa adanya untuk entity.]*
+Realisasi UC09 memakai satu kelas *boundary*, yaitu `FormProgresProjectView`, yang menerima data milestone, status pelaksanaan, dan berkas dokumentasi dari Pembuat Project serta menampilkan pesan kesalahan atau notifikasi keberhasilan. `ProgresController` berperan sebagai kelas *control* yang mengoordinasikan pembukaan halaman, pemeriksaan hak akses, dan penyimpanan pembaruan. Pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PembuatProject (C10) berperan sebagai aktor sekaligus pemilik data, sehingga tindakan antarmukanya (membuka halaman, mengisi milestone, mengunggah dokumentasi) dipindahkan ke `FormProgresProjectView`, sedangkan data pengguna tetap berada pada kelas *entity* `PembuatProject`. Validasi hak akses, validasi format dan ukuran dokumentasi, penyimpanan pembaruan progres, serta pencatatan stempel waktu tetap menjadi tanggung jawab `Project` sesuai deskripsi C02. Peran Admin Sistem yang memastikan pengguna adalah Pembuat Project pada skenario diimplementasikan sebagai pemeriksaan otomatis `validasiHakAkses()` pada `Project`, sehingga tidak menjadi kelas tersendiri.
 
 Tabel 3.9. Identifikasi Kelas Use Case UC09
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| ... | *...* | *...* |
+| 1 | FormProgresProjectView | PembuatProject (C10), Project (C02) |
+| 2 | ProgresController | PembuatProject (C10), Project (C02) |
+| 3 | SesiLogin | SesiLogin (C13) |
+| 4 | PembuatProject | PembuatProject (C10) |
+| 5 | Project | Project (C02) |
 
 ### 3.9.2 Sequence Diagram
 
@@ -750,6 +763,8 @@ Tabel 3.9. Identifikasi Kelas Use Case UC09
 <i>Gambar 3.9.1. Sequence Diagram UC09 - Skenario Normal</i>
 </p>
 
+Pembuat Project membuka halaman pembaruan progres melalui `FormProgresProjectView`. `ProgresController` memeriksa status login melalui `SesiLogin.cekStatusLogin()`, kemudian meminta `Project` menjalankan `validasiHakAkses()` untuk memastikan pengguna adalah Pembuat Project dari project tersebut. Setelah lolos, `tampilkanFormulir()` menampilkan formulir pembaruan progres. Pembuat Project mengisi milestone dan status pelaksanaan, mengunggah dokumentasi, lalu mengirim formulir. `ProgresController` memanggil `validasiDokumentasi()` dan `simpanPembaruanProgres()` pada `Project`, lalu `catatTimestamp()` mencatat riwayat pembaruan beserta stempel waktunya dan menghubungkannya dengan project. `FormProgresProjectView` menampilkan notifikasi keberhasilan.
+
 - **Skenario Alternatif 1: Akses Ditolak (Bukan Pembuat Project)**
 
 <p align="center">
@@ -759,6 +774,8 @@ Tabel 3.9. Identifikasi Kelas Use Case UC09
 <i>Gambar 3.9.2. Sequence Diagram UC09 - Akses Ditolak (Bukan Pembuat Project)</i>
 </p>
 
+Alur berjalan sama dengan skenario normal sampai pemeriksaan hak akses. `validasiHakAkses()` pada `Project` mengembalikan `false`, sehingga `tampilkanFormulir()` dan `simpanPembaruanProgres()` tidak dipanggil dan tidak ada data progres yang berubah. `FormProgresProjectView` menampilkan pesan bahwa tindakan tidak diizinkan melalui `tampilkanPesanKesalahan()`.
+
 - **Skenario Alternatif 2: Gagal Mengunggah Dokumentasi Progres**
 
 <p align="center">
@@ -767,6 +784,8 @@ Tabel 3.9. Identifikasi Kelas Use Case UC09
 <p align="center">
 <i>Gambar 3.9.3. Sequence Diagram UC09 - Gagal Mengunggah Dokumentasi Progres</i>
 </p>
+
+Alur berjalan sama dengan skenario normal sampai pengiriman formulir. `validasiDokumentasi()` pada `Project` mengembalikan `false` karena format atau ukuran berkas tidak valid, atau pengunggahan terputus akibat kesalahan jaringan. `simpanPembaruanProgres()` dan `catatTimestamp()` tidak dipanggil, sehingga pembaruan progres dibatalkan dan dokumen tidak tersimpan. `ProgresController` menyediakan pesan melalui `getPesanKesalahan()`, lalu `FormProgresProjectView` menampilkannya sebagai pesan kesalahan unggah berkas.
 
 ### 3.9.3 Diagram Kelas
 
@@ -786,14 +805,19 @@ Tabel 3.9. Identifikasi Kelas Use Case UC09
 
 ### 3.10.1 Identifikasi Kelas
 
-*[Sahla: satu paragraf pengantar, lalu isi tabel. Nama kelas perancangan memakai pola yang sama dengan UC01-UC04, yaitu Form…View / Detail…View untuk boundary, …Controller untuk control, dan nama kelas analisis apa adanya untuk entity.]*
+Realisasi UC10 memisahkan antarmuka daftar riwayat dari antarmuka detail riwayat menjadi dua kelas *boundary*. `FormRiwayatView` menampilkan menu dan daftar riwayat secara kronologis atau pesan bahwa riwayat belum tersedia, sedangkan `DetailRiwayatView` menampilkan rincian transaksi donasi (nominal, waktu, status) atau rincian laporan progres project. Keduanya berinteraksi dengan `RiwayatController` sebagai kelas *control* yang mengoordinasikan pengambilan riwayat dan detail, dengan pemeriksaan status login tetap menjadi tanggung jawab `SesiLogin`. Kelas analisis PenggunaUmum (C00) tetap dipertahankan sebagai kelas *entity* untuk data pengguna (termasuk perannya sebagai Pembuat Project, Donatur, atau Volunteer), sementara tindakan membuka menu riwayat ditangani oleh antarmuka. Catatan transaksi donasi tetap berada pada `TransaksiDonasi` sesuai deskripsi C06, sedangkan riwayat pembaruan progres (milestone dan status pelaksanaan) tetap berada pada `Project` sesuai deskripsi C02.
 
 Tabel 3.10. Identifikasi Kelas Use Case UC10
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL]* |
-| ... | *...* | *...* |
+| 1 | FormRiwayatView | PenggunaUmum (C00) |
+| 2 | DetailRiwayatView | TransaksiDonasi (C06), Project (C02) |
+| 3 | RiwayatController | PenggunaUmum (C00), TransaksiDonasi (C06), Project (C02) |
+| 4 | SesiLogin | SesiLogin (C13) |
+| 5 | PenggunaUmum | PenggunaUmum (C00) |
+| 6 | TransaksiDonasi | TransaksiDonasi (C06) |
+| 7 | Project | Project (C02) |
 
 ### 3.10.2 Sequence Diagram
 
@@ -806,6 +830,8 @@ Tabel 3.10. Identifikasi Kelas Use Case UC10
 <i>Gambar 3.10.1. Sequence Diagram UC10 - Skenario Normal</i>
 </p>
 
+Pengguna Umum membuka menu riwayat melalui `FormRiwayatView`. `RiwayatController` memeriksa status login melalui `SesiLogin.cekStatusLogin()`, lalu mengambil riwayat transaksi dari `TransaksiDonasi.getRiwayatTransaksi()` dan riwayat pembaruan progres dari `Project.getRiwayatProgres()`. Hasilnya ditampilkan oleh `tampilkanDaftarRiwayat()` dalam urutan kronologis. Ketika Pengguna Umum memilih salah satu entri, `RiwayatController` memanggil `getDetailTransaksi()` pada `TransaksiDonasi` atau `getDetailProgres()` pada `Project` sesuai jenis entri, dan `DetailRiwayatView` menampilkan rincian transaksi atau rincian laporan progres.
+
 - **Skenario Alternatif 1: Riwayat Belum Tersedia**
 
 <p align="center">
@@ -814,6 +840,8 @@ Tabel 3.10. Identifikasi Kelas Use Case UC10
 <p align="center">
 <i>Gambar 3.10.2. Sequence Diagram UC10 - Riwayat Belum Tersedia</i>
 </p>
+
+Alur berjalan sama dengan skenario normal sampai pengambilan riwayat. `getRiwayatTransaksi()` dan `getRiwayatProgres()` tidak mengembalikan data karena pengguna belum pernah berdonasi, menjadi volunteer, atau membuat project. `FormRiwayatView` menampilkan pesan bahwa riwayat belum tersedia melalui `tampilkanPesanRiwayatKosong()`, dan `DetailRiwayatView` tidak ditampilkan.
 
 ### 3.10.3 Diagram Kelas
 
