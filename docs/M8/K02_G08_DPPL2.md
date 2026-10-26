@@ -345,7 +345,7 @@ Tabel 3.2. Identifikasi Kelas Use Case UC02
 ### 3.2.3 Diagram Kelas
 
 <p align="center">
-<img alt="Diagram Kelas UC02" src="./assets/diagram/class-uc02.png" width="50%">
+<img alt="Diagram Kelas UC02" src="./assets/diagram/class-uc02-fix.png" width="50%">
 </p>
 <p align="center">
 <i>Gambar 3.2.4. Diagram Kelas Membuat Campaign Penggalangan Donasi (UC02)</i>
@@ -404,7 +404,7 @@ Tabel 3.3. Identifikasi Kelas Use Case UC03
 ### 3.3.3 Diagram Kelas
 
 <p align="center">
-<img alt="Diagram Kelas UC03" src="./assets/diagram/class-uc03.png" width="50%">
+<img alt="Diagram Kelas UC03" src="./assets/diagram/class-uc03-fix.png" width="50%">
 </p>
 <p align="center">
 <i>Gambar 3.3.4. Diagram Kelas Membuat Project Aksi Iklim (UC03)</i>
@@ -458,7 +458,7 @@ Tabel 3.4. Identifikasi Kelas Use Case UC04
 ### 3.4.3 Diagram Kelas
 
 <p align="center">
-<img alt="Diagram Kelas UC04" src="./assets/diagram/class-uc04.png" width="50%">
+<img alt="Diagram Kelas UC04" src="./assets/diagram/class-uc04-fix.png" width="50%">
 </p>
 <p align="center">
 <i>Gambar 3.4.3. Diagram Kelas Meninjau dan Memverifikasi Project (UC04)</i>
