@@ -934,66 +934,331 @@ Tabel 4.2. Catatan Tipe dan Nilai Domain pada Tabel 4.1
 
 # BAB 5: Perancangan Rinci Kelas
 
-Bagian ini diisi dengan daftar seluruh kelas dalam tabel berikut:
+Bagian ini merinci seluruh kelas perancangan menjadi daftar
+operasi dan atribut beserta *visibility*-nya, lalu menuliskan algoritma untuk
+operasi yang memuat aturan bisnis atau mengakses basis data. Tipe data pada
+tabel atribut ditulis dalam notasi TypeScript sesuai bahasa pemrograman yang
+ditetapkan pada Tabel 2.1, dengan pemetaan dari notasi diagram kelas mengikuti
+Tabel 4.2.
 
 Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 | :--- | :--- | :--- |
-| 1 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL atau -]* |
-| 2 | *[Nama kelas perancangan]* | *[Nama kelas analisis pada SKPL atau -]* |
+| 1 | PenggunaUmum (C00) | PenggunaUmum (C00) |
+| 2 | Akun (C12) | Akun (C12) |
+| 3 | SesiLogin (C13) | SesiLogin (C13) |
+| 4 | FormPendaftaranView (C14) | PenggunaUmum (C00) |
+| 5 | FormLoginView (C15) | PenggunaUmum (C00) |
+| 6 | AutentikasiController (C16) | PenggunaUmum (C00) |
+| 7 | PembuatProject (C10) | PembuatProject (C10) |
+| 8 | Campaign (C03) | Campaign (C03) |
+| 9 | FormCampaignView (C17) | PembuatProject (C10) |
+| 10 | DetailCampaignView (C18) | Campaign (C03) |
+| 11 | CampaignController (C19) | PembuatProject (C10), Campaign (C03) |
+| 12 | Project (C02) | Project (C02) |
+| 13 | FormProjectView (C20) | PembuatProject (C10) |
+| 14 | DetailProjectView (C21) | Project (C02) |
+| 15 | ProjectController (C22) | PembuatProject (C10), Project (C02) |
+| 16 | AdminSistem (C11) | AdminSistem (C11) |
+| 17 | PengajuanView (C23) | PembuatProject (C10) |
+| 18 | DaftarPengajuanView (C24) | AdminSistem (C11) |
+| 19 | DetailPengajuanView (C25) | AdminSistem (C11) |
+| 20 | VerifikasiController (C26) | PembuatProject (C10), AdminSistem (C11) |
+| 21 | Katalog (C01) | Katalog (C01) |
+| 22 | FormPencarianView (C27) | PenggunaUmum (C00), Katalog (C01) |
+| 23 | PencarianController (C28) | PenggunaUmum (C00), Katalog (C01) |
 | ... | *...* | *...* |
 
-Untuk **setiap kelas**, identifikasi operasi berdasarkan tanggung jawab kelas beserta *visibility*-nya, serta atribut beserta *visibility* dan tipenya. Buat subbab tersendiri untuk setiap kelas.
-
-## 5.1 Kelas [Nama Kelas 1]
-
-**Nama Kelas:** *[Nama kelas]*  
-**ID Kelas:** *[ID kelas]*
-
-Tabel 5.1.1. Operasi Kelas [Nama Kelas 1]
-
+## 5.1 Kelas PenggunaUmum
+ 
+**Nama Kelas:** PenggunaUmum  
+**ID Kelas:** C00
+ 
+Tabel 5.1.a. Operasi Kelas PenggunaUmum
+ 
 | Nama Operasi | Visibility (private, public) | Keterangan |
 | :--- | :--- | :--- |
-| *[Signature operasi, termasuk parameter dan tipe kembalian]* | *[Visibility]* | *[Tanggung jawab operasi]* |
-| *...* | *...* | *...* |
-
-Tabel 5.1.2. Atribut Kelas [Nama Kelas 1]
-
+| `buatAkun(nama: String, email: String, password: String): Akun` | public | Membentuk objek Akun baru dari nama, email, dan password yang diisi pengguna. |
+| `bukaKatalog(): void` | public | Membuka halaman katalog kegiatan bagi pengguna. |
+| `bukaMenuRiwayat(): void` | public | Membuka halaman riwayat transaksi dan progres milik pengguna. |
+ 
+Tabel 5.1.b. Atribut Kelas PenggunaUmum
+ 
 | Nama Atribut | Visibility (private, public) | Tipe |
 | :--- | :--- | :--- |
-| *[Nama atribut]* | *[Visibility]* | *[Tipe sesuai bahasa pemrograman yang digunakan]* |
-| *...* | *...* | *...* |
-
-### 5.1.1 Algoritma/Query
-
-Bagian ini diisi untuk kerangka algoritma proses yang dianggap cukup penting. Algoritma dapat dituliskan sebagai *pseudocode*. Implementasi *skeleton code* juga dapat digunakan untuk kelas yang sudah terdefinisi pada bahasa pemrograman tertentu.
-
-**Nama Kelas:** *[Nama kelas]*  
-**Nama Operasi:** *[Signature operasi]*  
-**ID Algoritma:** *[Algo-001]*
-
+| `idPengguna` | private | `string` |
+| `nama` | private | `string` |
+| `email` | private | `string` |
+| `peran` | private | `string` |
+ 
+## 5.2 Kelas Akun
+ 
+**Nama Kelas:** Akun  
+**ID Kelas:** C12
+ 
+Tabel 5.2.a. Operasi Kelas Akun
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `validasiKelengkapanInput(nama: String, email: String, password: String): Boolean` | public | Memastikan nama, email, dan password terisi serta memenuhi format yang ditetapkan. |
+| `cekKetersediaanEmail(email: String): Boolean` | public | Memeriksa apakah email belum dipakai akun lain (KF02). Lihat Algo-001. |
+| `simpanAkun(): Boolean` | public | Menyimpan akun baru dengan password yang sudah di-hash (KF01, KF03). Lihat Algo-002. |
+| `validasiKredensial(email: String, password: String): Boolean` | public | Memverifikasi email dan password saat login. Lihat Algo-003. |
+ 
+Tabel 5.2.b. Atribut Kelas Akun
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idAkun` | private | `string` |
+| `email` | private | `string` |
+| `passwordHash` | private | `string` |
+| `statusAkun` | private | `string` |
+| `tanggalDibuat` | private | `Date` |
+ 
+### 5.2.1 Algoritma/Query
+ 
+**Nama Kelas:** Akun  
+**Nama Operasi:** `+ cekKetersediaanEmail(email: String): Boolean`  
+**ID Algoritma:** Algo-001
+ 
 ```text
-[Tuliskan pseudocode algoritma operasi di sini.]
+FUNCTION cekKetersediaanEmail(email: String) -> Boolean
+    {true bila email belum dipakai akun lain (KF02).}
+ 
+    emailNormal <- toLowerCase(trim(email))
+ 
+    IF emailNormal = "" OR NOT cocokPolaEmail(emailNormal) THEN
+        LEMPAR GalatValidasi("Format email tidak valid")
+    ENDIF
+ 
+    jumlah <- jalankanQuery(Q-001, emailNormal)
+    RETURN jumlah = 0
+ENDFUNCTION
 ```
-
-Jika operasi mengacu pada query tertentu, lengkapi tabel berikut. 
-
-Tabel 5.1.1. Query Operasi [Nama Operasi]
-
+ 
+Email dinormalkan menjadi huruf kecil sebelum diperiksa agar `Budi@mail.com` dan
+`budi@mail.com` tidak menjadi dua akun berbeda. Hasil `false` diterjemahkan
+`AutentikasiController` menjadi pesan "Email sudah terdaftar". Kolom `email`
+diberi *unique index* sehingga pemeriksaan ini tetap aman bila dua pendaftaran
+dikirim bersamaan; galat *duplicate key* pada Algo-002 menjadi lapis pengaman
+terakhir.
+ 
+Tabel 5.2.1. Query Operasi cekKetersediaanEmail()
+ 
 | No Query | Query | Keterangan |
 | :--- | :--- | :--- |
-| *[Q-001]* | *[Tuliskan query]* | *[Fungsi query]* |
-| *...* | *...* | *...* |
+| Q-001 | `SELECT COUNT(*) AS jumlah FROM akun WHERE email = ?;` | Menghitung akun yang sudah memakai email tersebut. Hasil 0 berarti email tersedia. |
+ 
+### 5.2.2 Algoritma/Query
+ 
+**Nama Kelas:** Akun  
+**Nama Operasi:** `+ simpanAkun(): Boolean`  
+**ID Algoritma:** Algo-002
+ 
+```text
+FUNCTION simpanAkun() -> Boolean
+    {Menyimpan akun baru dengan password ter-hash (KF01, KF03, B06).}
+ 
+    {passwordSementara hanya hidup di memori sejak PenggunaUmum.buatAkun()
+      dan tidak pernah menjadi kolom basis data.}
+    IF this.passwordSementara = NULL THEN
+        LEMPAR GalatValidasi("Password wajib diisi")
+    ENDIF
+ 
+    this.passwordHash      <- bcryptHash(this.passwordSementara, costFactor = 12)
+    this.passwordSementara <- NULL        {dihapus segera setelah di-hash}
+ 
+    this.idAkun        <- buatUUID()
+    this.statusAkun    <- "aktif"
+    this.tanggalDibuat <- waktuSekarang()
+ 
+    TRY
+        jalankanQuery(Q-002, this.idAkun, this.pemilik.idPengguna, this.email,
+                             this.passwordHash, this.statusAkun, this.tanggalDibuat)
+    CATCH galatKunciGanda
+        RETURN false
+    ENDTRY
+ 
+    RETURN true
+ENDFUNCTION
+```
+ 
+Password tidak pernah disimpan maupun dicatat dalam bentuk aslinya. `costFactor`
+12 dipilih karena bcrypt dengan nilai tersebut masih di bawah satu detik pada
+*runtime* Node.js 22, sehingga tidak melanggar batas waktu tanggap 3 detik pada
+Tabel 1.1, namun cukup lambat untuk menghambat serangan *brute force*. Blok
+`CATCH galatKunciGanda` menangani kasus dua pendaftaran beremail sama yang lolos
+Algo-001 karena dikirim pada saat yang hampir bersamaan. `this.pemilik` adalah
+sisi `PenggunaUmum` dari relasi komposisi pada Gambar 4.1.
+ 
+Tabel 5.2.2. Query Operasi simpanAkun()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-002 | `INSERT INTO akun (id_akun, id_pengguna, email, password_hash, status_akun, tanggal_dibuat) VALUES (?, ?, ?, ?, ?, ?);` | Menyimpan satu baris akun baru. Kolom `email` memiliki *unique index*. |
+ 
+### 5.2.3 Algoritma/Query
+ 
+**Nama Kelas:** Akun  
+**Nama Operasi:** `+ validasiKredensial(email: String, password: String): Boolean`  
+**ID Algoritma:** Algo-003
+ 
+```text
+FUNCTION validasiKredensial(email: String, password: String) -> Boolean
+    {Memverifikasi kredensial login (KF01, KF03).}
+ 
+    emailNormal <- toLowerCase(trim(email))
+    baris       <- jalankanQuery(Q-003, emailNormal)
+ 
+    IF baris = KOSONG THEN
+        {Hash tiruan tetap diverifikasi agar lama prosesnya sama dengan email
+          yang terdaftar, sehingga email yang sudah dipakai tidak dapat ditebak
+          dari selisih waktu tanggapan.}
+        bcryptVerify(password, HASH_TIRUAN)
+        RETURN false
+    ENDIF
+ 
+    IF baris.status_akun <> "aktif" THEN
+        RETURN false
+    ENDIF
+ 
+    IF NOT bcryptVerify(password, baris.password_hash) THEN
+        RETURN false
+    ENDIF
+ 
+    this.idAkun       <- baris.id_akun
+    this.email        <- baris.email
+    this.passwordHash <- baris.password_hash
+    this.statusAkun   <- baris.status_akun
+    RETURN true
+ENDFUNCTION
+```
+ 
+Ketiga jalur kegagalan sengaja mengembalikan `false` tanpa membedakan
+penyebabnya, dan `AutentikasiController` menampilkan satu pesan yang sama untuk
+semuanya, yaitu "Email atau password tidak valid". Membedakan "email tidak
+terdaftar" dari "password salah" akan memberi tahu penyerang email mana yang
+terdaftar di KlimPooL.
+ 
+Tabel 5.2.3. Query Operasi validasiKredensial()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-003 | `SELECT id_akun, id_pengguna, email, password_hash, status_akun FROM akun WHERE email = ?;` | Mengambil hash dan status akun untuk dibandingkan di sisi aplikasi. Password tidak pernah dibandingkan di dalam query. |
+ 
+## 5.3 Kelas SesiLogin
+ 
+**Nama Kelas:** SesiLogin  
+**ID Kelas:** C13
+ 
+Tabel 5.3.a. Operasi Kelas SesiLogin
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `buatSesi(idPengguna: String): SesiLogin` | public | Membuat sesi login baru beserta waktu kedaluwarsanya (KF04). Lihat Algo-004. |
+| `cekStatusLogin(idSesi: String): Boolean` | public | Memastikan pengguna masih berada dalam sesi aktif (KF04). Lihat Algo-005. |
+| `akhiriSesi(): void` | public | Menutup sesi pengguna dan mengubah statusnya menjadi berakhir. |
+ 
+Tabel 5.3.b. Atribut Kelas SesiLogin
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idSesi` | private | `string` |
+| `idPengguna` | private | `string` |
+| `waktuMulai` | private | `Date` |
+| `waktuKedaluwarsa` | private | `Date` |
+| `statusSesi` | private | `string` |
+ 
+### 5.3.1 Algoritma/Query
+ 
+**Nama Kelas:** SesiLogin  
+**Nama Operasi:** `+ buatSesi(idPengguna: String): SesiLogin`  
+**ID Algoritma:** Algo-004
+ 
+```text
+FUNCTION buatSesi(idPengguna: String) -> SesiLogin
+    {Membuat sesi login baru setelah kredensial terverifikasi (KF04).}
+ 
+    sesi <- SesiLogin BARU
+    sesi.idSesi           <- buatTokenAcak(32)      {32 byte dari CSPRNG}
+    sesi.idPengguna       <- idPengguna
+    sesi.waktuMulai       <- waktuSekarang()
+    sesi.waktuKedaluwarsa <- sesi.waktuMulai + DURASI_SESI
+    sesi.statusSesi       <- "aktif"
+ 
+    jalankanQuery(Q-004, sesi.idSesi, sesi.idPengguna, sesi.waktuMulai,
+                         sesi.waktuKedaluwarsa, sesi.statusSesi)
+    RETURN sesi
+ENDFUNCTION
+```
+ 
+`DURASI_SESI` ditetapkan 24 jam. `idSesi` dibangkitkan dari pembangkit acak
+kriptografis, bukan dari nomor urut atau dari `idPengguna`, agar tidak dapat
+ditebak. Sesi lama milik pengguna yang sama tidak dihapus, sehingga satu
+pengguna boleh login dari lebih dari satu peramban sekaligus.
+ 
+Tabel 5.3.1. Query Operasi buatSesi()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-004 | `INSERT INTO sesi_login (id_sesi, id_pengguna, waktu_mulai, waktu_kedaluwarsa, status_sesi) VALUES (?, ?, ?, ?, ?);` | Menyimpan sesi baru berstatus `aktif`. |
+ 
+### 5.3.2 Algoritma/Query
+ 
+**Nama Kelas:** SesiLogin  
+**Nama Operasi:** `+ cekStatusLogin(idSesi: String): Boolean`  
+**ID Algoritma:** Algo-005
+ 
+```text
+FUNCTION cekStatusLogin(idSesi: String) -> Boolean
+    {Dipanggil setiap kali pengguna mengakses fitur yang butuh login (KF04).}
+ 
+    IF idSesi = NULL OR idSesi = "" THEN
+        RETURN false
+    ENDIF
+ 
+    baris <- jalankanQuery(Q-005, idSesi)
+ 
+    IF baris = KOSONG THEN
+        RETURN false
+    ENDIF
+ 
+    IF baris.status_sesi <> "aktif" THEN
+        RETURN false
+    ENDIF
+ 
+    IF baris.waktu_kedaluwarsa <= waktuSekarang() THEN
+        jalankanQuery(Q-006, idSesi)     {tandai berakhir agar tidak dicek ulang}
+        RETURN false
+    ENDIF
+ 
+    this.idSesi           <- baris.id_sesi
+    this.idPengguna       <- baris.id_pengguna
+    this.waktuKedaluwarsa <- baris.waktu_kedaluwarsa
+    this.statusSesi       <- baris.status_sesi
+    RETURN true
+ENDFUNCTION
+```
+ 
+Kedaluwarsa dibandingkan terhadap waktu peladen, bukan waktu perangkat pengguna,
+supaya tidak dapat dilewati dengan mengubah jam di komputer sendiri. Operasi ini
+dipanggil oleh hampir seluruh *controller* pada UC02–UC10, sehingga `id_sesi`
+dijadikan *primary key* agar pencariannya hanya satu kali akses indeks.
+ 
+Tabel 5.3.2. Query Operasi cekStatusLogin()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-005 | `SELECT id_sesi, id_pengguna, waktu_kedaluwarsa, status_sesi FROM sesi_login WHERE id_sesi = ?;` | Mengambil satu sesi beserta waktu kedaluwarsa dan statusnya. |
+| Q-006 | `UPDATE sesi_login SET status_sesi = 'berakhir' WHERE id_sesi = ?;` | Menutup sesi yang sudah melewati waktu kedaluwarsa. |
 
+## 5.4 Kelas FormPendaftaranView
+ 
+**Nama Kelas:** ...
+**ID Kelas:** ...
 
-### 5.1.2 Algoritma/Query
-
-*[Ulangi pola 5.1.1 untuk operasi penting berikutnya pada kelas yang sama, jika ada.]*
-
-## 5.2 Kelas [Nama Kelas Berikutnya]
-
-*[Ulangi pola 5.1: nama dan ID kelas, tabel operasi, tabel atribut, serta subbab algoritma/query untuk operasi penting jika diperlukan.]*
+.............
 
 <br>
 

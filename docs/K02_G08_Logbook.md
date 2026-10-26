@@ -162,5 +162,17 @@
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
+### Milestone 8
+**Periode:** 21 Oktober 2026 - 28 Oktober 2026
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 26-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas | 1 | Belum selesai | - | 
+| 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas | 1 | Belum selesai | - | 
+
+**Catatan/Evaluasi Milestone 8:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+---
+
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``
