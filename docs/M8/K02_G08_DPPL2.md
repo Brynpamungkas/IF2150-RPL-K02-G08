@@ -300,19 +300,19 @@ Alur berjalan sama dengan skenario normal sampai pemeriksaan ketersediaan email.
 
 ### 3.2.1 Identifikasi Kelas
 
-Realisasi UC02 melibatkan satu kelas pada lapisan presentasi, satu pada lapisan API, dua pada lapisan domain/bisnis, satu entitas domain, serta kelas akses data. Kelas aktor pada tahap analisis (PembuatProject) dipetakan ke `CampaignProjectView` dan `CampaignProjectController` sebagai antarmuka dan pengendali permintaan.
+`FormCampaignView` menerima judul, deskripsi, target nominal, dan periode campaign serta menampilkan pesan kesalahan atau notifikasi keberhasilan, sedangkan `DetailCampaignView` menampilkan informasi campaign beserta status verifikasinya. Keduanya berinteraksi dengan `CampaignController`, kelas *control* yang mengoordinasikan pembuatan campaign, termasuk pemeriksaan status login melalui `SesiLogin`. Validasi kelengkapan data, target, dan periode, serta penyimpanan campaign dengan status "Menunggu Verifikasi", tetap menjadi tanggung jawab `Campaign` sesuai deskripsi C03. `PembuatProject` (C10) berperan sebagai aktor sekaligus pemilik campaign. Pada tingkat komponen (Tabel 2.3), kelas-kelas ini dihimpun oleh `CampaignProjectView`, `CampaignProjectController`, `CampaignProjectService`, `AutentikasiService`, dan `CampaignProjectRepository`, sehingga komponen tersebut tidak digambar lagi sebagai kelas pada diagram.
 
 Tabel 3.2. Identifikasi Kelas Use Case UC02
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | CampaignProjectView | PembuatProject (C10) |
-| 2 | CampaignProjectController | PembuatProject (C10) |
-| 3 | AutentikasiService | SesiLogin (C13) |
-| 4 | CampaignProjectService | PembuatProject (C10), Campaign (C03) |
-| 5 | Campaign | Campaign (C03) |
-| 6 | CampaignProjectRepository | Campaign (C03) |
-| 7 | DatabaseConnection | - (kelas baru pada tahap perancangan) |
+| 1 | FormCampaignView | PembuatProject (C10) |
+| 2 | DetailCampaignView | Campaign (C03) |
+| 3 | CampaignController | PembuatProject (C10), Campaign (C03) |
+| 4 | SesiLogin | SesiLogin (C13) |
+| 5 | PembuatProject | PembuatProject (C10) |
+| 6 | Campaign | Campaign (C03) |
+
 
 ### 3.2.2 Sequence Diagram
 
@@ -361,19 +361,18 @@ Tabel 3.2. Identifikasi Kelas Use Case UC02
 
 ### 3.3.1 Identifikasi Kelas
 
-Realisasi UC03 memakai pembagian lapisan yang sama dengan UC02. Perbedaannya, entitas domain yang dikelola adalah `Project` dan terdapat validasi kebutuhan project (dana, logistik, dan kriteria volunteer) yang dijalankan sebelum formulir dikirim.
+Realisasi UC03 memakai pembagian yang sama dengan UC02. Perbedaannya, entitas yang dikelola adalah `Project`, dan terdapat validasi kebutuhan project (dana, logistik, dan kriteria volunteer) yang dijalankan sebelum formulir dikirim. `FormProjectView` menerima informasi dasar dan kebutuhan project, `DetailProjectView` menampilkan project beserta status verifikasinya, dan `ProjectController` mengoordinasikan keduanya dengan memeriksa status login melalui `SesiLogin`. Pemetaan ke komponen pada Tabel 2.3 sama dengan UC02.
 
 Tabel 3.3. Identifikasi Kelas Use Case UC03
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | CampaignProjectView | PembuatProject (C10) |
-| 2 | CampaignProjectController | PembuatProject (C10) |
-| 3 | AutentikasiService | SesiLogin (C13) |
-| 4 | CampaignProjectService | PembuatProject (C10), Project (C02) |
-| 5 | Project | Project (C02) |
-| 6 | CampaignProjectRepository | Project (C02) |
-| 7 | DatabaseConnection | - (kelas baru pada tahap perancangan) |
+| 1 | FormProjectView | PembuatProject (C10) |
+| 2 | DetailProjectView | Project (C02) |
+| 3 | ProjectController | PembuatProject (C10), Project (C02) |
+| 4 | SesiLogin | SesiLogin (C13) |
+| 5 | PembuatProject | PembuatProject (C10) |
+| 6 | Project | Project (C02) |
 
 ### 3.3.2 Sequence Diagram
 
@@ -422,20 +421,21 @@ Tabel 3.3. Identifikasi Kelas Use Case UC03
 
 ### 3.4.1 Identifikasi Kelas
 
-Realisasi UC04 melibatkan dua aktor, yaitu Pembuat Project yang mengajukan verifikasi dan Admin Sistem yang meninjau pengajuan. Kelas aktor pada tahap analisis (PembuatProject dan AdminSistem) dipetakan ke `CampaignProjectView`, `CampaignProjectController`, dan `CampaignProjectService`. Pembatasan bahwa verifikasi hanya dapat dilakukan Admin Sistem ditangani oleh `AutentikasiService` melalui pemeriksaan hak akses berdasarkan peran.
+Realisasi UC04 melibatkan dua aktor, yaitu Pembuat Project yang mengajukan verifikasi melalui `PengajuanView` dan Admin Sistem yang meninjau pengajuan melalui `DaftarPengajuanView` dan `DetailPengajuanView`. Ketiganya berinteraksi dengan `VerifikasiController`. Pembatasan bahwa verifikasi hanya dapat dilakukan Admin Sistem (KF12) dijalankan `VerifikasiController` melalui `SesiLogin.cekHakAkses()`; bila peran tidak sesuai, pesan kesalahan diambil lewat `getPesanKesalahan()`. Perubahan status dan alasan penolakan disimpan oleh `Campaign` atau `Project` melalui `ubahStatus()`.
 
 Tabel 3.4. Identifikasi Kelas Use Case UC04
 
 | No | Nama Kelas Perancangan | Nama Kelas Analisis Terkait |
 |:--- | :--- | :--- |
-| 1 | CampaignProjectView | PembuatProject (C10), AdminSistem (C11) |
-| 2 | CampaignProjectController | PembuatProject (C10), AdminSistem (C11) |
-| 3 | AutentikasiService | SesiLogin (C13), AdminSistem (C11) |
-| 4 | CampaignProjectService | PembuatProject (C10), AdminSistem (C11) |
-| 5 | Campaign | Campaign (C03) |
-| 6 | Project | Project (C02) |
-| 7 | CampaignProjectRepository | Campaign (C03), Project (C02) |
-| 8 | DatabaseConnection | - (kelas baru pada tahap perancangan) |
+| 1 | PengajuanView | PembuatProject (C10) |
+| 2 | DaftarPengajuanView | AdminSistem (C11) |
+| 3 | DetailPengajuanView | AdminSistem (C11) |
+| 4 | VerifikasiController | PembuatProject (C10), AdminSistem (C11) |
+| 5 | SesiLogin | SesiLogin (C13), AdminSistem (C11) |
+| 6 | PembuatProject | PembuatProject (C10) |
+| 7 | AdminSistem | AdminSistem (C11) |
+| 8 | Campaign | Campaign (C03) |
+| 9 | Project | Project (C02) |
 
 ### 3.4.2 Sequence Diagram
 
@@ -860,7 +860,7 @@ Alur berjalan sama dengan skenario normal sampai pengambilan riwayat. `getRiwaya
 
 ## 4.1 Diagram Kelas
 
-Diagram kelas keseluruhan menggabungkan seluruh kelas perancangan dari BAB 3, yaitu kelas *boundary*, *control*, dan *entity* dari UC01 sampai UC10. Kelas *entity* yang dipakai oleh lebih dari satu use case digambarkan satu kali saja dengan atribut dan operasi gabungan.
+Diagram kelas keseluruhan menggabungkan seluruh kelas perancangan dari BAB 3, yaitu kelas *boundary*, *control*, dan *entity* dari UC01 sampai UC10. Kelas *entity* yang dipakai oleh lebih dari satu use case digambarkan satu kali saja dengan atribut dan operasi gabungan. Visibilitas ditulis `+` (public) dan `-` (private), dan tipe data memakai TypeScript sesuai Tabel 2.1. Tipe bantu yang muncul pada tabel dijelaskan pada Tabel 4.2.
 
 <p align="center">
 <img alt="Diagram Kelas Perancangan Keseluruhan KlimPooL" src="./assets/diagram/class-keseluruhan.png" width="100%">
@@ -873,102 +873,74 @@ Tabel 4.1. Daftar Kelas Perancangan Keseluruhan
 
 | ID Kelas | Nama Kelas | Atribut | Metode/Operasi |
 | :--- | :--- | :--- | :--- |
-| C00 | PenggunaUmum | `idPengguna`, `nama`, `peran`, `email` | `buatAkun()`, `bukaKatalog()`, `bukaMenuRiwayat()` |
-| C12 | Akun | `idAkun`, `email`, `passwordHash`, `statusAkun`, `tanggalDibuat` | `validasiKelengkapanInput()`, `cekKetersediaanEmail()`, `simpanAkun()`, `validasiKredensial()` |
-| C13 | SesiLogin | `idSesi`, `idPengguna`, `waktuMulai`, `waktuKedaluwarsa`, `statusSesi` | `buatSesi()`, `cekStatusLogin()`, `akhiriSesi()` |
-| C14 | FormPendaftaranView | - | `pilihMenuPendaftaran()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
-| C15 | FormLoginView | - | `isiKredensial()`, `kirimKredensial()`, `tampilkanPesanKesalahan()`, `arahkanKeHalamanUtama()` |
-| C16 | AutentikasiController | `pesanKesalahan` | `daftarAkun()`, `login()`, `getPesanKesalahan()` |
-| C10 | PembuatProject | `idPembuat`, `nama`, `email` | `buatCampaign()`, `buatProject()`, `ajukanVerifikasi()`, `bukaMenuVolunteerManagement()`, `tinjauPendaftar()`, `buatKeputusan()`, `bukaHalamanProgres()`, `isiPembaruanMilestone()`, `unggahDokumentasi()` |
-| C03 | Campaign | `idCampaign`, `judul`, `deskripsi`, `targetNominal`, `periodeMulai`, `periodeSelesai`, `status`, `alasanPenolakan`, `kebutuhan`, `lokasi`, `danaTerkumpul` | `validasiData()`, `validasiTarget()`, `validasiPeriode()`, `simpanCampaign()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()`, `cekStatusCampaign()`, `tambahDana()` |
-| C17 | FormCampaignView | - | `pilihMenuBuatCampaign()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
-| C18 | DetailCampaignView | - | `bukaHalamanCampaign()`, `tampilkanDetail()` |
-| C19 | CampaignController | `pesanKesalahan` | `buatCampaign()`, `getPesanKesalahan()`, `getDetailCampaign()` |
-| C02 | Project | `idProject`, `nama`, `deskripsi`, `lokasi`, `tujuan`, `kebutuhanDana`, `kebutuhanLogistik`, `kriteriaVolunteer`, `status`, `alasanPenolakan`, `milestone`, `statusPelaksanaan`, `dokumentasiProgres`, `timestampPembaruan` | `setInformasi()`, `setKebutuhan()`, `validasiData()`, `validasiKebutuhan()`, `simpanProject()`, `tampilkanDetail()`, `ubahStatus()`, `getDaftarMenungguVerifikasi()`, `cekAdaPendaftar()`, `getDaftarPendaftar()`, `validasiHakAkses()`, `simpanPembaruanProgres()`, `catatTimestamp()`, `getRiwayatProgres()`, `getDetailProgres()` |
-| C20 | FormProjectView | - | `pilihMenuBuatProject()`, `tampilkanFormulir()`, `isiInformasiProject()`, `tampilkanInformasi()`, `isiKebutuhan()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
-| C21 | DetailProjectView | - | `bukaHalamanProject()`, `tampilkanDetail()` |
-| C22 | ProjectController | `pesanKesalahan` | `simpanInformasiDasar()`, `perbaruiInformasi()`, `isiKebutuhan()`, `kirimProject()`, `getPesanKesalahan()`, `getDetailProject()` |
-| C11 | AdminSistem | `idAdmin`, `nama`, `email` | `tinjauPengajuan()`, `setujuiPengajuan()`, `tolakPengajuan()` |
-| C23 | PengajuanView | - | `ajukanVerifikasi()`, `tampilkanNotifikasi()` |
-| C24 | DaftarPengajuanView | - | `bukaDaftarPengajuan()`, `tampilkanDaftar()`, `pilihPengajuan()` |
-| C25 | DetailPengajuanView | `idPengajuan`, `jenis` | `tampilkanDetail()`, `setujui()`, `tolak()`, `tampilkanStatus()` |
-| C26 | VerifikasiController | - | `ajukanVerifikasi()`, `getDaftarMenunggu()`, `getDetailPengajuan()`, `setujuiPengajuan()`, `tolakPengajuan()` |
-| C01 | Katalog | `kataKunci`, `filter` | `terimaKataKunci()`, `terapkanFilter()`, `cari()`, `tampilkanHasil()` |
-| C04 | Donatur | `idDonatur`, `nama`, `email`, `saldo` | `getSaldo()`, `kurangiSaldo()` |
-| C05 | PetaWilayah | `koordinatPusat`, `radius` | `tampilkanSebaranProject()`, `tampilkanSebaranCampaign()` |
-| C06 | TransaksiDonasi | `idTransaksi`, `idDonatur`, `idTujuan`, `jenisTujuan`, `idempotencyKey`, `nominal`, `tanggal`, `statusTransaksi` | `validasiNominal()`, `validasiDuplikasi()`, `prosesDonasi()`, `buatTransaksi()`, `getRiwayatTransaksi()`, `getDetailTransaksi()` |
-| C07 | BuktiTransaksi | `idBukti`, `rincian` | `cetakBukti()`, `tampilkanBukti()` |
-| C08 | Volunteer | `idVolunteer`, `nama`, `email` | `isiFormulir()`, `kirimPendaftaran()` |
-| C09 | PendaftaranRelawan | `idPendaftaran`, `idVolunteer`, `idProject`, `dataDiri`, `keahlian`, `pengalaman`, `ketersediaanJadwal`, `statusPendaftaran` | `buatPendaftaran()`, `validasiKelengkapan()`, `cekPendaftaranGanda()`, `simpanPendaftaran()`, `getDetailPendaftar()`, `perbaruiStatus()` |
-| C27 | FormPencarianView | - | `bukaKatalog()`, `masukkanKriteria()`, `tampilkanHasil()`, `tampilkanPesanKesalahan()` |
-| C28 | PencarianController | `pesanKesalahan` | `getDaftarDipublikasikan()`, `cari()`, `getDetailProject()`, `getDetailCampaign()`, `getPesanKesalahan()` |
-| C29 | FormPetaWilayahView | - | `bukaPeta()`, `tampilkanPeta()` |
-| C30 | FormDonasiView | - | `tekanDonasi()`, `tampilkanFormulir()`, `isiNominal()`, `konfirmasiPembayaran()`, `tampilkanPesanKesalahan()` |
-| C31 | DetailBuktiTransaksiView | - | `bukaBukti()`, `tampilkanBukti()` |
-| C32 | DonasiController | `pesanKesalahan` | `getSebaran()`, `bukaFormDonasi()`, `konfirmasiDonasi()`, `getBuktiTransaksi()`, `getPesanKesalahan()` |
-| C33 | FormPendaftaranRelawanView | - | `tekanDaftar()`, `tampilkanFormulir()`, `isiFormulir()`, `kirimPendaftaran()`, `tampilkanPesanKesalahan()`, `tampilkanStatus()` |
-| C34 | RelawanController | `pesanKesalahan` | `getSebaranProject()`, `bukaFormPendaftaran()`, `daftarRelawan()`, `getPesanKesalahan()`, `getDaftarPendaftar()`, `buatKeputusan()`, `getStatusPendaftaran()` |
-| C35 | FormVolunteerManagementView | - | `pilihMenuVolunteerManagement()`, `tampilkanDaftarPendaftar()`, `pilihPendaftar()`, `pilihKeputusan()`, `tampilkanNotifikasiBerhasil()`, `tampilkanPesanBelumAdaPendaftar()` |
-| C36 | DetailStatusPendaftaranView | - | `bukaHalamanStatusPendaftaran()`, `tampilkanStatus()`, `tampilkanInstruksiKegiatan()` |
-| C37 | FormProgresProjectView | - | `pilihMenuProgres()`, `tampilkanFormulir()`, `isiPembaruanMilestone()`, `unggahDokumentasi()`, `kirimFormulir()`, `tampilkanPesanKesalahan()`, `tampilkanNotifikasiBerhasil()` |
-| C38 | ProgresController | `pesanKesalahan` | `bukaHalamanProgres()`, `perbaruiProgres()`, `getPesanKesalahan()` |
-| C39 | FormRiwayatView | - | `pilihMenuRiwayat()`, `tampilkanDaftarRiwayat()`, `pilihRiwayat()`, `tampilkanPesanRiwayatKosong()` |
-| C40 | DetailRiwayatView | - | `tampilkanDetailTransaksi()`, `tampilkanDetailProgres()` |
-| C41 | RiwayatController | - | `getRiwayat()`, `getDetailTransaksi()`, `getDetailProgres()` |
+| C00 | PenggunaUmum | `- idPengguna: string`<br>`- nama: string`<br>`- email: string`<br>`- peran: Peran` | `+ buatAkun(nama: string, email: string, password: string): Akun`<br>`+ bukaKatalog(): void`<br>`+ bukaMenuRiwayat(): void` |
+| C12 | Akun | `- idAkun: string`<br>`- email: string`<br>`- passwordHash: string`<br>`- statusAkun: StatusAkun`<br>`- tanggalDibuat: Date` | `+ validasiKelengkapanInput(nama: string, email: string, password: string): boolean`<br>`+ cekKetersediaanEmail(email: string): boolean`<br>`+ simpanAkun(): boolean`<br>`+ validasiKredensial(email: string, password: string): boolean` |
+| C13 | SesiLogin | `- idSesi: string`<br>`- idPengguna: string`<br>`- waktuMulai: Date`<br>`- waktuKedaluwarsa: Date`<br>`- statusSesi: StatusSesi` | `+ buatSesi(idPengguna: string): SesiLogin`<br>`+ cekStatusLogin(idSesi: string): boolean`<br>`+ cekHakAkses(idSesi: string, peran: Peran): boolean`<br>`+ akhiriSesi(): void` |
+| C14 | FormPendaftaranView | - | `+ pilihMenuPendaftaran(): void`<br>`+ tampilkanFormulir(): void`<br>`+ isiFormulir(nama: string, email: string, password: string): void`<br>`+ kirimFormulir(): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void`<br>`+ tampilkanNotifikasiBerhasil(): void` |
+| C15 | FormLoginView | - | `+ isiKredensial(email: string, password: string): void`<br>`+ kirimKredensial(): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void`<br>`+ arahkanKeHalamanUtama(): void` |
+| C16 | AutentikasiController | `- pesanKesalahan: string` | `+ daftarAkun(nama: string, email: string, password: string): boolean`<br>`+ login(email: string, password: string): boolean`<br>`+ getPesanKesalahan(): string` |
+| C10 | PembuatProject | `- idPembuat: string`<br>`- nama: string`<br>`- email: string` | `+ buatCampaign(data: DataCampaign): Campaign`<br>`+ buatProject(data: DataProject): Project`<br>`+ ajukanVerifikasi(idKegiatan: string, jenis: JenisKegiatan): void`<br>`+ bukaMenuVolunteerManagement(idProject: string): void`<br>`+ tinjauPendaftar(idPendaftaran: string): PendaftaranRelawan`<br>`+ buatKeputusan(idPendaftaran: string, keputusan: StatusPendaftaran): boolean`<br>`+ bukaHalamanProgres(idProject: string): void`<br>`+ isiPembaruanMilestone(milestone: string, statusPelaksanaan: string): void`<br>`+ unggahDokumentasi(berkas: File): void` |
+| C03 | Campaign | `- idCampaign: string`<br>`- idPembuat: string`<br>`- judul: string`<br>`- deskripsi: string`<br>`- kategori: string`<br>`- lokasi: string`<br>`- kebutuhan: string`<br>`- rencanaPenggunaanDana: string`<br>`- targetNominal: number`<br>`- danaTerkumpul: number`<br>`- periodeMulai: Date`<br>`- periodeSelesai: Date`<br>`- status: StatusVerifikasi`<br>`- alasanPenolakan: string` | `+ validasiData(): boolean`<br>`+ validasiTarget(): boolean`<br>`+ validasiPeriode(): boolean`<br>`+ simpanCampaign(): boolean`<br>`+ tampilkanDetail(): Campaign`<br>`+ ubahStatus(statusBaru: StatusVerifikasi, alasan: string): boolean`<br>`+ getDaftarMenungguVerifikasi(): Campaign[]`<br>`+ cekStatusCampaign(): boolean`<br>`+ tambahDana(nominal: number): boolean`<br>`+ hitungPersentaseCapaian(): number` |
+| C17 | FormCampaignView | - | `+ pilihMenuBuatCampaign(): void`<br>`+ tampilkanFormulir(): void`<br>`+ isiFormulir(data: DataCampaign): void`<br>`+ kirimFormulir(): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void`<br>`+ tampilkanNotifikasiBerhasil(): void` |
+| C18 | DetailCampaignView | - | `+ bukaHalamanCampaign(idCampaign: string): void`<br>`+ tampilkanDetail(campaign: Campaign): void` |
+| C19 | CampaignController | `- pesanKesalahan: string` | `+ buatCampaign(data: DataCampaign): boolean`<br>`+ getPesanKesalahan(): string`<br>`+ getDetailCampaign(idCampaign: string): Campaign` |
+| C02 | Project | `- idProject: string`<br>`- idPembuat: string`<br>`- nama: string`<br>`- deskripsi: string`<br>`- kategori: string`<br>`- lokasi: string`<br>`- tujuan: string`<br>`- jadwalMulai: Date`<br>`- jadwalSelesai: Date`<br>`- kebutuhanDana: number`<br>`- danaTerkumpul: number`<br>`- kebutuhanLogistik: string`<br>`- kriteriaVolunteer: string`<br>`- kuotaRelawan: number`<br>`- statusPendaftaranProject: StatusPendaftaranProject`<br>`- status: StatusVerifikasi`<br>`- alasanPenolakan: string`<br>`- milestone: string`<br>`- statusPelaksanaan: string`<br>`- dokumentasiProgres: string`<br>`- timestampPembaruan: Date` | `+ setInformasi(data: DataProject): void`<br>`+ setKebutuhan(data: DataKebutuhan): void`<br>`+ validasiData(): boolean`<br>`+ validasiKebutuhan(): boolean`<br>`+ simpanProject(): boolean`<br>`+ tampilkanDetail(): Project`<br>`+ ubahStatus(statusBaru: StatusVerifikasi, alasan: string): boolean`<br>`+ getDaftarMenungguVerifikasi(): Project[]`<br>`+ cekStatusProject(): boolean`<br>`+ tambahDana(nominal: number): boolean`<br>`+ hitungPersentaseCapaian(): number`<br>`+ cekKuota(): boolean`<br>`+ cekStatusPendaftaran(): boolean`<br>`+ cekAdaPendaftar(): boolean`<br>`+ getDaftarPendaftar(): PendaftaranRelawan[]`<br>`+ validasiHakAkses(idPengguna: string): boolean`<br>`+ simpanPembaruanProgres(data: DataProgres): boolean`<br>`+ catatTimestamp(): void`<br>`+ getRiwayatProgres(idPengguna: string): EntriRiwayat[]`<br>`+ getDetailProgres(idProgres: string): DataProgres` |
+| C20 | FormProjectView | - | `+ pilihMenuBuatProject(): void`<br>`+ tampilkanFormulir(): void`<br>`+ isiInformasiProject(data: DataProject): void`<br>`+ tampilkanInformasi(): void`<br>`+ isiKebutuhan(data: DataKebutuhan): void`<br>`+ kirimFormulir(): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void`<br>`+ tampilkanNotifikasiBerhasil(): void` |
+| C21 | DetailProjectView | - | `+ bukaHalamanProject(idProject: string): void`<br>`+ tampilkanDetail(project: Project): void` |
+| C22 | ProjectController | `- pesanKesalahan: string` | `+ simpanInformasiDasar(data: DataProject): boolean`<br>`+ perbaruiInformasi(data: DataProject): boolean`<br>`+ isiKebutuhan(data: DataKebutuhan): boolean`<br>`+ kirimProject(): boolean`<br>`+ getPesanKesalahan(): string`<br>`+ getDetailProject(idProject: string): Project` |
+| C11 | AdminSistem | `- idAdmin: string`<br>`- nama: string`<br>`- email: string` | `+ tinjauPengajuan(idPengajuan: string): void`<br>`+ setujuiPengajuan(idPengajuan: string): boolean`<br>`+ tolakPengajuan(idPengajuan: string, alasan: string): boolean` |
+| C23 | PengajuanView | - | `+ ajukanVerifikasi(idKegiatan: string, jenis: JenisKegiatan): void`<br>`+ tampilkanNotifikasi(pesan: string): void` |
+| C24 | DaftarPengajuanView | - | `+ bukaDaftarPengajuan(): void`<br>`+ tampilkanDaftar(daftar: Kegiatan[]): void`<br>`+ pilihPengajuan(idPengajuan: string): void` |
+| C25 | DetailPengajuanView | `- idPengajuan: string`<br>`- jenis: JenisKegiatan` | `+ tampilkanDetail(pengajuan: Kegiatan): void`<br>`+ setujui(): void`<br>`+ tolak(alasan: string): void`<br>`+ tampilkanStatus(status: StatusVerifikasi): void` |
+| C26 | VerifikasiController | `- pesanKesalahan: string` | `+ ajukanVerifikasi(idKegiatan: string, jenis: JenisKegiatan): boolean`<br>`+ getDaftarMenunggu(): Kegiatan[]`<br>`+ getDetailPengajuan(idPengajuan: string, jenis: JenisKegiatan): Kegiatan`<br>`+ setujuiPengajuan(idPengajuan: string, jenis: JenisKegiatan): boolean`<br>`+ tolakPengajuan(idPengajuan: string, jenis: JenisKegiatan, alasan: string): boolean`<br>`+ getPesanKesalahan(): string` |
+| C01 | Katalog | `- kataKunci: string`<br>`- filter: KriteriaPencarian` | `+ terimaKataKunci(kataKunci: string): void`<br>`+ terapkanFilter(filter: KriteriaPencarian): void`<br>`+ cari(): Kegiatan[]`<br>`+ tampilkanHasil(): Kegiatan[]` |
+| C04 | Donatur | `- idDonatur: string`<br>`- nama: string`<br>`- email: string`<br>`- saldo: number` | `+ getSaldo(): number`<br>`+ kurangiSaldo(nominal: number): boolean` |
+| C05 | PetaWilayah | `- koordinatPusat: Koordinat`<br>`- radius: number` | `+ tampilkanSebaranProject(): Project[]`<br>`+ tampilkanSebaranCampaign(): Campaign[]` |
+| C06 | TransaksiDonasi | `- idTransaksi: string`<br>`- idDonatur: string`<br>`- idTujuan: string`<br>`- jenisTujuan: JenisKegiatan`<br>`- idempotencyKey: string`<br>`- nominal: number`<br>`- tanggal: Date`<br>`- statusTransaksi: StatusTransaksi` | `+ validasiNominal(nominal: number): boolean`<br>`+ validasiDuplikasi(idempotencyKey: string): boolean`<br>`+ prosesDonasi(): boolean`<br>`+ buatTransaksi(idDonatur: string, idTujuan: string, jenisTujuan: JenisKegiatan, nominal: number, idempotencyKey: string): TransaksiDonasi`<br>`+ getRiwayatTransaksi(idPengguna: string): TransaksiDonasi[]`<br>`+ getDetailTransaksi(idTransaksi: string): TransaksiDonasi` |
+| C07 | BuktiTransaksi | `- idBukti: string`<br>`- idTransaksi: string`<br>`- rincian: string` | `+ cetakBukti(): void`<br>`+ tampilkanBukti(): string` |
+| C08 | Volunteer | `- idVolunteer: string`<br>`- nama: string`<br>`- email: string` | `+ isiFormulir(data: DataPendaftaran): void`<br>`+ kirimPendaftaran(idProject: string): boolean` |
+| C09 | PendaftaranRelawan | `- idPendaftaran: string`<br>`- idVolunteer: string`<br>`- idProject: string`<br>`- dataDiri: string`<br>`- keahlian: string`<br>`- pengalaman: string`<br>`- ketersediaanJadwal: string`<br>`- statusPendaftaran: StatusPendaftaran` | `+ buatPendaftaran(idVolunteer: string, idProject: string, data: DataPendaftaran): PendaftaranRelawan`<br>`+ validasiKelengkapan(): boolean`<br>`+ cekPendaftaranGanda(): boolean`<br>`+ simpanPendaftaran(): boolean`<br>`+ getDetailPendaftar(): PendaftaranRelawan`<br>`+ perbaruiStatus(statusBaru: StatusPendaftaran): boolean` |
+| C27 | FormPencarianView | - | `+ bukaKatalog(): void`<br>`+ masukkanKriteria(kataKunci: string, filter: KriteriaPencarian): void`<br>`+ tampilkanHasil(hasil: Kegiatan[]): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void` |
+| C28 | PencarianController | `- pesanKesalahan: string` | `+ getDaftarDipublikasikan(): Kegiatan[]`<br>`+ cari(kataKunci: string, filter: KriteriaPencarian): Kegiatan[]`<br>`+ getDetailProject(idProject: string): Project`<br>`+ getDetailCampaign(idCampaign: string): Campaign`<br>`+ getPesanKesalahan(): string` |
+| C29 | FormPetaWilayahView | - | `+ bukaPeta(): void`<br>`+ tampilkanPeta(sebaran: Kegiatan[]): void` |
+| C30 | FormDonasiView | - | `+ tekanDonasi(): void`<br>`+ tampilkanFormulir(saldo: number): void`<br>`+ isiNominal(nominal: number): void`<br>`+ konfirmasiPembayaran(): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void` |
+| C31 | DetailBuktiTransaksiView | - | `+ bukaBukti(idTransaksi: string): void`<br>`+ tampilkanBukti(bukti: BuktiTransaksi): void` |
+| C32 | DonasiController | `- pesanKesalahan: string` | `+ getSebaran(): Kegiatan[]`<br>`+ bukaFormDonasi(idTujuan: string, jenisTujuan: JenisKegiatan): boolean`<br>`+ konfirmasiDonasi(idTujuan: string, jenisTujuan: JenisKegiatan, nominal: number, idempotencyKey: string): boolean`<br>`+ getBuktiTransaksi(idTransaksi: string): BuktiTransaksi`<br>`+ getPesanKesalahan(): string` |
+| C33 | FormPendaftaranRelawanView | - | `+ tekanDaftar(idProject: string): void`<br>`+ tampilkanFormulir(): void`<br>`+ isiFormulir(data: DataPendaftaran): void`<br>`+ kirimPendaftaran(): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void`<br>`+ tampilkanStatus(status: StatusPendaftaran): void` |
+| C34 | RelawanController | `- pesanKesalahan: string` | `+ getSebaranProject(): Project[]`<br>`+ bukaFormPendaftaran(idProject: string): boolean`<br>`+ daftarRelawan(idProject: string, data: DataPendaftaran): boolean`<br>`+ getPesanKesalahan(): string`<br>`+ getDaftarPendaftar(idProject: string): PendaftaranRelawan[]`<br>`+ buatKeputusan(idPendaftaran: string, keputusan: StatusPendaftaran): boolean`<br>`+ getStatusPendaftaran(idPendaftaran: string): StatusPendaftaran` |
+| C35 | FormVolunteerManagementView | - | `+ pilihMenuVolunteerManagement(idProject: string): void`<br>`+ tampilkanDaftarPendaftar(daftar: PendaftaranRelawan[]): void`<br>`+ pilihPendaftar(idPendaftaran: string): void`<br>`+ pilihKeputusan(keputusan: StatusPendaftaran): void`<br>`+ tampilkanNotifikasiBerhasil(): void`<br>`+ tampilkanPesanBelumAdaPendaftar(): void` |
+| C36 | DetailStatusPendaftaranView | - | `+ bukaHalamanStatusPendaftaran(idPendaftaran: string): void`<br>`+ tampilkanStatus(status: StatusPendaftaran): void`<br>`+ tampilkanInstruksiKegiatan(lokasi: string, jadwalMulai: Date): void` |
+| C37 | FormProgresProjectView | - | `+ pilihMenuProgres(idProject: string): void`<br>`+ tampilkanFormulir(): void`<br>`+ isiPembaruanMilestone(milestone: string, statusPelaksanaan: string): void`<br>`+ unggahDokumentasi(berkas: File): void`<br>`+ kirimFormulir(): void`<br>`+ tampilkanPesanKesalahan(pesan: string): void`<br>`+ tampilkanNotifikasiBerhasil(): void` |
+| C38 | ProgresController | `- pesanKesalahan: string` | `+ bukaHalamanProgres(idProject: string): boolean`<br>`+ perbaruiProgres(idProject: string, data: DataProgres, berkas: File): boolean`<br>`+ getPesanKesalahan(): string` |
+| C39 | FormRiwayatView | - | `+ pilihMenuRiwayat(): void`<br>`+ tampilkanDaftarRiwayat(daftar: EntriRiwayat[]): void`<br>`+ pilihRiwayat(idEntri: string): void`<br>`+ tampilkanPesanRiwayatKosong(): void` |
+| C40 | DetailRiwayatView | - | `+ tampilkanDetailTransaksi(transaksi: TransaksiDonasi): void`<br>`+ tampilkanDetailProgres(progres: DataProgres): void` |
+| C41 | RiwayatController | - | `+ getRiwayat(idPengguna: string): EntriRiwayat[]`<br>`+ getDetailTransaksi(idTransaksi: string): TransaksiDonasi`<br>`+ getDetailProgres(idProgres: string): DataProgres` |
+
+Tabel 4.2. Tipe Bantu pada Tabel 4.1
+
+| Tipe bantu | Jenis | Isi |
+| :--- | :--- | :--- |
+| `Peran` | enum | pembuat_project, donatur, volunteer, admin |
+| `StatusAkun` | enum | aktif, nonaktif |
+| `StatusSesi` | enum | aktif, berakhir |
+| `StatusVerifikasi` | enum | draft, menunggu_verifikasi, diterima, ditolak |
+| `StatusPendaftaran` | enum | pending, accepted, rejected |
+| `StatusPendaftaranProject` | enum | dibuka, ditutup |
+| `StatusTransaksi` | enum | berhasil, gagal |
+| `JenisKegiatan` | enum | campaign, project |
+| `Kegiatan` | alias | Campaign atau Project (dipakai pada pencarian, peta, dan daftar pengajuan) |
+| `Koordinat` | struktur | `latitude: number`, `longitude: number` |
+| `DataCampaign` | struktur | judul, deskripsi, kategori, lokasi, kebutuhan, targetNominal, periodeMulai, periodeSelesai, rencanaPenggunaanDana |
+| `DataProject` | struktur | nama, deskripsi, kategori, lokasi, tujuan, jadwalMulai, jadwalSelesai |
+| `DataKebutuhan` | struktur | kebutuhanDana, kebutuhanLogistik, kriteriaVolunteer, kuotaRelawan |
+| `DataPendaftaran` | struktur | dataDiri, keahlian, pengalaman, ketersediaanJadwal |
+| `DataProgres` | struktur | milestone, statusPelaksanaan, dokumentasiProgres, timestampPembaruan |
+| `KriteriaPencarian` | struktur | kategori, lokasi, status, periodeMulai, periodeSelesai (semua opsional) |
+| `EntriRiwayat` | struktur | idEntri, jenis (transaksi atau progres), waktu, ringkasan |
+| `File` | bawaan | berkas unggahan dari peramban (dokumentasi progres, maks. 50 MB) |
 
 <br>
 
----
-# BAB 5: Matriks Kerunutan
-
-Tabel berikut memetakan setiap kelas perancangan pada BAB 4 terhadap use case yang direalisasikannya secara keseluruhan dari **UC01 hingga UC10**. Acuan keterkaitan diambil dari BAB 6 *Traceability* dokumen SKPL, lalu disesuaikan dengan realisasi use case pada BAB 3.
-
-Tabel 5.1. Matriks Kerunutan Kelas terhadap Use Case (Keseluruhan UC01–UC10)
-
-| Kelas | Use Case Terkait |
-| :--- | :--- |
-| C00 - PenggunaUmum | UC01 - Melakukan Pendaftaran dan Autentikasi, UC05 - Mencari dan Menelusuri Project, UC10 - Melihat Riwayat dan Penelusuran |
-| C01 - Katalog | UC05 - Mencari dan Menelusuri Project |
-| C02 - Project | UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project, UC10 - Melihat Riwayat dan Penelusuran |
-| C03 - Campaign | UC02 - Membuat Campaign Penggalangan Donasi, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi |
-| C04 - Donatur | UC06 - Melakukan Transaksi Donasi |
-| C05 - PetaWilayah | UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
-| C06 - TransaksiDonasi | UC06 - Melakukan Transaksi Donasi, UC10 - Melihat Riwayat dan Penelusuran |
-| C07 - BuktiTransaksi | UC06 - Melakukan Transaksi Donasi |
-| C08 - Volunteer | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
-| C09 - PendaftaranRelawan | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
-| C10 - PembuatProject | UC02 - Membuat Campaign Penggalangan Donasi, UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project |
-| C11 - AdminSistem | UC04 - Meninjau dan Memverifikasi Project |
-| C12 - Akun | UC01 - Melakukan Pendaftaran dan Autentikasi |
-| C13 - SesiLogin | UC01 - Melakukan Pendaftaran dan Autentikasi, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project, UC10 - Melihat Riwayat dan Penelusuran |
-| C14 - FormPendaftaranView | UC01 - Melakukan Pendaftaran dan Autentikasi |
-| C15 - FormLoginView | UC01 - Melakukan Pendaftaran dan Autentikasi |
-| C16 - AutentikasiController | UC01 - Melakukan Pendaftaran dan Autentikasi |
-| C17 - FormCampaignView | UC02 - Membuat Campaign Penggalangan Donasi |
-| C18 - DetailCampaignView | UC02 - Membuat Campaign Penggalangan Donasi, UC05 - Mencari dan Menelusuri Project |
-| C19 - CampaignController | UC02 - Membuat Campaign Penggalangan Donasi |
-| C20 - FormProjectView | UC03 - Membuat Project Aksi Iklim |
-| C21 - DetailProjectView | UC03 - Membuat Project Aksi Iklim, UC05 - Mencari dan Menelusuri Project |
-| C22 - ProjectController | UC03 - Membuat Project Aksi Iklim |
-| C23 - PengajuanView | UC04 - Meninjau dan Memverifikasi Project |
-| C24 - DaftarPengajuanView | UC04 - Meninjau dan Memverifikasi Project |
-| C25 - DetailPengajuanView | UC04 - Meninjau dan Memverifikasi Project |
-| C26 - VerifikasiController | UC04 - Meninjau dan Memverifikasi Project |
-| C27 - FormPencarianView | UC05 - Mencari dan Menelusuri Project |
-| C28 - PencarianController | UC05 - Mencari dan Menelusuri Project |
-| C29 - FormPetaWilayahView | UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
-| C30 - FormDonasiView | UC06 - Melakukan Transaksi Donasi |
-| C31 - DetailBuktiTransaksiView | UC06 - Melakukan Transaksi Donasi |
-| C32 - DonasiController | UC06 - Melakukan Transaksi Donasi |
-| C33 - FormPendaftaranRelawanView | UC07 - Mendaftar Sebagai Volunteer |
-| C34 - RelawanController | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
-| C35 - FormVolunteerManagementView | UC08 - Mengelola Pendaftaran Relawan |
-| C36 - DetailStatusPendaftaranView | UC08 - Mengelola Pendaftaran Relawan |
-| C37 - FormProgresProjectView | UC09 - Memperbarui Progres Project |
-| C38 - ProgresController | UC09 - Memperbarui Progres Project |
-| C39 - FormRiwayatView | UC10 - Melihat Riwayat dan Penelusuran |
-| C40 - DetailRiwayatView | UC10 - Melihat Riwayat dan Penelusuran |
-| C41 - RiwayatController | UC10 - Melihat Riwayat dan Penelusuran |
 ---
 
 # BAB 5: Perancangan Rinci Kelas
@@ -1089,8 +1061,49 @@ Petakan kelas perancangan dengan use case yang terkait. Gunakan **BAB 6 Traceabi
 
 Tabel 7.1. Matriks Kerunutan Kelas terhadap Use Case
 
+
 | Kelas | Use Case Terkait |
 | :--- | :--- |
-| *[ID kelas - Nama kelas]* | *[ID UC - Nama use case; tuliskan seluruh use case terkait]* |
-| *[ID kelas - Nama kelas]* | *[ID UC - Nama use case]* |
-| *...* | *...* |
+| C00 - PenggunaUmum | UC01 - Melakukan Pendaftaran dan Autentikasi, UC05 - Mencari dan Menelusuri Project, UC10 - Melihat Riwayat dan Penelusuran |
+| C01 - Katalog | UC05 - Mencari dan Menelusuri Project |
+| C02 - Project | UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project, UC10 - Melihat Riwayat dan Penelusuran |
+| C03 - Campaign | UC02 - Membuat Campaign Penggalangan Donasi, UC04 - Meninjau dan Memverifikasi Project, UC05 - Mencari dan Menelusuri Project, UC06 - Melakukan Transaksi Donasi |
+| C04 - Donatur | UC06 - Melakukan Transaksi Donasi |
+| C05 - PetaWilayah | UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
+| C06 - TransaksiDonasi | UC06 - Melakukan Transaksi Donasi, UC10 - Melihat Riwayat dan Penelusuran |
+| C07 - BuktiTransaksi | UC06 - Melakukan Transaksi Donasi |
+| C08 - Volunteer | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
+| C09 - PendaftaranRelawan | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
+| C10 - PembuatProject | UC02 - Membuat Campaign Penggalangan Donasi, UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project |
+| C11 - AdminSistem | UC04 - Meninjau dan Memverifikasi Project |
+| C12 - Akun | UC01 - Melakukan Pendaftaran dan Autentikasi |
+| C13 - SesiLogin | UC01 - Melakukan Pendaftaran dan Autentikasi, UC02 - Membuat Campaign Penggalangan Donasi, UC03 - Membuat Project Aksi Iklim, UC04 - Meninjau dan Memverifikasi Project, UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan, UC09 - Memperbarui Progres Project, UC10 - Melihat Riwayat dan Penelusuran |
+| C14 - FormPendaftaranView | UC01 - Melakukan Pendaftaran dan Autentikasi |
+| C15 - FormLoginView | UC01 - Melakukan Pendaftaran dan Autentikasi |
+| C16 - AutentikasiController | UC01 - Melakukan Pendaftaran dan Autentikasi |
+| C17 - FormCampaignView | UC02 - Membuat Campaign Penggalangan Donasi |
+| C18 - DetailCampaignView | UC02 - Membuat Campaign Penggalangan Donasi, UC05 - Mencari dan Menelusuri Project |
+| C19 - CampaignController | UC02 - Membuat Campaign Penggalangan Donasi |
+| C20 - FormProjectView | UC03 - Membuat Project Aksi Iklim |
+| C21 - DetailProjectView | UC03 - Membuat Project Aksi Iklim, UC05 - Mencari dan Menelusuri Project |
+| C22 - ProjectController | UC03 - Membuat Project Aksi Iklim |
+| C23 - PengajuanView | UC04 - Meninjau dan Memverifikasi Project |
+| C24 - DaftarPengajuanView | UC04 - Meninjau dan Memverifikasi Project |
+| C25 - DetailPengajuanView | UC04 - Meninjau dan Memverifikasi Project |
+| C26 - VerifikasiController | UC04 - Meninjau dan Memverifikasi Project |
+| C27 - FormPencarianView | UC05 - Mencari dan Menelusuri Project |
+| C28 - PencarianController | UC05 - Mencari dan Menelusuri Project |
+| C29 - FormPetaWilayahView | UC06 - Melakukan Transaksi Donasi, UC07 - Mendaftar Sebagai Volunteer |
+| C30 - FormDonasiView | UC06 - Melakukan Transaksi Donasi |
+| C31 - DetailBuktiTransaksiView | UC06 - Melakukan Transaksi Donasi |
+| C32 - DonasiController | UC06 - Melakukan Transaksi Donasi |
+| C33 - FormPendaftaranRelawanView | UC07 - Mendaftar Sebagai Volunteer |
+| C34 - RelawanController | UC07 - Mendaftar Sebagai Volunteer, UC08 - Mengelola Pendaftaran Relawan |
+| C35 - FormVolunteerManagementView | UC08 - Mengelola Pendaftaran Relawan |
+| C36 - DetailStatusPendaftaranView | UC08 - Mengelola Pendaftaran Relawan |
+| C37 - FormProgresProjectView | UC09 - Memperbarui Progres Project |
+| C38 - ProgresController | UC09 - Memperbarui Progres Project |
+| C39 - FormRiwayatView | UC10 - Melihat Riwayat dan Penelusuran |
+| C40 - DetailRiwayatView | UC10 - Melihat Riwayat dan Penelusuran |
+| C41 - RiwayatController | UC10 - Melihat Riwayat dan Penelusuran |
+---
