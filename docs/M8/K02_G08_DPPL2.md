@@ -32,10 +32,9 @@ Dipersiapkan oleh:
 
 | Revisi | Deskripsi |
 | :--- | :--- |
-| *A* | *Deskripsikan perubahan yang dilakukan dari dokumen sebelumnya pada dokumen ini. Jika tidak terdapat perubahan, harap kosongkan tabel.* |
+| *A* | Perubahan dari DPPL 1 ke DPPL 2: Tabel 3.2–3.4 dan paragraf identifikasi kelas UC02–UC04 diganti agar memakai kelas yang sama dengan sequence diagram dan diagram kelas, yaitu `FormCampaignView`, `CampaignController`, `FormProjectView`, `ProjectController`, `VerifikasiController`, dan seterusnya. Nama komponen (`CampaignProjectView`, `CampaignProjectController`, dll.) tidak digambar lagi sebagai kelas.<br>|
 | *B* |  |
 | *C* |  |
-| ... |  |
 
 <br>
 
