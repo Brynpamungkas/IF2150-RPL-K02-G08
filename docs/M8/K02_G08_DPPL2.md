@@ -968,6 +968,25 @@ Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 | 21 | Katalog (C01) | Katalog (C01) |
 | 22 | FormPencarianView (C27) | PenggunaUmum (C00), Katalog (C01) |
 | 23 | PencarianController (C28) | PenggunaUmum (C00), Katalog (C01) |
+| 24 | PetaWilayah (C05) | PetaWilayah (C05) |
+| 25 | Donatur (C04) | Donatur (C04) |
+| 26 | TransaksiDonasi (C06) | TransaksiDonasi (C06) |
+| 27 | BuktiTransaksi (C07) | BuktiTransaksi (C07) |
+| 28 | Volunteer (C08) | Volunteer (C08) |
+| 29 | PendaftaranRelawan (C09) | PendaftaranRelawan (C09) |
+| 30 | FormPetaWilayahView (C29) | PetaWilayah (C05) |
+| 31 | FormDonasiView (C30) | Donatur (C04), TransaksiDonasi (C06) |
+| 32 | DetailBuktiTransaksiView (C31) | BuktiTransaksi (C07) |
+| 33 | DonasiController (C32) | Donatur (C04), TransaksiDonasi (C06) |
+| 34 | FormPendaftaranRelawanView (C33) | Volunteer (C08), PendaftaranRelawan (C09) |
+| 35 | RelawanController (C34) | Volunteer (C08), PendaftaranRelawan (C09), PembuatProject (C10) |
+| 36 | FormVolunteerManagementView (C35) | PembuatProject (C10), PendaftaranRelawan (C09) |
+| 37 | DetailStatusPendaftaranView (C36) | Volunteer (C08), PendaftaranRelawan (C09) |
+| 38 | FormProgresProjectView (C37) | PembuatProject (C10), Project (C02) |
+| 39 | ProgresController (C38) | PembuatProject (C10), Project (C02) |
+| 40 | FormRiwayatView (C39) | PenggunaUmum (C00) |
+| 41 | DetailRiwayatView (C40) | TransaksiDonasi (C06), Project (C02) |
+| 42 | RiwayatController (C41) | PenggunaUmum (C00), TransaksiDonasi (C06), Project (C02) |
 | ... | *...* | *...* |
 
 ## 5.1 Kelas PenggunaUmum
@@ -1259,6 +1278,1927 @@ Tabel 5.3.2. Query Operasi cekStatusLogin()
 **ID Kelas:** ...
 
 .............
+
+## 5.24 Kelas PetaWilayah
+
+**Nama Kelas:** PetaWilayah  
+**ID Kelas:** C05
+
+Tabel 5.24.a. Operasi Kelas PetaWilayah
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `tampilkanSebaranProject(): List<Project>` | public | Mengambil project berstatus dipublikasikan di dalam wilayah peta untuk ditampilkan sebagai penanda (KF14, KF15). Lihat Algo-101. |
+| `tampilkanSebaranCampaign(): List<Campaign>` | public | Mengambil campaign berstatus dipublikasikan di dalam wilayah peta (KF14, KF15). Lihat Algo-102. |
+
+Tabel 5.24.b. Atribut Kelas PetaWilayah
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `koordinatPusat` | private | `string` |
+| `radius` | private | `number` |
+
+### 5.24.1 Algoritma/Query
+
+**Nama Kelas:** PetaWilayah  
+**Nama Operasi:** `+ tampilkanSebaranProject(): List<Project>`  
+**ID Algoritma:** Algo-101
+
+```text
+FUNCTION tampilkanSebaranProject() -> List<Project>
+    {Project berstatus Diterima (dipublikasikan) di dalam wilayah peta (KF14).}
+
+    pusat <- pecahKoordinat(this.koordinatPusat)      {"lat,lng" -> (lat, lng)}
+
+    IF this.radius > 0 THEN
+        baris <- jalankanQuery(Q-101, pusat.lng, pusat.lat, this.radius * 1000)
+    ELSE
+        baris <- jalankanQuery(Q-102)                  {tanpa filter wilayah}
+    ENDIF
+
+    daftar <- DAFTAR KOSONG
+    FOR EACH b IN baris DO
+        daftar.tambah(Project dari b)
+    ENDFOR
+    RETURN daftar
+ENDFUNCTION
+```
+
+`radius` dalam kilometer dan dikalikan 1000 karena `ST_Distance_Sphere` mengembalikan meter. Bila `radius` 0, seluruh project dipublikasikan ditampilkan, yang dipakai saat peta pertama kali dibuka. Hanya project dengan `latitude` dan `longitude` terisi yang ikut, sebab penanda tidak dapat digambar tanpa koordinat.
+
+Tabel 5.24.1. Query Operasi tampilkanSebaranProject()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-101 | `SELECT id_project, nama, lokasi, latitude, longitude, kebutuhan_dana, dana_terkumpul FROM project WHERE status = 'Diterima' AND latitude IS NOT NULL AND longitude IS NOT NULL AND ST_Distance_Sphere(POINT(longitude, latitude), POINT(?, ?)) <= ?;` | Project dipublikasikan dalam radius dari titik pusat. |
+| Q-102 | `SELECT id_project, nama, lokasi, latitude, longitude, kebutuhan_dana, dana_terkumpul FROM project WHERE status = 'Diterima' AND latitude IS NOT NULL AND longitude IS NOT NULL;` | Seluruh project dipublikasikan yang punya koordinat. |
+
+### 5.24.2 Algoritma/Query
+
+**Nama Kelas:** PetaWilayah  
+**Nama Operasi:** `+ tampilkanSebaranCampaign(): List<Campaign>`  
+**ID Algoritma:** Algo-102
+
+```text
+FUNCTION tampilkanSebaranCampaign() -> List<Campaign>
+    {Campaign berstatus Diterima yang periodenya belum berakhir (KF14).}
+
+    pusat <- pecahKoordinat(this.koordinatPusat)
+
+    IF this.radius > 0 THEN
+        baris <- jalankanQuery(Q-103, pusat.lng, pusat.lat, this.radius * 1000)
+    ELSE
+        baris <- jalankanQuery(Q-104)
+    ENDIF
+
+    daftar <- DAFTAR KOSONG
+    FOR EACH b IN baris DO
+        daftar.tambah(Campaign dari b)
+    ENDFOR
+    RETURN daftar
+ENDFUNCTION
+```
+
+Campaign yang periodenya sudah lewat tidak ditampilkan karena tidak dapat lagi menerima donasi (UC06 Alt 3). Aturan yang sama dipakai oleh `cekStatusCampaign()` pada Algo-132 agar peta dan formulir donasi tidak saling bertentangan.
+
+Tabel 5.24.2. Query Operasi tampilkanSebaranCampaign()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-103 | `SELECT id_campaign, judul, lokasi, latitude, longitude, target_nominal, dana_terkumpul FROM campaign WHERE status = 'Diterima' AND periode_selesai >= CURDATE() AND latitude IS NOT NULL AND longitude IS NOT NULL AND ST_Distance_Sphere(POINT(longitude, latitude), POINT(?, ?)) <= ?;` | Campaign aktif dalam radius. |
+| Q-104 | `SELECT id_campaign, judul, lokasi, latitude, longitude, target_nominal, dana_terkumpul FROM campaign WHERE status = 'Diterima' AND periode_selesai >= CURDATE() AND latitude IS NOT NULL AND longitude IS NOT NULL;` | Seluruh campaign aktif yang punya koordinat. |
+
+## 5.25 Kelas Donatur
+
+**Nama Kelas:** Donatur  
+**ID Kelas:** C04
+
+Tabel 5.25.a. Operasi Kelas Donatur
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `getSaldo(): double` | public | Membaca saldo Donatur terkini (KF15). Lihat Algo-103. |
+| `kurangiSaldo(nominal: double): Boolean` | public | Mengurangi saldo Donatur secara atomik dan menolak bila saldo tidak cukup (KF15, KF16). Lihat Algo-104. |
+
+Tabel 5.25.b. Atribut Kelas Donatur
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idDonatur` | private | `string` |
+| `nama` | private | `string` |
+| `email` | private | `string` |
+| `saldo` | private | `number` |
+
+### 5.25.1 Algoritma/Query
+
+**Nama Kelas:** Donatur  
+**Nama Operasi:** `+ getSaldo(): double`  
+**ID Algoritma:** Algo-103
+
+```text
+FUNCTION getSaldo() -> double
+    {Saldo terkini Donatur (KF15).}
+
+    baris <- jalankanQuery(Q-105, this.idDonatur)
+    IF baris = KOSONG THEN
+        LEMPAR GalatTidakDitemukan("Donatur tidak ditemukan")
+    ENDIF
+
+    this.saldo <- baris.saldo
+    RETURN this.saldo
+ENDFUNCTION
+```
+
+Saldo selalu dibaca dari basis data, bukan dari atribut `saldo` yang mungkin sudah usang, karena aplikasi berjalan *serverless* dan tiap permintaan dapat ditangani instans berbeda. Di dalam `prosesDonasi()` pembacaan ini dilakukan dengan `FOR UPDATE` (lihat Algo-108).
+
+Tabel 5.25.1. Query Operasi getSaldo()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-105 | `SELECT saldo FROM donatur WHERE id_donatur = ?;` | Membaca saldo satu Donatur. |
+
+### 5.25.2 Algoritma/Query
+
+**Nama Kelas:** Donatur  
+**Nama Operasi:** `+ kurangiSaldo(nominal: double): Boolean`  
+**ID Algoritma:** Algo-104
+
+```text
+FUNCTION kurangiSaldo(nominal: double) -> Boolean
+    {Mengurangi saldo secara atomik. Dipanggil di dalam transaksi
+      milik TransaksiDonasi.prosesDonasi() (KF15, KF16).}
+
+    terpengaruh <- jalankanQuery(Q-106, nominal, this.idDonatur, nominal)
+
+    IF terpengaruh = 0 THEN
+        RETURN false                       {saldo kurang atau Donatur tidak ada}
+    ENDIF
+
+    this.saldo <- this.saldo - nominal
+    RETURN true
+ENDFUNCTION
+```
+
+Syarat `saldo >= ?` ditaruh di dalam `WHERE` agar pemeriksaan dan pengurangan terjadi dalam satu pernyataan. Dua donasi bersamaan dari Donatur yang sama tidak dapat sama-sama lolos dan membuat saldo negatif. Kolom `saldo` juga diberi `CHECK (saldo >= 0)` sebagai pengaman terakhir.
+
+Tabel 5.25.2. Query Operasi kurangiSaldo()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-106 | `UPDATE donatur SET saldo = saldo - ? WHERE id_donatur = ? AND saldo >= ?;` | Mengurangi saldo hanya bila cukup. Jumlah baris terpengaruh 0 berarti ditolak. |
+
+## 5.26 Kelas TransaksiDonasi
+
+**Nama Kelas:** TransaksiDonasi  
+**ID Kelas:** C06
+
+Tabel 5.26.a. Operasi Kelas TransaksiDonasi
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `validasiNominal(nominal: double): Boolean` | public | Memastikan nominal donasi lebih dari nol dan berada dalam batas yang ditetapkan (KF15). Lihat Algo-105. |
+| `validasiDuplikasi(idempotencyKey: String): Boolean` | public | Memeriksa apakah *idempotency key* sudah terdaftar (KF18). Lihat Algo-106. |
+| `prosesDonasi(): Boolean` | public | Menjalankan pengurangan saldo, penambahan dana tujuan, dan pencatatan transaksi dalam satu transaksi basis data (KF15, KF16, KF26). Lihat Algo-108. |
+| `buatTransaksi(idDonatur: String, idTujuan: String, jenisTujuan: String, nominal: double, idempotencyKey: String): TransaksiDonasi` | public | Membuat dan menyimpan catatan transaksi berstatus `berhasil` beserta ID uniknya (KF17). Lihat Algo-107. |
+| `getRiwayatTransaksi(idPengguna: String): List<String>` | public | Mengambil seluruh transaksi milik pengguna dari yang terbaru (KF27). Lihat Algo-109. |
+| `getDetailTransaksi(idTransaksi: String): String` | public | Mengambil rincian satu transaksi milik pengguna (KF27). Lihat Algo-110. |
+
+Tabel 5.26.b. Atribut Kelas TransaksiDonasi
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idTransaksi` | private | `string` |
+| `idDonatur` | private | `string` |
+| `idTujuan` | private | `string` |
+| `jenisTujuan` | private | `string` |
+| `idempotencyKey` | private | `string` |
+| `nominal` | private | `number` |
+| `tanggal` | private | `Date` |
+| `statusTransaksi` | private | `string` |
+
+### 5.26.1 Algoritma/Query
+
+**Nama Kelas:** TransaksiDonasi  
+**Nama Operasi:** `+ validasiNominal(nominal: double): Boolean`  
+**ID Algoritma:** Algo-105
+
+```text
+FUNCTION validasiNominal(nominal: double) -> Boolean
+    {Nominal donasi harus valid sebelum transaksi dimulai (KF15).}
+
+    IF nominal = NULL OR NOT adalahAngka(nominal) THEN
+        RETURN false
+    ENDIF
+    IF nominal <= 0 THEN
+        RETURN false
+    ENDIF
+    IF nominal > NOMINAL_MAKS THEN
+        RETURN false
+    ENDIF
+    IF jumlahDesimal(nominal) > 2 THEN
+        RETURN false
+    ENDIF
+
+    RETURN true
+ENDFUNCTION
+```
+
+`NOMINAL_MAKS` ditetapkan 1.000.000.000 agar tidak melebihi rentang `DECIMAL(15,2)`. Nilai ini perlu dikonfirmasi kelompok karena SKPL hanya mensyaratkan nominal lebih dari nol. Operasi ini tidak mengakses basis data sehingga aman dijalankan sebelum transaksi dibuka.
+
+### 5.26.2 Algoritma/Query
+
+**Nama Kelas:** TransaksiDonasi  
+**Nama Operasi:** `+ validasiDuplikasi(idempotencyKey: String): Boolean`  
+**ID Algoritma:** Algo-106
+
+```text
+FUNCTION validasiDuplikasi(idempotencyKey: String) -> Boolean
+    {true bila key SUDAH terdaftar, yaitu permintaan ini duplikat (KF18).}
+
+    IF idempotencyKey = NULL OR idempotencyKey = "" THEN
+        LEMPAR GalatValidasi("Idempotency key wajib ada")
+    ENDIF
+
+    jumlah <- jalankanQuery(Q-107, idempotencyKey)
+    RETURN jumlah > 0
+ENDFUNCTION
+```
+
+Hasil `true` berarti duplikat, jadi pemanggil menolak permintaan, sesuai diagram UC06 Alt 2 (`false: key belum terdaftar` pada skenario normal). *Unique index* pada `idempotency_key` menjaga kasus dua permintaan yang lolos pemeriksaan ini bersamaan: salah satunya gagal saat `INSERT` pada Algo-107 dan transaksinya dibatalkan.
+
+Tabel 5.26.2. Query Operasi validasiDuplikasi()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-107 | `SELECT COUNT(*) AS jumlah FROM transaksi_donasi WHERE idempotency_key = ?;` | Menghitung transaksi yang memakai key tersebut. |
+
+### 5.26.3 Algoritma/Query
+
+**Nama Kelas:** TransaksiDonasi  
+**Nama Operasi:** `+ buatTransaksi(idDonatur: String, idTujuan: String, jenisTujuan: String, nominal: double, idempotencyKey: String): TransaksiDonasi`  
+**ID Algoritma:** Algo-107
+
+```text
+FUNCTION buatTransaksi(idDonatur: String, idTujuan: String, jenisTujuan: String,
+                       nominal: double, idempotencyKey: String) -> TransaksiDonasi
+    {Mencatat transaksi berhasil (KF17). Dipanggil di dalam transaksi
+      basis data milik prosesDonasi().}
+
+    t <- TransaksiDonasi BARU
+    t.idTransaksi     <- buatUUID()
+    t.idDonatur       <- idDonatur
+    t.idTujuan        <- idTujuan
+    t.jenisTujuan     <- jenisTujuan
+    t.idempotencyKey  <- idempotencyKey
+    t.nominal         <- nominal
+    t.tanggal         <- waktuSekarang()
+    t.statusTransaksi <- "berhasil"
+
+    jalankanQuery(Q-108, t.idTransaksi, t.idDonatur, t.idTujuan, t.jenisTujuan,
+                         t.idempotencyKey, t.nominal, t.tanggal, t.statusTransaksi)
+    RETURN t
+ENDFUNCTION
+```
+
+Hanya transaksi berstatus `berhasil` yang pernah disimpan. Karena seluruh proses berjalan dalam satu transaksi basis data, kegagalan di tahap mana pun membatalkan baris ini juga sehingga tidak ada transaksi `gagal` yang tertinggal, dan *idempotency key* yang gagal diproses dapat dipakai lagi pada percobaan ulang (UC06 Alt 1). Nilai `gagal` pada Tabel 4.2 tetap dipertahankan untuk pencatatan tambahan bila kelompok memutuskan menyimpannya.
+
+Tabel 5.26.3. Query Operasi buatTransaksi()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-108 | `INSERT INTO transaksi_donasi (id_transaksi, id_donatur, id_tujuan, jenis_tujuan, idempotency_key, nominal, tanggal, status_transaksi) VALUES (?, ?, ?, ?, ?, ?, ?, ?);` | Menyimpan satu transaksi. `idempotency_key` memiliki *unique index*. |
+
+### 5.26.4 Algoritma/Query
+
+**Nama Kelas:** TransaksiDonasi  
+**Nama Operasi:** `+ prosesDonasi(idDonatur: String, idTujuan: String, jenisTujuan: String, nominal: double, idempotencyKey: String): Boolean`  
+**ID Algoritma:** Algo-108
+
+```text
+FUNCTION prosesDonasi(idDonatur: String, idTujuan: String, jenisTujuan: String,
+                      nominal: double, idempotencyKey: String) -> Boolean
+    {Satu transaksi atomik: kurangi saldo, tambah dana tujuan, catat transaksi
+      (KF15, KF16, KF17, KF26).}
+
+    MULAI_TRANSAKSI()
+
+    TRY
+        {1. Kunci baris Donatur sehingga donasi bersamaan menunggu giliran.}
+        donatur <- Donatur BARU(idDonatur)
+        saldoSaatIni <- jalankanQuery(Q-109, idDonatur).saldo
+        IF saldoSaatIni < nominal THEN
+            BATALKAN()
+            this.alasanGagal <- "SALDO_KURANG"
+            RETURN false                  {tidak ada yang berubah}
+        ENDIF
+
+        {2. Kurangi saldo.}
+        IF NOT donatur.kurangiSaldo(nominal) THEN
+            BATALKAN()
+            this.alasanGagal <- "SALDO_KURANG"
+            RETURN false
+        ENDIF
+
+        {3. Tambah dana tujuan; persentase capaian ikut diperbarui (KF26).}
+        IF jenisTujuan = "project" THEN
+            tujuan <- Project BARU(idTujuan)
+        ELSE
+            tujuan <- Campaign BARU(idTujuan)
+        ENDIF
+        IF NOT tujuan.tambahDana(nominal) THEN
+            BATALKAN()
+            this.alasanGagal <- "TUJUAN_DITUTUP"
+            RETURN false
+        ENDIF
+
+        {4. Catat transaksi.}
+        transaksi <- buatTransaksi(idDonatur, idTujuan, jenisTujuan,
+                                   nominal, idempotencyKey)
+        this.idTransaksi <- transaksi.idTransaksi
+
+        KOMIT()
+    CATCH galatKunciGanda
+        BATALKAN()
+        this.alasanGagal <- "DUPLIKAT"
+        RETURN false
+    CATCH galatApa PUN                    {gangguan jaringan atau basis data}
+        BATALKAN()
+        this.alasanGagal <- "GANGGUAN"
+        RETURN false
+    ENDTRY
+
+    RETURN true
+ENDFUNCTION
+```
+
+Seluruh langkah memakai satu koneksi dan satu transaksi MySQL (InnoDB, *isolation level* `REPEATABLE READ`), sehingga `BATALKAN()` mengembalikan saldo Donatur, dana tujuan, dan catatan transaksi sekaligus (KF16, KNF04). `FOR UPDATE` pada Q-109 memberi kunci baris yang menjadi realisasi blok `critical` pada diagram UC06. `alasanGagal` dibaca `DonasiController` untuk memilih pesan: `SALDO_KURANG`, `TUJUAN_DITUTUP`, `DUPLIKAT`, atau `GANGGUAN`.
+
+Tabel 5.26.4. Query Operasi prosesDonasi()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-109 | `SELECT saldo FROM donatur WHERE id_donatur = ? FOR UPDATE;` | Membaca sekaligus mengunci baris saldo Donatur sampai transaksi selesai. |
+
+### 5.26.5 Algoritma/Query
+
+**Nama Kelas:** TransaksiDonasi  
+**Nama Operasi:** `+ getRiwayatTransaksi(idPengguna: String): List<String>`  
+**ID Algoritma:** Algo-109
+
+```text
+FUNCTION getRiwayatTransaksi(idPengguna: String) -> List<String>
+    {Transaksi milik pengguna, terbaru lebih dulu (KF27).}
+
+    baris <- jalankanQuery(Q-110, idPengguna)
+
+    daftar <- DAFTAR KOSONG
+    FOR EACH b IN baris DO
+        daftar.tambah(JSON({ jenis: "transaksi", id: b.id_transaksi,
+                             nominal: b.nominal, tujuan: b.nama_tujuan,
+                             waktu: b.tanggal, status: b.status_transaksi }))
+    ENDFOR
+    RETURN daftar
+ENDFUNCTION
+```
+
+Daftar berupa string JSON agar sesuai tipe `List<String>` pada Tabel 4.1 dan dapat diurai oleh `FormRiwayatView`. Daftar kosong bukan galat: `RiwayatController` yang memutuskan menampilkan pesan riwayat kosong. Nama tujuan diambil dengan `LEFT JOIN` ke `project` dan `campaign` karena satu transaksi hanya menunjuk salah satunya.
+
+Tabel 5.26.5. Query Operasi getRiwayatTransaksi()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-110 | `SELECT t.id_transaksi, t.nominal, t.tanggal, t.status_transaksi, COALESCE(p.nama, c.judul) AS nama_tujuan FROM transaksi_donasi t LEFT JOIN project p ON t.jenis_tujuan = 'project' AND p.id_project = t.id_tujuan LEFT JOIN campaign c ON t.jenis_tujuan = 'campaign' AND c.id_campaign = t.id_tujuan WHERE t.id_donatur = ? ORDER BY t.tanggal DESC;` | Seluruh transaksi satu Donatur dari yang terbaru. |
+
+### 5.26.6 Algoritma/Query
+
+**Nama Kelas:** TransaksiDonasi  
+**Nama Operasi:** `+ getDetailTransaksi(idTransaksi: String): String`  
+**ID Algoritma:** Algo-110
+
+```text
+FUNCTION getDetailTransaksi(idTransaksi: String) -> String
+    {Rincian satu transaksi. Pemeriksaan kepemilikan dilakukan pemanggil
+      dengan menyertakan idDonatur pada kueri (KF27).}
+
+    baris <- jalankanQuery(Q-111, idTransaksi, this.idDonatur)
+    IF baris = KOSONG THEN
+        LEMPAR GalatTidakDitemukan("Transaksi tidak ditemukan")
+    ENDIF
+
+    RETURN JSON({ id: baris.id_transaksi, donatur: baris.nama_donatur,
+                  tujuan: baris.nama_tujuan, nominal: baris.nominal,
+                  waktu: baris.tanggal, status: baris.status_transaksi })
+ENDFUNCTION
+```
+
+Kueri memuat `id_donatur = ?` sehingga pengguna tidak dapat membuka transaksi orang lain dengan menebak `idTransaksi`. Transaksi milik orang lain diperlakukan sama seperti transaksi yang tidak ada agar keberadaannya tidak bocor.
+
+Tabel 5.26.6. Query Operasi getDetailTransaksi()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-111 | `SELECT t.id_transaksi, t.nominal, t.tanggal, t.status_transaksi, u.nama AS nama_donatur, COALESCE(p.nama, c.judul) AS nama_tujuan FROM transaksi_donasi t JOIN pengguna u ON u.id_pengguna = t.id_donatur LEFT JOIN project p ON t.jenis_tujuan = 'project' AND p.id_project = t.id_tujuan LEFT JOIN campaign c ON t.jenis_tujuan = 'campaign' AND c.id_campaign = t.id_tujuan WHERE t.id_transaksi = ? AND t.id_donatur = ?;` | Satu transaksi beserta nama Donatur dan tujuannya, terbatas pada pemiliknya. |
+
+## 5.27 Kelas BuktiTransaksi
+
+**Nama Kelas:** BuktiTransaksi  
+**ID Kelas:** C07
+
+Tabel 5.27.a. Operasi Kelas BuktiTransaksi
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `cetakBukti(): void` | public | Membentuk dan menyimpan rincian bukti dari transaksi yang berhasil (KF17). Lihat Algo-111. |
+| `tampilkanBukti(): String` | public | Mengembalikan rincian bukti untuk ditampilkan. Lihat Algo-112. |
+
+Tabel 5.27.b. Atribut Kelas BuktiTransaksi
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idBukti` | private | `string` |
+| `idTransaksi` | private | `string` |
+| `rincian` | private | `string` |
+
+### 5.27.1 Algoritma/Query
+
+**Nama Kelas:** BuktiTransaksi  
+**Nama Operasi:** `+ cetakBukti(): void`  
+**ID Algoritma:** Algo-111
+
+```text
+PROCEDURE cetakBukti()
+    {Membentuk dan menyimpan bukti dari transaksi yang baru berhasil (KF17).}
+
+    transaksi <- jalankanQuery(Q-112, this.idTransaksi)
+    IF transaksi = KOSONG OR transaksi.status_transaksi <> "berhasil" THEN
+        LEMPAR GalatValidasi("Bukti hanya dibuat untuk transaksi berhasil")
+    ENDIF
+
+    this.idBukti <- buatUUID()
+    this.rincian <- JSON({ donatur: transaksi.nama_donatur,
+                           tujuan: transaksi.nama_tujuan,
+                           nominal: transaksi.nominal,
+                           waktu: transaksi.tanggal,
+                           status: transaksi.status_transaksi })
+
+    jalankanQuery(Q-113, this.idBukti, this.idTransaksi, this.rincian)
+ENDPROCEDURE
+```
+
+Rincian disimpan sebagai salinan (*snapshot*) agar bukti tidak berubah bila nama project atau campaign kelak diubah. Kolom `id_transaksi` bersifat *unique* sehingga satu transaksi hanya punya satu bukti, dan pemanggilan ulang akibat percobaan ulang tidak membuat bukti ganda. Dijalankan setelah `prosesDonasi()` berhasil, di luar transaksi donasi: kegagalan di sini tidak membatalkan donasi dan dapat diulang.
+
+Tabel 5.27.1. Query Operasi cetakBukti()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-112 | `SELECT t.nominal, t.tanggal, t.status_transaksi, u.nama AS nama_donatur, COALESCE(p.nama, c.judul) AS nama_tujuan FROM transaksi_donasi t JOIN pengguna u ON u.id_pengguna = t.id_donatur LEFT JOIN project p ON t.jenis_tujuan = 'project' AND p.id_project = t.id_tujuan LEFT JOIN campaign c ON t.jenis_tujuan = 'campaign' AND c.id_campaign = t.id_tujuan WHERE t.id_transaksi = ?;` | Data sumber rincian bukti. |
+| Q-113 | `INSERT INTO bukti_transaksi (id_bukti, id_transaksi, rincian) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE id_bukti = id_bukti;` | Menyimpan bukti; pemanggilan ulang untuk transaksi yang sama tidak mengubah apa pun. |
+
+### 5.27.2 Algoritma/Query
+
+**Nama Kelas:** BuktiTransaksi  
+**Nama Operasi:** `+ tampilkanBukti(): String`  
+**ID Algoritma:** Algo-112
+
+```text
+FUNCTION tampilkanBukti() -> String
+    {Mengembalikan rincian bukti untuk ditampilkan.}
+
+    baris <- jalankanQuery(Q-114, this.idTransaksi)
+    IF baris = KOSONG THEN
+        LEMPAR GalatTidakDitemukan("Bukti transaksi tidak ditemukan")
+    ENDIF
+
+    this.idBukti <- baris.id_bukti
+    this.rincian <- baris.rincian
+    RETURN this.rincian
+ENDFUNCTION
+```
+
+Kepemilikan bukti diperiksa oleh `DonasiController.getBuktiTransaksi()` (Algo-122) sebelum operasi ini dipanggil.
+
+Tabel 5.27.2. Query Operasi tampilkanBukti()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-114 | `SELECT id_bukti, rincian FROM bukti_transaksi WHERE id_transaksi = ?;` | Mengambil bukti satu transaksi. |
+
+## 5.28 Kelas Volunteer
+
+**Nama Kelas:** Volunteer  
+**ID Kelas:** C08
+
+Tabel 5.28.a. Operasi Kelas Volunteer
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `isiFormulir(dataDiri: String, keahlian: String, pengalaman: String, ketersediaanJadwal: String): void` | public | Menampung data diri, keahlian, pengalaman, dan ketersediaan jadwal yang diisi Volunteer. Tidak mengakses basis data. |
+| `kirimPendaftaran(idProject: String): Boolean` | public | Meneruskan data formulir menjadi pendaftaran pada project terpilih (KF19, KF20). Lihat Algo-118. |
+
+Tabel 5.28.b. Atribut Kelas Volunteer
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idVolunteer` | private | `string` |
+| `nama` | private | `string` |
+| `email` | private | `string` |
+
+### 5.28.1 Algoritma/Query
+
+**Nama Kelas:** Volunteer  
+**Nama Operasi:** `+ kirimPendaftaran(idProject: String): Boolean`  
+**ID Algoritma:** Algo-118
+
+```text
+FUNCTION kirimPendaftaran(idProject: String) -> Boolean
+    {Meneruskan data formulir yang sudah ditampung isiFormulir() (KF19, KF20).}
+
+    pendaftaran <- PendaftaranRelawan.buatPendaftaran(this.idVolunteer, idProject,
+                       this.dataDiri, this.keahlian, this.pengalaman,
+                       this.ketersediaanJadwal)
+
+    IF NOT pendaftaran.validasiKelengkapan() THEN
+        RETURN false
+    ENDIF
+    IF pendaftaran.cekPendaftaranGanda() THEN
+        RETURN false
+    ENDIF
+
+    RETURN pendaftaran.simpanPendaftaran()
+ENDFUNCTION
+```
+
+Urutan pemeriksaan sama dengan `RelawanController.daftarRelawan()` (Algo-123) tetapi tanpa pemeriksaan login dan kuota, yang menjadi tugas *controller*. Alasan penolakan dibedakan oleh *controller*, bukan operasi ini.
+
+## 5.29 Kelas PendaftaranRelawan
+
+**Nama Kelas:** PendaftaranRelawan  
+**ID Kelas:** C09
+
+Tabel 5.29.a. Operasi Kelas PendaftaranRelawan
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `buatPendaftaran(idVolunteer: String, idProject: String, dataDiri: String, keahlian: String, pengalaman: String, ketersediaanJadwal: String): PendaftaranRelawan` | public | Membentuk objek pendaftaran berstatus `pending` dari data formulir (KF20). Lihat Algo-119. |
+| `validasiKelengkapan(): Boolean` | public | Memastikan data diri, keahlian, pengalaman, dan ketersediaan jadwal terisi (KF19). Lihat Algo-113. |
+| `cekPendaftaranGanda(): Boolean` | public | Memeriksa apakah Volunteer sudah mendaftar pada project yang sama (KF19). Lihat Algo-114. |
+| `simpanPendaftaran(): Boolean` | public | Menyimpan pendaftaran berstatus `pending` (KF20). Lihat Algo-115. |
+| `getDetailPendaftar(): String` | public | Mengambil data lengkap satu pendaftar untuk ditinjau Pembuat Project (KF21). Lihat Algo-116. |
+| `perbaruiStatus(statusBaru: String): void` | public | Mengubah status pendaftaran menjadi `accepted` atau `rejected` (KF21). Lihat Algo-117. |
+
+Tabel 5.29.b. Atribut Kelas PendaftaranRelawan
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idPendaftaran` | private | `string` |
+| `idVolunteer` | private | `string` |
+| `idProject` | private | `string` |
+| `dataDiri` | private | `string` |
+| `keahlian` | private | `string` |
+| `pengalaman` | private | `string` |
+| `ketersediaanJadwal` | private | `string` |
+| `statusPendaftaran` | private | `string` |
+
+### 5.29.1 Algoritma/Query
+
+**Nama Kelas:** PendaftaranRelawan  
+**Nama Operasi:** `+ buatPendaftaran(idVolunteer: String, idProject: String, dataDiri: String, keahlian: String, pengalaman: String, ketersediaanJadwal: String): PendaftaranRelawan`  
+**ID Algoritma:** Algo-119
+
+```text
+FUNCTION buatPendaftaran(idVolunteer: String, idProject: String, dataDiri: String,
+                         keahlian: String, pengalaman: String,
+                         ketersediaanJadwal: String) -> PendaftaranRelawan
+    {Membentuk objek pendaftaran di memori. Belum disimpan (KF20).}
+
+    p <- PendaftaranRelawan BARU
+    p.idPendaftaran      <- buatUUID()
+    p.idVolunteer        <- idVolunteer
+    p.idProject          <- idProject
+    p.dataDiri           <- trim(dataDiri)
+    p.keahlian           <- trim(keahlian)
+    p.pengalaman         <- trim(pengalaman)
+    p.ketersediaanJadwal <- trim(ketersediaanJadwal)
+    p.statusPendaftaran  <- "pending"
+
+    RETURN p
+ENDFUNCTION
+```
+
+Status awal selalu `pending`. Nilai ini ditetapkan di sini, bukan diterima dari formulir, supaya pengguna tidak dapat mendaftarkan diri langsung sebagai `accepted`.
+
+### 5.29.2 Algoritma/Query
+
+**Nama Kelas:** PendaftaranRelawan  
+**Nama Operasi:** `+ validasiKelengkapan(): Boolean`  
+**ID Algoritma:** Algo-113
+
+```text
+FUNCTION validasiKelengkapan() -> Boolean
+    {Keempat isian wajib terisi (KF19).}
+
+    IF this.dataDiri = ""           THEN RETURN false ENDIF
+    IF this.keahlian = ""           THEN RETURN false ENDIF
+    IF this.pengalaman = ""         THEN RETURN false ENDIF
+    IF this.ketersediaanJadwal = "" THEN RETURN false ENDIF
+
+    RETURN true
+ENDFUNCTION
+```
+
+Isian yang hanya berisi spasi dianggap kosong karena `buatPendaftaran()` sudah memangkasnya. Operasi ini tidak mengakses basis data. `RelawanController` menyebut bagian yang belum terisi dengan memeriksa tiap atribut sendiri-sendiri saat menyusun pesan kesalahan.
+
+### 5.29.3 Algoritma/Query
+
+**Nama Kelas:** PendaftaranRelawan  
+**Nama Operasi:** `+ cekPendaftaranGanda(): Boolean`  
+**ID Algoritma:** Algo-114
+
+```text
+FUNCTION cekPendaftaranGanda() -> Boolean
+    {true bila Volunteer sudah pernah mendaftar pada project ini (KF19).}
+
+    jumlah <- jalankanQuery(Q-115, this.idVolunteer, this.idProject)
+    RETURN jumlah > 0
+ENDFUNCTION
+```
+
+Pendaftaran yang sudah `rejected` tetap dihitung sebagai pendaftaran sehingga Volunteer tidak dapat mengajukan ulang pada project yang sama. Jika kelompok ingin membolehkan pengajuan ulang, tambahkan `AND status_pendaftaran <> 'rejected'` pada Q-115. *Unique index* `(id_volunteer, id_project)` menjaga kasus dua pengiriman bersamaan.
+
+Tabel 5.29.3. Query Operasi cekPendaftaranGanda()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-115 | `SELECT COUNT(*) AS jumlah FROM pendaftaran_relawan WHERE id_volunteer = ? AND id_project = ?;` | Menghitung pendaftaran Volunteer pada project tersebut. |
+
+### 5.29.4 Algoritma/Query
+
+**Nama Kelas:** PendaftaranRelawan  
+**Nama Operasi:** `+ simpanPendaftaran(): Boolean`  
+**ID Algoritma:** Algo-115
+
+```text
+FUNCTION simpanPendaftaran() -> Boolean
+    {Menyimpan pendaftaran berstatus pending (KF20).}
+
+    TRY
+        jalankanQuery(Q-116, this.idPendaftaran, this.idVolunteer, this.idProject,
+                             this.dataDiri, this.keahlian, this.pengalaman,
+                             this.ketersediaanJadwal, this.statusPendaftaran,
+                             waktuSekarang())
+    CATCH galatKunciGanda
+        RETURN false                 {pendaftaran ganda yang lolos cekPendaftaranGanda()}
+    ENDTRY
+
+    RETURN true
+ENDFUNCTION
+```
+
+Blok `CATCH` menangani dua pengiriman yang tiba hampir bersamaan: keduanya lolos `cekPendaftaranGanda()`, tetapi hanya satu yang berhasil memasukkan baris.
+
+Tabel 5.29.4. Query Operasi simpanPendaftaran()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-116 | `INSERT INTO pendaftaran_relawan (id_pendaftaran, id_volunteer, id_project, data_diri, keahlian, pengalaman, ketersediaan_jadwal, status_pendaftaran, tanggal_daftar) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);` | Menyimpan satu pendaftaran. Pasangan `(id_volunteer, id_project)` memiliki *unique index*. |
+
+### 5.29.5 Algoritma/Query
+
+**Nama Kelas:** PendaftaranRelawan  
+**Nama Operasi:** `+ getDetailPendaftar(): String`  
+**ID Algoritma:** Algo-116
+
+```text
+FUNCTION getDetailPendaftar() -> String
+    {Data lengkap pendaftar untuk ditinjau Pembuat Project (KF21).}
+
+    baris <- jalankanQuery(Q-117, this.idPendaftaran)
+    IF baris = KOSONG THEN
+        LEMPAR GalatTidakDitemukan("Pendaftaran tidak ditemukan")
+    ENDIF
+
+    RETURN JSON({ id: baris.id_pendaftaran, nama: baris.nama,
+                  dataDiri: baris.data_diri, keahlian: baris.keahlian,
+                  pengalaman: baris.pengalaman,
+                  ketersediaanJadwal: baris.ketersediaan_jadwal,
+                  status: baris.status_pendaftaran })
+ENDFUNCTION
+```
+
+Hak Pembuat Project atas pendaftaran ini diperiksa `RelawanController` (Algo-124 dan Algo-125) sebelum operasi ini dipanggil. Email Volunteer sengaja tidak ikut dikembalikan karena tidak dibutuhkan untuk keputusan.
+
+Tabel 5.29.5. Query Operasi getDetailPendaftar()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-117 | `SELECT r.id_pendaftaran, u.nama, r.data_diri, r.keahlian, r.pengalaman, r.ketersediaan_jadwal, r.status_pendaftaran FROM pendaftaran_relawan r JOIN pengguna u ON u.id_pengguna = r.id_volunteer WHERE r.id_pendaftaran = ?;` | Detail satu pendaftar beserta namanya. |
+
+### 5.29.6 Algoritma/Query
+
+**Nama Kelas:** PendaftaranRelawan  
+**Nama Operasi:** `+ perbaruiStatus(statusBaru: String): void`  
+**ID Algoritma:** Algo-117
+
+```text
+PROCEDURE perbaruiStatus(statusBaru: String)
+    {Mengubah status pendaftaran hasil keputusan Pembuat Project (KF21).}
+
+    IF statusBaru <> "accepted" AND statusBaru <> "rejected" THEN
+        LEMPAR GalatValidasi("Keputusan tidak dikenal")
+    ENDIF
+
+    terpengaruh <- jalankanQuery(Q-118, statusBaru, this.idPendaftaran)
+    IF terpengaruh = 0 THEN
+        LEMPAR GalatKonflik("Pendaftaran sudah diputuskan atau tidak ditemukan")
+    ENDIF
+
+    this.statusPendaftaran <- statusBaru
+ENDPROCEDURE
+```
+
+`AND status_pendaftaran = 'pending'` pada Q-118 membuat keputusan hanya dapat diambil satu kali. Dua Pembuat Project yang menekan tombol bersamaan tidak saling menimpa, dan keputusan yang sudah final tidak dapat diubah diam-diam.
+
+Tabel 5.29.6. Query Operasi perbaruiStatus()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-118 | `UPDATE pendaftaran_relawan SET status_pendaftaran = ? WHERE id_pendaftaran = ? AND status_pendaftaran = 'pending';` | Mengubah status dari `pending` ke keputusan. |
+
+## 5.30 Kelas FormPetaWilayahView
+
+**Nama Kelas:** FormPetaWilayahView  
+**ID Kelas:** C29
+
+Tabel 5.30.a. Operasi Kelas FormPetaWilayahView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaPeta(): void` | public | Meminta data sebaran dari controller saat Donatur atau Volunteer membuka peta. |
+| `tampilkanPeta(sebaran: List<String>): void` | public | Menggambar penanda campaign dan project pada peta dari data sebaran. |
+
+Tabel 5.30.b. Atribut Kelas FormPetaWilayahView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.31 Kelas FormDonasiView
+
+**Nama Kelas:** FormDonasiView  
+**ID Kelas:** C30
+
+Tabel 5.31.a. Operasi Kelas FormDonasiView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `tekanDonasi(): void` | public | Menerima pilihan tujuan donasi (project atau campaign) dari pengguna dan meminta formulir. |
+| `tampilkanFormulir(saldo: double): void` | public | Menampilkan formulir donasi beserta saldo Donatur. |
+| `isiNominal(nominal: double): void` | public | Menerima nominal donasi dari Donatur. |
+| `konfirmasiPembayaran(): void` | public | Membangkitkan *idempotency key* sekali per formulir dan mengirim permintaan donasi. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan saldo tidak cukup, nominal tidak valid, tujuan ditutup, duplikasi, atau kegagalan transaksi. |
+
+Tabel 5.31.b. Atribut Kelas FormDonasiView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.32 Kelas DetailBuktiTransaksiView
+
+**Nama Kelas:** DetailBuktiTransaksiView  
+**ID Kelas:** C31
+
+Tabel 5.32.a. Operasi Kelas DetailBuktiTransaksiView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaBukti(idTransaksi: String): void` | public | Meminta bukti transaksi berdasarkan ID transaksi. |
+| `tampilkanBukti(bukti: String): void` | public | Menampilkan Donatur, tujuan dana, nominal, waktu, dan status transaksi. |
+
+Tabel 5.32.b. Atribut Kelas DetailBuktiTransaksiView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.33 Kelas DonasiController
+
+**Nama Kelas:** DonasiController  
+**ID Kelas:** C32
+
+Tabel 5.33.a. Operasi Kelas DonasiController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `getSebaran(): List<String>` | public | Memeriksa login lalu mengambil sebaran project dan campaign dari `PetaWilayah`. Lihat Algo-145. |
+| `bukaFormDonasi(idTujuan: String, jenisTujuan: String): Boolean` | public | Memeriksa login dan status tujuan, lalu mengambil saldo Donatur. Lihat Algo-120. |
+| `konfirmasiDonasi(idTujuan: String, jenisTujuan: String, nominal: double, idempotencyKey: String): Boolean` | public | Mengoordinasikan validasi nominal, pemeriksaan duplikasi, dan pemrosesan donasi (KF15–KF18, KF26). Lihat Algo-121. |
+| `getBuktiTransaksi(idTransaksi: String): String` | public | Mengambil bukti transaksi milik Donatur yang sedang login. Lihat Algo-122. |
+| `getPesanKesalahan(): String` | public | Mengembalikan `pesanKesalahan` terakhir untuk ditampilkan view. |
+
+Tabel 5.33.b. Atribut Kelas DonasiController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `pesanKesalahan` | private | `string` |
+
+### 5.33.1 Algoritma/Query
+
+**Nama Kelas:** DonasiController  
+**Nama Operasi:** `+ bukaFormDonasi(idTujuan: String, jenisTujuan: String): Boolean`  
+**ID Algoritma:** Algo-120
+
+```text
+FUNCTION bukaFormDonasi(idTujuan: String, jenisTujuan: String) -> Boolean
+    {Memastikan Donatur boleh berdonasi sebelum formulir tampil (KF14, KF15).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN false
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    IF jenisTujuan = "project" THEN
+        tujuan <- Project BARU(idTujuan)
+        aktif  <- tujuan.cekStatusProject()
+    ELSE
+        tujuan <- Campaign BARU(idTujuan)
+        aktif  <- tujuan.cekStatusCampaign()
+    ENDIF
+
+    IF NOT aktif THEN
+        this.pesanKesalahan <- "Campaign atau project sudah berakhir atau ditutup"
+        RETURN false
+    ENDIF
+
+    donatur <- Donatur BARU(idPengguna)
+    this.saldoDonatur <- donatur.getSaldo()
+    RETURN true
+ENDFUNCTION
+```
+
+`idDonatur` tidak diterima dari klien melainkan diambil dari sesi, sehingga pengguna tidak dapat berdonasi atas nama orang lain. Parameter `idDonatur` pada pesan `bukaFormDonasi` di diagram UC06 karena itu tidak diperlukan dan dapat dihapus dari diagram. `idSesiPermintaan` adalah nilai sesi dari *cookie* permintaan HTTP.
+
+### 5.33.2 Algoritma/Query
+
+**Nama Kelas:** DonasiController  
+**Nama Operasi:** `+ konfirmasiDonasi(idTujuan: String, jenisTujuan: String, nominal: double, idempotencyKey: String): Boolean`  
+**ID Algoritma:** Algo-121
+
+```text
+FUNCTION konfirmasiDonasi(idTujuan: String, jenisTujuan: String, nominal: double,
+                          idempotencyKey: String) -> Boolean
+    {Mengoordinasikan donasi dari validasi sampai bukti (KF15-KF18, KF26).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN false
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    t <- TransaksiDonasi BARU
+
+    IF NOT t.validasiNominal(nominal) THEN
+        this.pesanKesalahan <- "Nominal donasi tidak valid"
+        RETURN false
+    ENDIF
+
+    IF t.validasiDuplikasi(idempotencyKey) THEN
+        this.pesanKesalahan <- "Permintaan donasi ini sudah diproses"
+        RETURN false
+    ENDIF
+
+    IF NOT t.prosesDonasi(idPengguna, idTujuan, jenisTujuan, nominal, idempotencyKey) THEN
+        PILIH t.alasanGagal
+            "SALDO_KURANG"   : this.pesanKesalahan <- "Saldo tidak mencukupi"
+            "TUJUAN_DITUTUP" : this.pesanKesalahan <- "Campaign atau project sudah berakhir atau ditutup"
+            "DUPLIKAT"       : this.pesanKesalahan <- "Permintaan donasi ini sudah diproses"
+            LAINNYA          : this.pesanKesalahan <- "Transaksi dibatalkan, saldo Anda tidak berubah"
+        ENDPILIH
+        RETURN false
+    ENDIF
+
+    bukti <- BuktiTransaksi BARU(t.idTransaksi)
+    bukti.cetakBukti()
+    this.idTransaksiTerakhir <- t.idTransaksi
+    RETURN true
+ENDFUNCTION
+```
+
+Pemeriksaan status tujuan diulang di dalam `prosesDonasi()` (blok `critical` pada diagram UC06) karena campaign dapat berakhir di antara pembukaan formulir dan penekanan tombol konfirmasi. `nominal` dikirim klien tetapi dibatasi ulang di sisi server oleh `validasiNominal()`. Bukti dibuat setelah transaksi donasi selesai; bila `cetakBukti()` gagal, donasi tetap sah dan bukti dapat dibuat ulang tanpa menggandakan baris (lihat Algo-111).
+
+### 5.33.3 Algoritma/Query
+
+**Nama Kelas:** DonasiController  
+**Nama Operasi:** `+ getBuktiTransaksi(idTransaksi: String): String`  
+**ID Algoritma:** Algo-122
+
+```text
+FUNCTION getBuktiTransaksi(idTransaksi: String) -> String
+    {Bukti hanya boleh dilihat Donatur pemilik transaksi (KF17).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN ""
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    jumlah <- jalankanQuery(Q-119, idTransaksi, idPengguna)
+    IF jumlah = 0 THEN
+        this.pesanKesalahan <- "Bukti transaksi tidak ditemukan"
+        RETURN ""
+    ENDIF
+
+    bukti <- BuktiTransaksi BARU(idTransaksi)
+    RETURN bukti.tampilkanBukti()
+ENDFUNCTION
+```
+
+Tanpa pemeriksaan kepemilikan, siapa pun yang login dapat membaca bukti transaksi orang lain dengan mengganti `idTransaksi` pada alamat.
+
+Tabel 5.33.3. Query Operasi getBuktiTransaksi()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-119 | `SELECT COUNT(*) AS jumlah FROM transaksi_donasi WHERE id_transaksi = ? AND id_donatur = ?;` | Memastikan transaksi milik pengguna yang login. |
+
+### 5.33.4 Algoritma/Query
+
+**Nama Kelas:** DonasiController  
+**Nama Operasi:** `+ getSebaran(): List<String>`  
+**ID Algoritma:** Algo-145
+
+```text
+FUNCTION getSebaran() -> List<String>
+    {Sebaran project dan campaign untuk peta (KF14). Dipakai juga oleh
+      RelawanController.getSebaranProject() dengan hanya mengambil bagian project.}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN DAFTAR KOSONG
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    peta <- PetaWilayah BARU(koordinatPusatBawaan, radiusBawaan)
+
+    sebaran <- DAFTAR KOSONG
+    FOR EACH p IN peta.tampilkanSebaranProject() DO
+        sebaran.tambah(JSON({ jenis: "project", id: p.idProject, nama: p.nama,
+                              lokasi: p.lokasi, lat: p.latitude, lng: p.longitude }))
+    ENDFOR
+    FOR EACH c IN peta.tampilkanSebaranCampaign() DO
+        sebaran.tambah(JSON({ jenis: "campaign", id: c.idCampaign, nama: c.judul,
+                              lokasi: c.lokasi, lat: c.latitude, lng: c.longitude }))
+    ENDFOR
+
+    RETURN sebaran
+ENDFUNCTION
+```
+
+Operasi ini hanya menggabungkan dua hasil `PetaWilayah` sehingga tidak ada kueri baru. `latitude` dan `longitude` adalah kolom yang perlu ditambahkan pada tabel `project` dan `campaign` (lihat Tabel 5.B.1).
+
+## 5.34 Kelas FormPendaftaranRelawanView
+
+**Nama Kelas:** FormPendaftaranRelawanView  
+**ID Kelas:** C33
+
+Tabel 5.34.a. Operasi Kelas FormPendaftaranRelawanView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `tekanDaftar(idProject: String): void` | public | Menerima pilihan project yang ingin diikuti dan meminta formulir. |
+| `tampilkanFormulir(): void` | public | Menampilkan formulir pendaftaran relawan. |
+| `isiFormulir(dataDiri: String, keahlian: String, pengalaman: String, ketersediaanJadwal: String): void` | public | Menerima data diri, keahlian, pengalaman, dan ketersediaan jadwal. |
+| `kirimPendaftaran(): void` | public | Mengirim data formulir ke controller. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan formulir tidak lengkap, pendaftaran ganda, atau kuota penuh/pendaftaran ditutup. |
+| `tampilkanStatus(status: String): void` | public | Menampilkan status pendaftaran setelah dikirim. |
+
+Tabel 5.34.b. Atribut Kelas FormPendaftaranRelawanView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.35 Kelas RelawanController
+
+**Nama Kelas:** RelawanController  
+**ID Kelas:** C34
+
+Tabel 5.35.a. Operasi Kelas RelawanController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `getSebaranProject(): List<String>` | public | Sama dengan `DonasiController.getSebaran()` tetapi hanya mengembalikan project. Lihat Algo-145. |
+| `bukaFormPendaftaran(idProject: String): Boolean` | public | Memeriksa login, status pendaftaran project, dan kuota sebelum formulir dibuka (KF19). Lihat Algo-123. |
+| `daftarRelawan(idProject: String, dataDiri: String, keahlian: String, pengalaman: String, ketersediaanJadwal: String): Boolean` | public | Mengoordinasikan pendaftaran relawan dari validasi sampai penyimpanan (KF19, KF20). Lihat Algo-123. |
+| `getPesanKesalahan(): String` | public | Mengembalikan `pesanKesalahan` terakhir untuk ditampilkan view. |
+| `getDaftarPendaftar(idProject: String): List<String>` | public | Mengambil daftar pendaftar project milik Pembuat Project yang login (KF21). Lihat Algo-124. |
+| `buatKeputusan(idPendaftaran: String, keputusan: String): void` | public | Menyimpan keputusan terima/tolak atas satu pendaftaran (KF21). Lihat Algo-125. |
+| `getStatusPendaftaran(idPendaftaran: String): String` | public | Mengambil status pendaftaran milik Volunteer beserta instruksi kegiatan bila diterima (KF22). Lihat Algo-126. |
+
+Tabel 5.35.b. Atribut Kelas RelawanController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `pesanKesalahan` | private | `string` |
+
+### 5.35.1 Algoritma/Query
+
+**Nama Kelas:** RelawanController  
+**Nama Operasi:** `+ daftarRelawan(idProject: String, dataDiri: String, keahlian: String, pengalaman: String, ketersediaanJadwal: String): Boolean`  
+**ID Algoritma:** Algo-123
+
+```text
+FUNCTION daftarRelawan(idProject: String, dataDiri: String, keahlian: String,
+                       pengalaman: String, ketersediaanJadwal: String) -> Boolean
+    {Alur pendaftaran relawan. bukaFormPendaftaran() menjalankan langkah 1-3
+      yang sama sehingga formulir tidak tampil bagi project yang sudah ditutup.}
+
+    {1. Login}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN false
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    {2. Pendaftaran project masih dibuka}
+    project <- Project BARU(idProject)
+    IF NOT project.cekStatusPendaftaran() THEN
+        this.pesanKesalahan <- "Pendaftaran relawan pada project ini sudah ditutup"
+        RETURN false
+    ENDIF
+
+    {3. Kuota masih tersedia}
+    IF NOT project.cekKuota() THEN
+        this.pesanKesalahan <- "Kuota volunteer sudah penuh"
+        RETURN false
+    ENDIF
+
+    {4. Kelengkapan formulir}
+    p <- PendaftaranRelawan.buatPendaftaran(idPengguna, idProject, dataDiri,
+                                            keahlian, pengalaman, ketersediaanJadwal)
+    IF NOT p.validasiKelengkapan() THEN
+        this.pesanKesalahan <- "Data pendaftaran belum lengkap"
+        RETURN false
+    ENDIF
+
+    {5. Pendaftaran ganda}
+    IF p.cekPendaftaranGanda() THEN
+        this.pesanKesalahan <- "Anda sudah mendaftar pada project ini"
+        RETURN false
+    ENDIF
+
+    {6. Simpan}
+    IF NOT p.simpanPendaftaran() THEN
+        this.pesanKesalahan <- "Anda sudah mendaftar pada project ini"
+        RETURN false
+    ENDIF
+
+    this.idPendaftaranTerakhir <- p.idPendaftaran
+    RETURN true
+ENDFUNCTION
+```
+
+Pemeriksaan project (langkah 2-3) dilakukan sebelum pemeriksaan formulir karena itulah urutan pada diagram UC07 Alt 3 (kuota penuh) dan Alt 1 (formulir tidak lengkap). Peran Volunteer tidak dicek: berdasarkan Tabel 4.2 setiap pengguna umum yang login boleh mendaftar. Kuota hanya dihitung dari pendaftar `accepted` (lihat Algo-136), sehingga `cekKuota()` diulang saat keputusan diambil pada Algo-125.
+
+### 5.35.2 Algoritma/Query
+
+**Nama Kelas:** RelawanController  
+**Nama Operasi:** `+ getDaftarPendaftar(idProject: String): List<String>`  
+**ID Algoritma:** Algo-124
+
+```text
+FUNCTION getDaftarPendaftar(idProject: String) -> List<String>
+    {Daftar pendaftar project milik Pembuat Project yang login (KF21).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN DAFTAR KOSONG
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    project <- Project BARU(idProject)
+    IF NOT project.validasiHakAkses(idPengguna) THEN
+        this.pesanKesalahan <- "Anda tidak berhak mengelola project ini"
+        RETURN DAFTAR KOSONG
+    ENDIF
+
+    IF NOT project.cekAdaPendaftar() THEN
+        RETURN DAFTAR KOSONG            {view menampilkan pesan belum ada pendaftar}
+    ENDIF
+
+    daftar <- DAFTAR KOSONG
+    FOR EACH p IN project.getDaftarPendaftar() DO
+        daftar.tambah(p.getDetailPendaftar())
+    ENDFOR
+    RETURN daftar
+ENDFUNCTION
+```
+
+Daftar kosong dan akses ditolak sama-sama mengembalikan daftar kosong, tetapi hanya akses ditolak yang mengisi `pesanKesalahan`, sehingga view dapat membedakan keduanya. Pada diagram UC08, `getDetailPendaftar()` dipanggil per pendaftar; implementasi dapat menggantinya dengan satu `JOIN` bila jumlah pendaftar besar.
+
+### 5.35.3 Algoritma/Query
+
+**Nama Kelas:** RelawanController  
+**Nama Operasi:** `+ buatKeputusan(idPendaftaran: String, keputusan: String): void`  
+**ID Algoritma:** Algo-125
+
+```text
+PROCEDURE buatKeputusan(idPendaftaran: String, keputusan: String)
+    {Menyimpan keputusan terima/tolak (KF21).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        LEMPAR GalatAkses("Silakan login terlebih dahulu")
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    p <- PendaftaranRelawan BARU(idPendaftaran)
+    baris <- jalankanQuery(Q-120, idPendaftaran)
+    IF baris = KOSONG THEN
+        LEMPAR GalatTidakDitemukan("Pendaftaran tidak ditemukan")
+    ENDIF
+
+    project <- Project BARU(baris.id_project)
+    IF NOT project.validasiHakAkses(idPengguna) THEN
+        LEMPAR GalatAkses("Anda tidak berhak memutuskan pendaftaran ini")
+    ENDIF
+
+    IF keputusan <> "accepted" AND keputusan <> "rejected" THEN
+        LEMPAR GalatValidasi("Keputusan harus accepted atau rejected")
+    ENDIF
+
+    IF keputusan = "accepted" AND NOT project.cekKuota() THEN
+        LEMPAR GalatKonflik("Kuota volunteer sudah penuh")
+    ENDIF
+
+    p.perbaruiStatus(keputusan)
+ENDPROCEDURE
+```
+
+Kuota diperiksa lagi saat menerima karena pendaftar yang masih `pending` tidak dihitung pada `cekKuota()`, sehingga banyak orang dapat mendaftar sekaligus tetapi hanya sejumlah kuota yang dapat diterima. Kunci pemeriksaan hak akses adalah `idProject` yang diambil dari basis data, bukan dari klien. Pemeriksaan ini mengikuti diagram UC08 yang memanggil `perbaruiStatus()` setelah `buatKeputusan()`.
+
+Tabel 5.35.3. Query Operasi buatKeputusan()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-120 | `SELECT id_project, id_volunteer FROM pendaftaran_relawan WHERE id_pendaftaran = ?;` | Mencari project dan Volunteer dari satu pendaftaran. |
+
+### 5.35.4 Algoritma/Query
+
+**Nama Kelas:** RelawanController  
+**Nama Operasi:** `+ getStatusPendaftaran(idPendaftaran: String): String`  
+**ID Algoritma:** Algo-126
+
+```text
+FUNCTION getStatusPendaftaran(idPendaftaran: String) -> String
+    {Status pendaftaran milik Volunteer beserta instruksi bila diterima (KF22).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN ""
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    baris <- jalankanQuery(Q-121, idPendaftaran, idPengguna)
+    IF baris = KOSONG THEN
+        this.pesanKesalahan <- "Pendaftaran tidak ditemukan"
+        RETURN ""
+    ENDIF
+
+    hasil <- { status: baris.status_pendaftaran }
+    IF baris.status_pendaftaran = "accepted" THEN
+        hasil.lokasi <- baris.lokasi
+        hasil.jadwal <- baris.ketersediaan_jadwal
+    ENDIF
+
+    RETURN JSON(hasil)
+ENDFUNCTION
+```
+
+Instruksi hanya disertakan bila `accepted` (KF22). `jadwal` diambil dari ketersediaan jadwal yang diisi Volunteer karena `Project` belum punya atribut jadwal kegiatan; bila kelompok menambahkannya (lihat catatan SKPL KF08), ganti dengan kolom jadwal project. Kueri membatasi hasil pada pendaftaran milik pengguna yang login.
+
+Tabel 5.35.4. Query Operasi getStatusPendaftaran()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-121 | `SELECT r.status_pendaftaran, r.ketersediaan_jadwal, p.lokasi FROM pendaftaran_relawan r JOIN project p ON p.id_project = r.id_project WHERE r.id_pendaftaran = ? AND r.id_volunteer = ?;` | Status dan lokasi untuk satu pendaftaran milik Volunteer. |
+
+## 5.36 Kelas FormVolunteerManagementView
+
+**Nama Kelas:** FormVolunteerManagementView  
+**ID Kelas:** C35
+
+Tabel 5.36.a. Operasi Kelas FormVolunteerManagementView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `pilihMenuVolunteerManagement(idProject: String): void` | public | Membuka menu pengelolaan pendaftar untuk project tertentu. |
+| `tampilkanDaftarPendaftar(daftar: List<String>): void` | public | Menampilkan daftar pendaftar beserta statusnya. |
+| `pilihPendaftar(idPendaftaran: String): void` | public | Memilih satu pendaftar untuk ditinjau. |
+| `pilihKeputusan(keputusan: String): void` | public | Mengirim keputusan `accepted` atau `rejected`. |
+| `tampilkanNotifikasiBerhasil(): void` | public | Menampilkan notifikasi keputusan tersimpan. |
+| `tampilkanPesanBelumAdaPendaftar(): void` | public | Menampilkan pesan bahwa belum ada pendaftar. |
+
+Tabel 5.36.b. Atribut Kelas FormVolunteerManagementView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.37 Kelas DetailStatusPendaftaranView
+
+**Nama Kelas:** DetailStatusPendaftaranView  
+**ID Kelas:** C36
+
+Tabel 5.37.a. Operasi Kelas DetailStatusPendaftaranView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaHalamanStatusPendaftaran(idPendaftaran: String): void` | public | Meminta status pendaftaran milik Volunteer. |
+| `tampilkanStatus(status: String): void` | public | Menampilkan status diterima atau ditolak. |
+| `tampilkanInstruksiKegiatan(lokasi: String, jadwal: String): void` | public | Menampilkan instruksi lokasi dan jadwal bila pendaftaran diterima (KF22). |
+
+Tabel 5.37.b. Atribut Kelas DetailStatusPendaftaranView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.38 Kelas FormProgresProjectView
+
+**Nama Kelas:** FormProgresProjectView  
+**ID Kelas:** C37
+
+Tabel 5.38.a. Operasi Kelas FormProgresProjectView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `pilihMenuProgres(idProject: String): void` | public | Membuka halaman pembaruan progres untuk project tertentu. |
+| `tampilkanFormulir(): void` | public | Menampilkan formulir milestone, status pelaksanaan, dan unggah dokumentasi. |
+| `isiPembaruanMilestone(milestone: String, statusPelaksanaan: String): void` | public | Menerima milestone dan status pelaksanaan. |
+| `unggahDokumentasi(berkas: File): void` | public | Menerima berkas dokumentasi dari peramban. |
+| `kirimFormulir(): void` | public | Mengirim pembaruan ke controller. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan akses ditolak atau kegagalan unggah berkas. |
+| `tampilkanNotifikasiBerhasil(): void` | public | Menampilkan notifikasi pembaruan tersimpan. |
+
+Tabel 5.38.b. Atribut Kelas FormProgresProjectView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.39 Kelas ProgresController
+
+**Nama Kelas:** ProgresController  
+**ID Kelas:** C38
+
+Tabel 5.39.a. Operasi Kelas ProgresController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaHalamanProgres(idProject: String): Boolean` | public | Memeriksa login dan hak akses sebelum formulir progres dibuka (KF25). Lihat Algo-127. |
+| `perbaruiProgres(idProject: String, milestone: String, statusPelaksanaan: String, berkas: File): Boolean` | public | Mengoordinasikan penyimpanan milestone, status, dokumentasi, dan stempel waktu (KF23–KF25). Lihat Algo-128. |
+| `getPesanKesalahan(): String` | public | Mengembalikan `pesanKesalahan` terakhir untuk ditampilkan view. |
+
+Tabel 5.39.b. Atribut Kelas ProgresController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `pesanKesalahan` | private | `string` |
+
+### 5.39.1 Algoritma/Query
+
+**Nama Kelas:** ProgresController  
+**Nama Operasi:** `+ bukaHalamanProgres(idProject: String): Boolean`  
+**ID Algoritma:** Algo-127
+
+```text
+FUNCTION bukaHalamanProgres(idProject: String) -> Boolean
+    {Hanya Pembuat Project terkait atau Admin Sistem yang boleh (KF25).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN false
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    project <- Project BARU(idProject)
+    IF NOT project.validasiHakAkses(idPengguna) THEN
+        this.pesanKesalahan <- "Tindakan ini tidak diizinkan"
+        RETURN false
+    ENDIF
+
+    RETURN true
+ENDFUNCTION
+```
+
+Pemeriksaan ini diulang pada `perbaruiProgres()` karena membuka formulir tidak menjamin pengguna masih berhak saat mengirimnya.
+
+### 5.39.2 Algoritma/Query
+
+**Nama Kelas:** ProgresController  
+**Nama Operasi:** `+ perbaruiProgres(idProject: String, milestone: String, statusPelaksanaan: String, berkas: File): Boolean`  
+**ID Algoritma:** Algo-128
+
+```text
+FUNCTION perbaruiProgres(idProject: String, milestone: String,
+                         statusPelaksanaan: String, berkas: File) -> Boolean
+    {Menyimpan pembaruan progres (KF23, KF24, KF25).}
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        this.pesanKesalahan <- "Silakan login terlebih dahulu"
+        RETURN false
+    ENDIF
+    idPengguna <- sesi.idPengguna
+
+    project <- Project BARU(idProject)
+    IF NOT project.validasiHakAkses(idPengguna) THEN
+        this.pesanKesalahan <- "Tindakan ini tidak diizinkan"
+        RETURN false
+    ENDIF
+
+    MULAI_TRANSAKSI()
+    TRY
+        IF NOT project.simpanPembaruanProgres(milestone, statusPelaksanaan, berkas) THEN
+            BATALKAN()
+            this.pesanKesalahan <- project.pesanKesalahan
+            RETURN false
+        ENDIF
+
+        project.catatTimestamp(idPengguna)
+        KOMIT()
+    CATCH galatApa PUN
+        BATALKAN()
+        hapusBerkasUnggahan(project.dokumentasiProgres)    {jangan tinggalkan berkas yatim}
+        this.pesanKesalahan <- "Pembaruan progres gagal disimpan, silakan coba lagi"
+        RETURN false
+    ENDTRY
+
+    RETURN true
+ENDFUNCTION
+```
+
+`simpanPembaruanProgres()` dan `catatTimestamp()` berada dalam satu transaksi sehingga tidak pernah ada pembaruan tanpa catatan riwayat atau sebaliknya (UC09 Alt 2). Berkas yang sudah terunggah ke penyimpanan objek tidak ikut dibatalkan oleh basis data, maka dihapus secara eksplisit pada jalur gagal.
+
+## 5.40 Kelas FormRiwayatView
+
+**Nama Kelas:** FormRiwayatView  
+**ID Kelas:** C39
+
+Tabel 5.40.a. Operasi Kelas FormRiwayatView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `pilihMenuRiwayat(): void` | public | Membuka menu riwayat dan meminta daftar dari controller. |
+| `tampilkanDaftarRiwayat(daftar: List<String>): void` | public | Menampilkan transaksi dan pembaruan progres secara kronologis. |
+| `pilihRiwayat(idEntri: String, jenis: String): void` | public | Memilih satu entri untuk dilihat rinciannya. |
+| `tampilkanPesanRiwayatKosong(): void` | public | Menampilkan pesan bahwa riwayat belum tersedia. |
+
+Tabel 5.40.b. Atribut Kelas FormRiwayatView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.41 Kelas DetailRiwayatView
+
+**Nama Kelas:** DetailRiwayatView  
+**ID Kelas:** C40
+
+Tabel 5.41.a. Operasi Kelas DetailRiwayatView
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `tampilkanDetailTransaksi(detail: String): void` | public | Menampilkan nominal, waktu, dan status transaksi. |
+| `tampilkanDetailProgres(detail: String): void` | public | Menampilkan milestone, status pelaksanaan, dan dokumentasi progres. |
+
+Tabel 5.41.b. Atribut Kelas DetailRiwayatView
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+## 5.42 Kelas RiwayatController
+
+**Nama Kelas:** RiwayatController  
+**ID Kelas:** C41
+
+Tabel 5.42.a. Operasi Kelas RiwayatController
+
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `getRiwayat(idPengguna: String): List<String>` | public | Menyusun riwayat transaksi dan progres milik pengguna secara kronologis (KF27). Lihat Algo-129. |
+| `getDetailTransaksi(idTransaksi: String): String` | public | Mengambil rincian satu transaksi milik pengguna (KF27). Lihat Algo-130. |
+| `getDetailProgres(idProgres: String): String` | public | Mengambil rincian satu pembaruan progres yang boleh dilihat pengguna (KF27). Lihat Algo-130. |
+
+Tabel 5.42.b. Atribut Kelas RiwayatController
+
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| - | - | - |
+
+### 5.42.1 Algoritma/Query
+
+**Nama Kelas:** RiwayatController  
+**Nama Operasi:** `+ getRiwayat(idPengguna: String): List<String>`  
+**ID Algoritma:** Algo-129
+
+```text
+FUNCTION getRiwayat(idPengguna: String) -> List<String>
+    {Riwayat transaksi dan progres milik pengguna, kronologis (KF27).}
+
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        LEMPAR GalatAkses("Silakan login terlebih dahulu")
+    ENDIF
+    IF sesi.idPengguna <> idPengguna THEN
+        LEMPAR GalatAkses("Riwayat milik pengguna lain")
+    ENDIF
+
+    transaksi <- TransaksiDonasi BARU.getRiwayatTransaksi(idPengguna)
+    progres   <- Project BARU.getRiwayatProgres(idPengguna)
+
+    gabungan <- transaksi + progres
+    urutkan gabungan menurut waktu, terbaru lebih dulu
+
+    RETURN gabungan
+ENDFUNCTION
+```
+
+`RiwayatController` tidak memiliki atribut `pesanKesalahan` pada Tabel 4.1, sehingga kegagalan login dan akses dilaporkan sebagai galat yang ditangkap lapisan API dan diterjemahkan menjadi respons HTTP 401 atau 403. Daftar kosong adalah hasil yang sah dan membuat `FormRiwayatView` menampilkan pesan riwayat kosong (UC10 Alt 1). Pengurutan dilakukan di sini karena dua sumber data berasal dari tabel berbeda.
+
+### 5.42.2 Algoritma/Query
+
+**Nama Kelas:** RiwayatController  
+**Nama Operasi:** `+ getDetailTransaksi(idTransaksi: String): String`  
+**ID Algoritma:** Algo-130
+
+```text
+FUNCTION getDetailTransaksi(idTransaksi: String) -> String
+    {Rincian transaksi milik pengguna yang login (KF27).}
+
+    sesi <- SesiLogin BARU
+    IF NOT sesi.cekStatusLogin(idSesiPermintaan) THEN
+        LEMPAR GalatAkses("Silakan login terlebih dahulu")
+    ENDIF
+
+    t <- TransaksiDonasi BARU
+    t.idDonatur <- sesi.idPengguna
+    RETURN t.getDetailTransaksi(idTransaksi)
+ENDFUNCTION
+```
+
+`getDetailProgres(idProgres)` mengikuti pola yang sama dan memanggil `Project.getDetailProgres()` (Algo-144). Pemeriksaan kepemilikan ada pada kueri masing-masing operasi entity, bukan pada *controller*, supaya aturan akses tetap berlaku bila operasi entity dipakai dari tempat lain.
+
+## 5.43 Operasi Tambahan UC06–UC10 pada Kelas Bersama
+
+Kelas `Project` (C02), `Campaign` (C03), dan `PembuatProject` (C10) didefinisikan pada bagian orang A karena dibuat pada UC02–UC04. Operasi berikut baru dipakai oleh UC06–UC10, sehingga algoritmanya ditulis di sini. Saat digabung, pindahkan Tabel 5.43.a ke Tabel operasi kelas masing-masing, atau biarkan bagian ini dengan rujukan dari bagian `Project` dan `Campaign`.
+
+Operasi `PembuatProject` untuk UC07–UC09 (`bukaMenuVolunteerManagement`, `tinjauPendaftar`, `buatKeputusan`, `bukaHalamanProgres`, `isiPembaruanMilestone`, `unggahDokumentasi`) hanya meneruskan masukan antarmuka ke *controller* dan tidak memuat aturan bisnis atau akses basis data, sehingga cukup dicantumkan pada Tabel operasi tanpa algoritma.
+
+Tabel 5.43.a. Operasi Tambahan pada Project dan Campaign
+
+| Kelas | Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- | :--- |
+| Project | `cekStatusProject(): Boolean` | public | Lihat Algo-131. |
+| Project | `tambahDana(nominal: double): Boolean` | public | Lihat Algo-133. |
+| Project | `hitungPersentaseCapaian(): double` | public | Lihat Algo-135. |
+| Project | `cekKuota(): Boolean` | public | Lihat Algo-136. |
+| Project | `cekStatusPendaftaran(): Boolean` | public | Lihat Algo-137. |
+| Project | `cekAdaPendaftar(): Boolean` | public | Lihat Algo-138. |
+| Project | `getDaftarPendaftar(): List<PendaftaranRelawan>` | public | Lihat Algo-139. |
+| Project | `validasiHakAkses(idPengguna: String): Boolean` | public | Lihat Algo-140. |
+| Project | `simpanPembaruanProgres(milestone: String, statusPelaksanaan: String, dokumentasi: File): Boolean` | public | Lihat Algo-141. |
+| Project | `catatTimestamp(): void` | public | Lihat Algo-142. |
+| Project | `getRiwayatProgres(idPengguna: String): List<String>` | public | Lihat Algo-143. |
+| Project | `getDetailProgres(idProgres: String): String` | public | Lihat Algo-144. |
+| Campaign | `cekStatusCampaign(): Boolean` | public | Lihat Algo-132. |
+| Campaign | `tambahDana(nominal: double): Boolean` | public | Lihat Algo-134. |
+
+### 5.43.1 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ cekStatusProject(): Boolean`  
+**ID Algoritma:** Algo-131
+
+```text
+FUNCTION cekStatusProject() -> Boolean
+    {true bila project dipublikasikan dan dapat menerima donasi (KF15).}
+
+    baris <- jalankanQuery(Q-122, this.idProject)
+    IF baris = KOSONG THEN
+        RETURN false
+    ENDIF
+
+    this.status <- baris.status
+    RETURN baris.status = "Diterima"
+ENDFUNCTION
+```
+
+Hanya project berstatus `Diterima` yang menerima donasi. Project yang masih `Menunggu Verifikasi` atau `Ditolak` tidak muncul pada peta dan ditolak di sini bila ID-nya diketik langsung.
+
+Tabel 5.43.1. Query Operasi cekStatusProject()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-122 | `SELECT status FROM project WHERE id_project = ?;` | Membaca status project. |
+
+### 5.43.2 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ tambahDana(nominal: double): Boolean`  
+**ID Algoritma:** Algo-133
+
+```text
+FUNCTION tambahDana(nominal: double) -> Boolean
+    {Menambah dana terkumpul. Dipanggil di dalam transaksi prosesDonasi()
+      (KF15, KF26).}
+
+    terpengaruh <- jalankanQuery(Q-124, nominal, this.idProject)
+    IF terpengaruh = 0 THEN
+        RETURN false                   {project tidak aktif atau tidak ada}
+    ENDIF
+
+    this.danaTerkumpul <- this.danaTerkumpul + nominal
+    RETURN true
+ENDFUNCTION
+```
+
+Penambahan memakai `dana_terkumpul = dana_terkumpul + ?`, bukan membaca nilai lalu menulis ulang, sehingga dua donasi bersamaan tidak saling menimpa. Status diperiksa di dalam `WHERE` sebagai pemeriksaan ulang atomik. Persentase capaian tidak disimpan; dihitung saat dibutuhkan oleh `hitungPersentaseCapaian()`.
+
+Tabel 5.43.2. Query Operasi tambahDana()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-124 | `UPDATE project SET dana_terkumpul = dana_terkumpul + ? WHERE id_project = ? AND status = 'Diterima';` | Menambah dana terkumpul pada project aktif. |
+
+### 5.43.3 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ hitungPersentaseCapaian(): double`  
+**ID Algoritma:** Algo-135
+
+```text
+FUNCTION hitungPersentaseCapaian() -> double
+    {Persentase dana terkumpul terhadap kebutuhan dana (KF26).}
+
+    baris <- jalankanQuery(Q-126, this.idProject)
+    IF baris = KOSONG OR baris.kebutuhan_dana <= 0 THEN
+        RETURN 0
+    ENDIF
+
+    RETURN bulatkan(baris.dana_terkumpul / baris.kebutuhan_dana * 100, 2)
+ENDFUNCTION
+```
+
+Hasil tidak dibatasi 100 sehingga project yang kelebihan dana terlihat jelas; tampilan boleh memotongnya pada batang kemajuan. `Campaign.hitungPersentaseCapaian()` identik, dengan `target_nominal` pada tabel `campaign` (Q-127).
+
+Tabel 5.43.3. Query Operasi hitungPersentaseCapaian()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-126 | `SELECT kebutuhan_dana, dana_terkumpul FROM project WHERE id_project = ?;` | Data dasar persentase project. |
+| Q-127 | `SELECT target_nominal AS kebutuhan_dana, dana_terkumpul FROM campaign WHERE id_campaign = ?;` | Data dasar persentase campaign. |
+
+### 5.43.4 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ cekKuota(): Boolean`  
+**ID Algoritma:** Algo-136
+
+```text
+FUNCTION cekKuota() -> Boolean
+    {true bila masih ada tempat bagi relawan baru (KF19).}
+
+    baris <- jalankanQuery(Q-128, this.idProject)
+    IF baris = KOSONG THEN
+        RETURN false
+    ENDIF
+
+    IF baris.kuota_relawan = NULL THEN
+        RETURN true                    {kuota tidak dibatasi}
+    ENDIF
+
+    RETURN baris.jumlah_diterima < baris.kuota_relawan
+ENDFUNCTION
+```
+
+Hanya pendaftar `accepted` yang menghabiskan kuota. Kuota `NULL` berarti tidak dibatasi.
+
+Tabel 5.43.4. Query Operasi cekKuota()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-128 | `SELECT p.kuota_relawan, (SELECT COUNT(*) FROM pendaftaran_relawan r WHERE r.id_project = p.id_project AND r.status_pendaftaran = 'accepted') AS jumlah_diterima FROM project p WHERE p.id_project = ?;` | Kuota dan jumlah relawan yang sudah diterima. |
+
+### 5.43.5 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ cekStatusPendaftaran(): Boolean`  
+**ID Algoritma:** Algo-137
+
+```text
+FUNCTION cekStatusPendaftaran() -> Boolean
+    {true bila pendaftaran relawan project ini dibuka (KF19).}
+
+    baris <- jalankanQuery(Q-129, this.idProject)
+    IF baris = KOSONG THEN
+        RETURN false
+    ENDIF
+
+    this.statusPendaftaranProject <- baris.status_pendaftaran_project
+    RETURN baris.status = "Diterima" AND baris.status_pendaftaran_project = "dibuka"
+ENDFUNCTION
+```
+
+Pendaftaran hanya dapat dibuka pada project yang sudah dipublikasikan.
+
+Tabel 5.43.5. Query Operasi cekStatusPendaftaran()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-129 | `SELECT status, status_pendaftaran_project FROM project WHERE id_project = ?;` | Status project dan status pendaftarannya. |
+
+### 5.43.6 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ cekAdaPendaftar(): Boolean`  
+**ID Algoritma:** Algo-138
+
+```text
+FUNCTION cekAdaPendaftar() -> Boolean
+    {true bila project ini punya minimal satu pendaftar (KF21).}
+
+    jumlah <- jalankanQuery(Q-130, this.idProject)
+    RETURN jumlah > 0
+ENDFUNCTION
+```
+
+Semua status dihitung supaya Pembuat Project tetap dapat melihat pendaftar yang sudah diputuskan.
+
+Tabel 5.43.6. Query Operasi cekAdaPendaftar()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-130 | `SELECT COUNT(*) AS jumlah FROM pendaftaran_relawan WHERE id_project = ?;` | Menghitung pendaftar project. |
+
+### 5.43.7 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ getDaftarPendaftar(): List<PendaftaranRelawan>`  
+**ID Algoritma:** Algo-139
+
+```text
+FUNCTION getDaftarPendaftar() -> List<PendaftaranRelawan>
+    {Pendaftar project, yang masih pending lebih dulu (KF21).}
+
+    baris <- jalankanQuery(Q-131, this.idProject)
+
+    daftar <- DAFTAR KOSONG
+    FOR EACH b IN baris DO
+        daftar.tambah(PendaftaranRelawan dari b)
+    ENDFOR
+    RETURN daftar
+ENDFUNCTION
+```
+
+Pengurutan menaruh yang `pending` di atas agar Pembuat Project melihat yang perlu diputuskan lebih dulu.
+
+Tabel 5.43.7. Query Operasi getDaftarPendaftar()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-131 | `SELECT id_pendaftaran, id_volunteer, id_project, status_pendaftaran FROM pendaftaran_relawan WHERE id_project = ? ORDER BY (status_pendaftaran = 'pending') DESC, tanggal_daftar ASC;` | Pendaftar satu project. |
+
+### 5.43.8 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ validasiHakAkses(idPengguna: String): Boolean`  
+**ID Algoritma:** Algo-140
+
+```text
+FUNCTION validasiHakAkses(idPengguna: String) -> Boolean
+    {Hanya Pembuat Project terkait atau Admin Sistem (KF25).}
+
+    baris <- jalankanQuery(Q-132, this.idProject, idPengguna)
+    IF baris = KOSONG THEN
+        RETURN false
+    ENDIF
+
+    RETURN baris.id_pembuat = idPengguna OR baris.peran = "Admin Sistem"
+ENDFUNCTION
+```
+
+Peran dibaca dari basis data, bukan dari klien. Tabel 4.1 tidak mencantumkan `idPembuat` pada `Project`; kepemilikan diwujudkan sebagai kolom `id_pembuat` pada tabel `project` untuk relasi PembuatProject–Project.
+
+Tabel 5.43.8. Query Operasi validasiHakAkses()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-132 | `SELECT p.id_pembuat, u.peran FROM project p, pengguna u WHERE p.id_project = ? AND u.id_pengguna = ?;` | Pembuat project dan peran pengguna yang meminta akses. |
+
+### 5.43.9 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ simpanPembaruanProgres(milestone: String, statusPelaksanaan: String, dokumentasi: File): Boolean`  
+**ID Algoritma:** Algo-141
+
+```text
+FUNCTION simpanPembaruanProgres(milestone: String, statusPelaksanaan: String,
+                                dokumentasi: File) -> Boolean
+    {Memvalidasi dan menyimpan pembaruan progres (KF23, KF24).}
+
+    IF trim(milestone) = "" OR statusPelaksanaan TIDAK DALAM STATUS_PELAKSANAAN THEN
+        this.pesanKesalahan <- "Milestone atau status pelaksanaan tidak valid"
+        RETURN false
+    ENDIF
+
+    IF dokumentasi <> NULL THEN
+        IF ekstensi(dokumentasi) TIDAK DALAM {"jpg","png","pdf","mp4","zip"} THEN
+            this.pesanKesalahan <- "Format berkas tidak didukung"
+            RETURN false
+        ENDIF
+        IF ukuran(dokumentasi) > 50 MB THEN
+            this.pesanKesalahan <- "Ukuran berkas melebihi 50 MB"
+            RETURN false
+        ENDIF
+
+        TRY
+            this.dokumentasiProgres <- unggahKePenyimpananObjek(dokumentasi)
+        CATCH galatJaringan
+            this.pesanKesalahan <- "Pengunggahan terputus, silakan coba lagi"
+            RETURN false
+        ENDTRY
+    ENDIF
+
+    this.milestone         <- trim(milestone)
+    this.statusPelaksanaan <- statusPelaksanaan
+
+    jalankanQuery(Q-133, this.milestone, this.statusPelaksanaan, this.idProject)
+    RETURN true
+ENDFUNCTION
+```
+
+`STATUS_PELAKSANAAN` adalah {"Belum Dimulai", "Berjalan", "Selesai"}; SKPL tidak menyebut nilainya sehingga ini usulan yang perlu dimasukkan ke Tabel 4.2. Batas 50 MB dan daftar format mengikuti KNF07. Format dicek dari ekstensi dan *content type* berkas, bukan dari ekstensi saja. Berkas diunggah sebelum `UPDATE` sehingga kegagalan unggah tidak mengubah data (UC09 Alt 2); kebalikannya ditangani oleh `ProgresController` pada Algo-128. Tabel `project` hanya menyimpan keadaan terakhir, sedangkan riwayatnya dicatat `catatTimestamp()`.
+
+Tabel 5.43.9. Query Operasi simpanPembaruanProgres()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-133 | `UPDATE project SET milestone = ?, status_pelaksanaan = ? WHERE id_project = ?;` | Memperbarui milestone dan status pelaksanaan terakhir. |
+
+### 5.43.10 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ catatTimestamp(): void`  
+**ID Algoritma:** Algo-142
+
+```text
+PROCEDURE catatTimestamp(idPengguna: String)
+    {Mencatat riwayat pembaruan beserta stempel waktunya (KF23).}
+
+    this.timestampPembaruan <- waktuSekarang()           {waktu peladen}
+
+    jalankanQuery(Q-134, this.idProject, idPengguna, this.milestone,
+                         this.statusPelaksanaan, this.dokumentasiProgres,
+                         this.timestampPembaruan)
+    jalankanQuery(Q-135, this.timestampPembaruan, this.idProject)
+ENDPROCEDURE
+```
+
+Setiap pembaruan menjadi baris baru pada `progres_project`, sehingga UC10 dapat menelusuri seluruh perubahan, tidak hanya yang terakhir. Tabel 4.1 mencantumkan `catatTimestamp(): void` tanpa parameter; parameter `idPengguna` ditambahkan agar riwayat mencatat siapa yang memperbarui (Admin Sistem juga boleh, KF25) dan Tabel 4.1 perlu disesuaikan.
+
+Tabel 5.43.10. Query Operasi catatTimestamp()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-134 | `INSERT INTO progres_project (id_progres, id_project, id_pengguna, milestone, status_pelaksanaan, dokumentasi_url, timestamp_pembaruan) VALUES (UUID(), ?, ?, ?, ?, ?, ?);` | Menambah satu baris riwayat progres. |
+| Q-135 | `UPDATE project SET timestamp_pembaruan = ? WHERE id_project = ?;` | Menyelaraskan stempel waktu terakhir pada project. |
+
+### 5.43.11 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ getRiwayatProgres(idPengguna: String): List<String>`  
+**ID Algoritma:** Algo-143
+
+```text
+FUNCTION getRiwayatProgres(idPengguna: String) -> List<String>
+    {Pembaruan progres pada project yang dibuat atau diikuti pengguna (KF27).}
+
+    baris <- jalankanQuery(Q-136, idPengguna, idPengguna)
+
+    daftar <- DAFTAR KOSONG
+    FOR EACH b IN baris DO
+        daftar.tambah(JSON({ jenis: "progres", id: b.id_progres,
+                             nama: b.nama_project, milestone: b.milestone,
+                             waktu: b.timestamp_pembaruan }))
+    ENDFOR
+    RETURN daftar
+ENDFUNCTION
+```
+
+Pengguna yang mendaftar sebagai relawan melihat progres project yang diikutinya hanya bila pendaftarannya `accepted`, sedangkan pembuat project melihat seluruh progres project miliknya.
+
+Tabel 5.43.11. Query Operasi getRiwayatProgres()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-136 | `SELECT g.id_progres, g.milestone, g.timestamp_pembaruan, p.nama AS nama_project FROM progres_project g JOIN project p ON p.id_project = g.id_project WHERE p.id_pembuat = ? OR EXISTS (SELECT 1 FROM pendaftaran_relawan r WHERE r.id_project = p.id_project AND r.id_volunteer = ? AND r.status_pendaftaran = 'accepted') ORDER BY g.timestamp_pembaruan DESC;` | Progres project milik atau yang diikuti pengguna. |
+
+### 5.43.12 Algoritma/Query
+
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ getDetailProgres(idProgres: String): String`  
+**ID Algoritma:** Algo-144
+
+```text
+FUNCTION getDetailProgres(idProgres: String) -> String
+    {Rincian satu pembaruan progres yang boleh dilihat pengguna (KF27).}
+
+    baris <- jalankanQuery(Q-137, idProgres, this.idPengguna, this.idPengguna)
+    IF baris = KOSONG THEN
+        LEMPAR GalatTidakDitemukan("Progres tidak ditemukan")
+    ENDIF
+
+    RETURN JSON({ id: baris.id_progres, project: baris.nama_project,
+                  milestone: baris.milestone,
+                  statusPelaksanaan: baris.status_pelaksanaan,
+                  dokumentasi: baris.dokumentasi_url,
+                  waktu: baris.timestamp_pembaruan })
+ENDFUNCTION
+```
+
+Syarat akses sama dengan Q-136 sehingga daftar dan rincian selalu konsisten. `this.idPengguna` adalah konteks pengguna yang diisi `RiwayatController` dari sesi login sebelum operasi dipanggil; ia bukan atribut tersimpan.
+
+Tabel 5.43.12. Query Operasi getDetailProgres()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-137 | `SELECT g.id_progres, g.milestone, g.status_pelaksanaan, g.dokumentasi_url, g.timestamp_pembaruan, p.nama AS nama_project FROM progres_project g JOIN project p ON p.id_project = g.id_project WHERE g.id_progres = ? AND (p.id_pembuat = ? OR EXISTS (SELECT 1 FROM pendaftaran_relawan r WHERE r.id_project = p.id_project AND r.id_volunteer = ? AND r.status_pendaftaran = 'accepted'));` | Satu pembaruan progres bila pengguna berhak melihatnya. |
+
+### 5.43.13 Algoritma/Query
+
+**Nama Kelas:** Campaign  
+**Nama Operasi:** `+ cekStatusCampaign(): Boolean`  
+**ID Algoritma:** Algo-132
+
+```text
+FUNCTION cekStatusCampaign() -> Boolean
+    {true bila campaign dipublikasikan, periodenya masih berjalan, dan
+      dapat menerima donasi (KF15).}
+
+    baris <- jalankanQuery(Q-123, this.idCampaign)
+    IF baris = KOSONG THEN
+        RETURN false
+    ENDIF
+
+    IF baris.status <> "Diterima" THEN
+        RETURN false
+    ENDIF
+    IF baris.periode_mulai > tanggalHariIni() OR baris.periode_selesai < tanggalHariIni() THEN
+        RETURN false
+    ENDIF
+
+    RETURN true
+ENDFUNCTION
+```
+
+Campaign yang sudah mencapai target tetap dapat menerima donasi karena SKPL tidak melarangnya. Bila kelompok ingin menutupnya, tambahkan `AND dana_terkumpul < target_nominal`.
+
+Tabel 5.43.13. Query Operasi cekStatusCampaign()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-123 | `SELECT status, periode_mulai, periode_selesai FROM campaign WHERE id_campaign = ?;` | Membaca status dan periode campaign. |
+
+### 5.43.14 Algoritma/Query
+
+**Nama Kelas:** Campaign  
+**Nama Operasi:** `+ tambahDana(nominal: double): Boolean`  
+**ID Algoritma:** Algo-134
+
+```text
+FUNCTION tambahDana(nominal: double) -> Boolean
+    {Menambah dana terkumpul campaign (KF15, KF26).}
+
+    terpengaruh <- jalankanQuery(Q-125, nominal, this.idCampaign)
+    IF terpengaruh = 0 THEN
+        RETURN false                   {campaign berakhir, ditutup, atau tidak ada}
+    ENDIF
+
+    this.danaTerkumpul <- this.danaTerkumpul + nominal
+    RETURN true
+ENDFUNCTION
+```
+
+Pemeriksaan periode diulang di dalam `WHERE` agar campaign yang berakhir tepat saat donasi diproses tidak menerima dana.
+
+Tabel 5.43.14. Query Operasi tambahDana()
+
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-125 | `UPDATE campaign SET dana_terkumpul = dana_terkumpul + ? WHERE id_campaign = ? AND status = 'Diterima' AND periode_mulai <= CURDATE() AND periode_selesai >= CURDATE();` | Menambah dana terkumpul pada campaign aktif. |
 
 <br>
 
