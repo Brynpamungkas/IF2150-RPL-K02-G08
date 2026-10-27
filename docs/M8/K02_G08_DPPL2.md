@@ -986,7 +986,6 @@ Tabel 5.1. Daftar Kelas Perancangan dan Kelas Analisis Terkait
 | 40 | FormRiwayatView (C39) | PenggunaUmum (C00) |
 | 41 | DetailRiwayatView (C40) | TransaksiDonasi (C06), Project (C02) |
 | 42 | RiwayatController (C41) | PenggunaUmum (C00), TransaksiDonasi (C06), Project (C02) |
-| ... | *...* | *...* |
 
 ## 5.1 Kelas PenggunaUmum
  
@@ -1273,10 +1272,825 @@ Tabel 5.3.2. Query Operasi cekStatusLogin()
 
 ## 5.4 Kelas FormPendaftaranView
  
-**Nama Kelas:** ...
-**ID Kelas:** ...
-
-.............
+**Nama Kelas:** FormPendaftaranView  
+**ID Kelas:** C14
+ 
+Tabel 5.4.a. Operasi Kelas FormPendaftaranView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `pilihMenuPendaftaran(): void` | public | Menerima tindakan pengguna membuka menu pendaftaran. |
+| `tampilkanFormulir(): void` | public | Menampilkan formulir pendaftaran akun. |
+| `isiFormulir(nama: String, email: String, password: String): void` | public | Menerima nama, email, dan password yang diketik pengguna. |
+| `kirimFormulir(): void` | public | Mengirimkan isian formulir pendaftaran ke AutentikasiController. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan kesalahan pendaftaran kepada pengguna. |
+| `tampilkanNotifikasiBerhasil(): void` | public | Menampilkan pemberitahuan bahwa akun berhasil dibuat. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.5 Kelas FormLoginView
+ 
+**Nama Kelas:** FormLoginView  
+**ID Kelas:** C15
+ 
+Tabel 5.5.a. Operasi Kelas FormLoginView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `isiKredensial(email: String, password: String): void` | public | Menerima email dan password yang diketik pengguna pada halaman login. |
+| `kirimKredensial(): void` | public | Mengirimkan kredensial login ke AutentikasiController. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan bahwa email atau password tidak valid. |
+| `arahkanKeHalamanUtama(): void` | public | Mengarahkan pengguna ke halaman utama setelah login berhasil. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.6 Kelas AutentikasiController
+ 
+**Nama Kelas:** AutentikasiController  
+**ID Kelas:** C16
+ 
+Tabel 5.6.a. Operasi Kelas AutentikasiController
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `daftarAkun(nama: String, email: String, password: String): Boolean` | public | Mengoordinasikan pendaftaran akun, mulai dari validasi sampai penyimpanan. |
+| `login(email: String, password: String): Boolean` | public | Mengoordinasikan autentikasi dan pembuatan sesi login. |
+| `getPesanKesalahan(): String` | public | Mengembalikan pesan kesalahan terakhir untuk ditampilkan antarmuka. |
+ 
+Tabel 5.6.b. Atribut Kelas AutentikasiController
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `pesanKesalahan` | private | `string` |
+ 
+## 5.7 Kelas PembuatProject
+ 
+**Nama Kelas:** PembuatProject  
+**ID Kelas:** C10
+ 
+Tabel 5.7.a. Operasi Kelas PembuatProject
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `buatCampaign(judul: String, deskripsi: String, targetNominal: double, periodeMulai: Date, periodeSelesai: Date): Campaign` | public | Membentuk objek Campaign baru dari isian formulir. |
+| `buatProject(nama: String, deskripsi: String, lokasi: String, tujuan: String): Project` | public | Membentuk objek Project baru dari isian formulir. |
+| `ajukanVerifikasi(idPengajuan: String, jenis: String): void` | public | Mengajukan campaign atau project miliknya untuk ditinjau Admin Sistem. |
+| `bukaMenuVolunteerManagement(idProject: String): void` | public | Membuka halaman pengelolaan pendaftar relawan pada suatu project. |
+| `tinjauPendaftar(idPendaftaran: String): PendaftaranRelawan` | public | Mengambil data satu pendaftar relawan untuk ditinjau. |
+| `buatKeputusan(idPendaftaran: String, keputusan: String): Boolean` | public | Menetapkan keputusan terima atau tolak atas pendaftaran relawan. |
+| `bukaHalamanProgres(idProject: String): void` | public | Membuka halaman pembaruan progres project miliknya. |
+| `isiPembaruanMilestone(milestone: String, statusPelaksanaan: String): void` | public | Mengisi milestone dan status pelaksanaan kegiatan. |
+| `unggahDokumentasi(berkas: File): void` | public | Mengunggah berkas dokumentasi progres kegiatan. |
+ 
+Tabel 5.7.b. Atribut Kelas PembuatProject
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idPembuat` | private | `string` |
+| `nama` | private | `string` |
+| `email` | private | `string` |
+ 
+## 5.8 Kelas Campaign
+ 
+**Nama Kelas:** Campaign  
+**ID Kelas:** C03
+ 
+Tabel 5.8.a. Operasi Kelas Campaign
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `validasiData(): Boolean` | public | Memastikan judul, deskripsi, dan lokasi campaign terisi. |
+| `validasiTarget(): Boolean` | public | Menolak target dana yang kosong atau tidak positif (KF07). Lihat Algo-006. |
+| `validasiPeriode(): Boolean` | public | Menolak rentang periode penggalangan yang tidak valid (KF07). Lihat Algo-007. |
+| `simpanCampaign(): Boolean` | public | Menyimpan campaign baru berstatus menunggu verifikasi (KF06). Lihat Algo-008. |
+| `tampilkanDetail(): String` | public | Menyusun rincian campaign untuk ditampilkan antarmuka. |
+| `ubahStatus(statusBaru: String, alasan: String = ""): void` | public | Memperbarui status verifikasi beserta alasannya (KF11). Lihat Algo-010. |
+| `getDaftarMenungguVerifikasi(): List<String>` | public | Mengambil daftar campaign yang menunggu peninjauan Admin Sistem. Lihat Algo-009. |
+| `cekStatusCampaign(): Boolean` | public | Memastikan campaign masih berstatus diterima dan periodenya belum berakhir. |
+| `tambahDana(nominal: double): Boolean` | public | Menambahkan nominal donasi ke dana terkumpul campaign (KF15). |
+| `hitungPersentaseCapaian(): double` | public | Menghitung perbandingan dana terkumpul terhadap target nominal. |
+ 
+Tabel 5.8.b. Atribut Kelas Campaign
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idCampaign` | private | `string` |
+| `judul` | private | `string` |
+| `deskripsi` | private | `string` |
+| `targetNominal` | private | `number` |
+| `periodeMulai` | private | `Date` |
+| `periodeSelesai` | private | `Date` |
+| `status` | private | `string` |
+| `alasanPenolakan` | private | `string` |
+| `kebutuhan` | private | `string` |
+| `lokasi` | private | `string` |
+| `danaTerkumpul` | private | `number` |
+ 
+### 5.8.1 Algoritma/Query
+ 
+**Nama Kelas:** Campaign  
+**Nama Operasi:** `+ validasiTarget(): Boolean`  
+**ID Algoritma:** Algo-006
+ 
+```text
+FUNCTION validasiTarget() -> Boolean
+    { Menolak target dana kosong atau tidak positif (KF07). }
+ 
+    IF this.targetNominal = NULL THEN
+        LEMPAR GalatValidasi("Target dana wajib diisi")
+    ENDIF
+ 
+    IF this.targetNominal <= 0 THEN
+        LEMPAR GalatValidasi("Target dana harus lebih besar dari nol")
+    ENDIF
+ 
+    IF this.targetNominal > BATAS_TARGET THEN
+        LEMPAR GalatValidasi("Target dana melebihi batas yang diizinkan")
+    ENDIF
+ 
+    RETURN true
+ENDFUNCTION
+```
+ 
+Operasi ini murni perhitungan di memori sehingga tidak memerlukan query.
+`BATAS_TARGET` ditetapkan Rp1.000.000.000, sekaligus menjaga agar nilai tidak
+melampaui jangkauan tipe `double`. Nilai nol ditolak karena campaign tanpa
+target tidak dapat dihitung persentase capaiannya oleh
+`hitungPersentaseCapaian()`.
+ 
+### 5.8.2 Algoritma/Query
+ 
+**Nama Kelas:** Campaign  
+**Nama Operasi:** `+ validasiPeriode(): Boolean`  
+**ID Algoritma:** Algo-007
+ 
+```text
+FUNCTION validasiPeriode() -> Boolean
+    { Menolak rentang periode yang tidak valid (KF07). }
+ 
+    IF this.periodeMulai = NULL OR this.periodeSelesai = NULL THEN
+        LEMPAR GalatValidasi("Periode penggalangan wajib diisi")
+    ENDIF
+ 
+    IF this.periodeMulai >= this.periodeSelesai THEN
+        LEMPAR GalatValidasi("Tanggal selesai harus setelah tanggal mulai")
+    ENDIF
+ 
+    IF this.periodeSelesai < tanggalHariIni() THEN
+        LEMPAR GalatValidasi("Periode penggalangan sudah lewat")
+    ENDIF
+ 
+    IF bedaHari(this.periodeMulai, this.periodeSelesai) > BATAS_HARI THEN
+        LEMPAR GalatValidasi("Periode penggalangan melebihi batas")
+    ENDIF
+ 
+    RETURN true
+ENDFUNCTION
+```
+ 
+Yang dibandingkan dengan hari ini adalah `periodeSelesai`, bukan `periodeMulai`,
+supaya Pembuat Project tetap boleh mendaftarkan campaign yang periodenya sudah
+berjalan selama penggalangannya belum berakhir. `BATAS_HARI` ditetapkan 365
+hari.
+ 
+### 5.8.3 Algoritma/Query
+ 
+**Nama Kelas:** Campaign  
+**Nama Operasi:** `+ simpanCampaign(): Boolean`  
+**ID Algoritma:** Algo-008
+ 
+```text
+FUNCTION simpanCampaign() -> Boolean
+    { Menyimpan campaign baru berstatus menunggu verifikasi (KF06). }
+ 
+    this.validasiData()         { melempar GalatValidasi bila gagal }
+    this.validasiTarget()       { Algo-006 }
+    this.validasiPeriode()      { Algo-007 }
+ 
+    this.idCampaign      <- buatUUID()
+    this.status          <- "Menunggu Verifikasi"
+    this.danaTerkumpul   <- 0
+    this.alasanPenolakan <- ""
+ 
+    jalankanQuery(Q-007, this.idCampaign, this.pembuat.idPembuat, this.judul,
+                         this.deskripsi, this.targetNominal, this.periodeMulai,
+                         this.periodeSelesai, this.lokasi, this.kebutuhan,
+                         this.status, this.danaTerkumpul)
+    RETURN true
+ENDFUNCTION
+```
+ 
+Status awal selalu `"Menunggu Verifikasi"` dan tidak pernah diterima dari
+antarmuka, sehingga campaign tidak mungkin langsung terbit tanpa melewati Admin
+Sistem. `danaTerkumpul` diinisialisasi nol agar `tambahDana()` dan
+`hitungPersentaseCapaian()` pada UC06 selalu bekerja atas nilai yang
+terdefinisi. `this.pembuat` adalah sisi `PembuatProject` dari asosiasi "membuat"
+pada Gambar 4.1, yang menjadi kolom `id_pembuat` di basis data sesuai KF06.
+ 
+Tabel 5.8.3. Query Operasi simpanCampaign()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-007 | `INSERT INTO campaign (id_campaign, id_pembuat, judul, deskripsi, target_nominal, periode_mulai, periode_selesai, lokasi, kebutuhan, status, dana_terkumpul, tanggal_dibuat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());` | Menyimpan campaign baru beserta kaitannya ke akun Pembuat Project (KF06). |
+ 
+### 5.8.4 Algoritma/Query
+ 
+**Nama Kelas:** Campaign  
+**Nama Operasi:** `+ getDaftarMenungguVerifikasi(): List<String>`  
+**ID Algoritma:** Algo-009
+ 
+```text
+FUNCTION getDaftarMenungguVerifikasi() -> List<String>
+    { Daftar pengajuan yang perlu ditinjau Admin Sistem (KF11). }
+ 
+    daftar <- List KOSONG
+    hasil  <- jalankanQuery(Q-008)
+ 
+    FOR EACH baris IN hasil DO
+        ringkasan <- susunRingkasan(baris.id_campaign, "campaign", baris.judul,
+                                    baris.nama_pembuat, baris.tanggal_pengajuan)
+        daftar.tambah(ringkasan)
+    ENDFOR
+ 
+    RETURN daftar
+ENDFUNCTION
+```
+ 
+`Project.getDaftarMenungguVerifikasi()` memakai algoritma yang sama dengan
+Q-009. `VerifikasiController.getDaftarMenunggu()` memanggil keduanya, menggabung
+hasilnya, lalu mengurutkan ulang berdasarkan tanggal pengajuan, sehingga Admin
+Sistem melihat satu daftar gabungan campaign dan project. Pengurutan menaik
+dipakai agar pengajuan terlama ditinjau lebih dahulu.
+ 
+Tabel 5.8.4. Query Operasi getDaftarMenungguVerifikasi()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-008 | `SELECT c.id_campaign, c.judul, c.tanggal_pengajuan, p.nama AS nama_pembuat FROM campaign c JOIN pengguna p ON p.id_pengguna = c.id_pembuat WHERE c.status = 'Menunggu Verifikasi' ORDER BY c.tanggal_pengajuan ASC;` | Mengambil seluruh campaign yang menunggu verifikasi beserta nama pembuatnya. |
+| Q-009 | `SELECT pr.id_project, pr.nama, pr.tanggal_pengajuan, p.nama AS nama_pembuat FROM project pr JOIN pengguna p ON p.id_pengguna = pr.id_pembuat WHERE pr.status = 'Menunggu Verifikasi' ORDER BY pr.tanggal_pengajuan ASC;` | Query setara untuk `Project.getDaftarMenungguVerifikasi()`. |
+ 
+### 5.8.5 Algoritma/Query
+ 
+**Nama Kelas:** Campaign  
+**Nama Operasi:** `+ ubahStatus(statusBaru: String, alasan: String = ""): void`  
+**ID Algoritma:** Algo-010
+ 
+```text
+PROCEDURE ubahStatus(statusBaru: String, alasan: String = "")
+    { Memperbarui status verifikasi beserta alasannya (KF11). }
+ 
+    IF statusBaru NOT IN {"Menunggu Verifikasi", "Diterima", "Ditolak"} THEN
+        LEMPAR GalatValidasi("Status tidak dikenal")
+    ENDIF
+ 
+    IF statusBaru = "Ditolak" AND trim(alasan) = "" THEN
+        LEMPAR GalatValidasi("Penolakan wajib disertai alasan")
+    ENDIF
+ 
+    IF statusBaru = "Diterima" THEN
+        alasan <- ""      { dikosongkan agar tidak menyisakan alasan penolakan lama }
+    ENDIF
+ 
+    this.status          <- statusBaru
+    this.alasanPenolakan <- alasan
+ 
+    jalankanQuery(Q-010, this.status, this.alasanPenolakan, this.idCampaign)
+ENDPROCEDURE
+```
+ 
+Alasan diwajibkan hanya ketika status menjadi `"Ditolak"`, sesuai KF11 yang
+meminta status verifikasi diperbarui beserta alasannya. Campaign berstatus
+`"Diterima"` inilah yang dianggap telah dipublikasikan dan muncul pada pencarian
+UC05. `Project.ubahStatus()` memakai algoritma yang sama dengan Q-011.
+ 
+Tabel 5.8.5. Query Operasi ubahStatus()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-010 | `UPDATE campaign SET status = ?, alasan_penolakan = ?, tanggal_verifikasi = NOW() WHERE id_campaign = ?;` | Memperbarui status verifikasi campaign beserta alasan dan waktu peninjauannya. |
+| Q-011 | `UPDATE project SET status = ?, alasan_penolakan = ?, tanggal_verifikasi = NOW() WHERE id_project = ?;` | Query setara untuk `Project.ubahStatus()`. |
+ 
+## 5.9 Kelas FormCampaignView
+ 
+**Nama Kelas:** FormCampaignView  
+**ID Kelas:** C17
+ 
+Tabel 5.9.a. Operasi Kelas FormCampaignView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `pilihMenuBuatCampaign(): void` | public | Menerima tindakan Pembuat Project membuka menu pembuatan campaign. |
+| `tampilkanFormulir(): void` | public | Menampilkan formulir pembuatan campaign. |
+| `isiFormulir(judul: String, deskripsi: String, targetNominal: double, periodeMulai: Date, periodeSelesai: Date): void` | public | Menerima judul, deskripsi, target nominal, dan periode campaign. |
+| `kirimFormulir(): void` | public | Mengirimkan isian formulir campaign ke CampaignController. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan kesalahan pembuatan campaign. |
+| `tampilkanNotifikasiBerhasil(idCampaign: String): void` | public | Menampilkan pemberitahuan bahwa campaign berhasil dibuat. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.10 Kelas DetailCampaignView
+ 
+**Nama Kelas:** DetailCampaignView  
+**ID Kelas:** C18
+ 
+Tabel 5.10.a. Operasi Kelas DetailCampaignView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaHalamanCampaign(idCampaign: String): void` | public | Membuka halaman detail satu campaign. |
+| `tampilkanDetail(detail: String): void` | public | Menampilkan rincian campaign beserta status verifikasinya. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.11 Kelas CampaignController
+ 
+**Nama Kelas:** CampaignController  
+**ID Kelas:** C19
+ 
+Tabel 5.11.a. Operasi Kelas CampaignController
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `buatCampaign(judul: String, deskripsi: String, targetNominal: double, periodeMulai: Date, periodeSelesai: Date): Boolean` | public | Mengoordinasikan pembuatan campaign, dari validasi sampai penyimpanan. |
+| `getPesanKesalahan(): String` | public | Mengembalikan pesan kesalahan terakhir untuk ditampilkan antarmuka. |
+| `getDetailCampaign(idCampaign: String): String` | public | Mengambil rincian campaign untuk ditampilkan DetailCampaignView. |
+ 
+Tabel 5.11.b. Atribut Kelas CampaignController
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `pesanKesalahan` | private | `string` |
+ 
+## 5.12 Kelas Project
+ 
+**Nama Kelas:** Project  
+**ID Kelas:** C02
+ 
+Tabel 5.12.a. Operasi Kelas Project
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `setInformasi(nama: String, deskripsi: String, lokasi: String, tujuan: String): void` | public | Mengisi informasi dasar project, yaitu nama, deskripsi, lokasi, dan tujuan. |
+| `setKebutuhan(kebutuhanDana: double, kebutuhanLogistik: String, kriteriaVolunteer: String): void` | public | Mengisi kebutuhan dana, logistik, dan kriteria volunteer project. |
+| `validasiData(): Boolean` | public | Memastikan nama, deskripsi, lokasi, dan tujuan project terisi (KF10). |
+| `validasiKebutuhan(): Boolean` | public | Menolak kebutuhan project yang kosong atau bernilai negatif (KF10). Lihat Algo-011. |
+| `simpanProject(): Boolean` | public | Menyimpan project baru berstatus menunggu verifikasi (KF09). Lihat Algo-012. |
+| `tampilkanDetail(): String` | public | Menyusun rincian project untuk ditampilkan antarmuka. |
+| `ubahStatus(statusBaru: String, alasan: String = ""): void` | public | Memperbarui status verifikasi project beserta alasannya (KF11). |
+| `getDaftarMenungguVerifikasi(): List<String>` | public | Mengambil daftar project yang menunggu peninjauan Admin Sistem. |
+| `cekStatusProject(): Boolean` | public | Memastikan project masih berstatus diterima. |
+| `tambahDana(nominal: double): Boolean` | public | Menambahkan nominal donasi ke dana terkumpul project (KF15). |
+| `hitungPersentaseCapaian(): double` | public | Menghitung perbandingan dana terkumpul terhadap kebutuhan dana. |
+| `cekKuota(): Boolean` | public | Memastikan kuota relawan project belum penuh (KF20). |
+| `cekStatusPendaftaran(): Boolean` | public | Memastikan pendaftaran relawan project masih dibuka. |
+| `cekAdaPendaftar(): Boolean` | public | Memeriksa apakah sudah ada relawan yang mendaftar pada project. |
+| `getDaftarPendaftar(): List<PendaftaranRelawan>` | public | Mengambil seluruh pendaftaran relawan pada project. |
+| `validasiHakAkses(idPengguna: String): Boolean` | public | Memastikan hanya Pembuat Project pemilik yang boleh memperbarui progres (KF23). |
+| `simpanPembaruanProgres(milestone: String, statusPelaksanaan: String, dokumentasi: File): Boolean` | public | Menyimpan milestone, status pelaksanaan, dan dokumentasi progres (KF24). |
+| `catatTimestamp(): void` | public | Mencatat waktu pembaruan progres terakhir (KF25). |
+| `getRiwayatProgres(idPengguna: String): List<String>` | public | Mengambil riwayat progres project secara kronologis (KF27). |
+| `getDetailProgres(idProgres: String): String` | public | Mengambil rincian satu entri progres project. |
+ 
+Tabel 5.12.b. Atribut Kelas Project
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idProject` | private | `string` |
+| `nama` | private | `string` |
+| `deskripsi` | private | `string` |
+| `lokasi` | private | `string` |
+| `tujuan` | private | `string` |
+| `kebutuhanDana` | private | `number` |
+| `kebutuhanLogistik` | private | `string` |
+| `kriteriaVolunteer` | private | `string` |
+| `status` | private | `string` |
+| `alasanPenolakan` | private | `string` |
+| `danaTerkumpul` | private | `number` |
+| `kuotaRelawan` | private | `number` |
+| `statusPendaftaranProject` | private | `string` |
+| `milestone` | private | `string` |
+| `statusPelaksanaan` | private | `string` |
+| `dokumentasiProgres` | private | `string` |
+| `timestampPembaruan` | private | `Date` |
+ 
+### 5.12.1 Algoritma/Query
+ 
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ validasiKebutuhan(): Boolean`  
+**ID Algoritma:** Algo-011
+ 
+```text
+FUNCTION validasiKebutuhan() -> Boolean
+    { Menolak kebutuhan project yang kosong atau bernilai negatif (KF10). }
+ 
+    IF this.kebutuhanDana = NULL OR this.kebutuhanDana < 0 THEN
+        LEMPAR GalatValidasi("Kebutuhan dana tidak boleh negatif")
+    ENDIF
+ 
+    IF trim(this.kebutuhanLogistik) = "" THEN
+        LEMPAR GalatValidasi("Kebutuhan logistik wajib diisi")
+    ENDIF
+ 
+    IF trim(this.kriteriaVolunteer) = "" THEN
+        LEMPAR GalatValidasi("Kriteria volunteer wajib diisi")
+    ENDIF
+ 
+    IF this.kuotaRelawan = NULL OR this.kuotaRelawan <= 0 THEN
+        LEMPAR GalatValidasi("Jumlah volunteer harus lebih besar dari nol")
+    ENDIF
+ 
+    RETURN true
+ENDFUNCTION
+```
+ 
+Berbeda dengan `validasiTarget()` pada campaign, `kebutuhanDana` bernilai nol
+tetap diterima karena ada project aksi iklim yang hanya membutuhkan relawan dan
+logistik tanpa penggalangan dana. Yang ditolak hanya nilai negatif, persis bunyi
+KF10. Sebaliknya `kuotaRelawan` wajib positif karena `cekKuota()` pada UC07
+membandingkan jumlah pendaftar terhadap kuota tersebut.
+ 
+### 5.12.2 Algoritma/Query
+ 
+**Nama Kelas:** Project  
+**Nama Operasi:** `+ simpanProject(): Boolean`  
+**ID Algoritma:** Algo-012
+ 
+```text
+FUNCTION simpanProject() -> Boolean
+    { Menyimpan project baru berstatus menunggu verifikasi (KF09). }
+ 
+    this.validasiData()           { melempar GalatValidasi bila gagal }
+    this.validasiKebutuhan()      { Algo-011 }
+ 
+    this.idProject                <- buatUUID()
+    this.status                   <- "Menunggu Verifikasi"
+    this.statusPendaftaranProject <- "ditutup"
+    this.danaTerkumpul            <- 0
+    this.alasanPenolakan          <- ""
+ 
+    jalankanQuery(Q-012, this.idProject, this.pembuat.idPembuat, this.nama,
+                         this.deskripsi, this.lokasi, this.tujuan,
+                         this.kebutuhanDana, this.kebutuhanLogistik,
+                         this.kriteriaVolunteer, this.kuotaRelawan, this.status,
+                         this.statusPendaftaranProject, this.danaTerkumpul)
+    RETURN true
+ENDFUNCTION
+```
+ 
+`statusPendaftaranProject` sengaja diisi `"ditutup"` saat penyimpanan karena
+project belum diverifikasi, sehingga pendaftaran relawan pada UC07 tidak mungkin
+dibuka untuk project yang belum terbit. Pendaftaran baru dapat dibuka setelah
+Admin Sistem mengubah status menjadi `"Diterima"`.
+ 
+Tabel 5.12.2. Query Operasi simpanProject()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-012 | `INSERT INTO project (id_project, id_pembuat, nama, deskripsi, lokasi, tujuan, kebutuhan_dana, kebutuhan_logistik, kriteria_volunteer, kuota_relawan, status, status_pendaftaran_project, dana_terkumpul, tanggal_dibuat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW());` | Menyimpan project baru beserta kaitannya ke akun Pembuat Project (KF09). |
+ 
+## 5.13 Kelas FormProjectView
+ 
+**Nama Kelas:** FormProjectView  
+**ID Kelas:** C20
+ 
+Tabel 5.13.a. Operasi Kelas FormProjectView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `pilihMenuBuatProject(): void` | public | Menerima tindakan Pembuat Project membuka menu pembuatan project. |
+| `tampilkanFormulir(): void` | public | Menampilkan formulir pembuatan project. |
+| `isiInformasiProject(nama: String, deskripsi: String, lokasi: String, tujuan: String): void` | public | Menerima nama, deskripsi, lokasi, dan tujuan project. |
+| `tampilkanInformasi(): void` | public | Menampilkan kembali informasi dasar yang sudah diisi. |
+| `isiKebutuhan(kebutuhanDana: double, kebutuhanLogistik: String, kriteriaVolunteer: String): void` | public | Menerima kebutuhan dana, logistik, dan kriteria volunteer. |
+| `kirimFormulir(): void` | public | Mengirimkan isian formulir project ke ProjectController. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan kesalahan pembuatan project. |
+| `tampilkanNotifikasiBerhasil(idProject: String): void` | public | Menampilkan pemberitahuan bahwa project berhasil dibuat. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.14 Kelas DetailProjectView
+ 
+**Nama Kelas:** DetailProjectView  
+**ID Kelas:** C21
+ 
+Tabel 5.14.a. Operasi Kelas DetailProjectView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaHalamanProject(idProject: String): void` | public | Membuka halaman detail satu project. |
+| `tampilkanDetail(detail: String): void` | public | Menampilkan rincian project beserta status verifikasinya. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.15 Kelas ProjectController
+ 
+**Nama Kelas:** ProjectController  
+**ID Kelas:** C22
+ 
+Tabel 5.15.a. Operasi Kelas ProjectController
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `simpanInformasiDasar(nama: String, deskripsi: String, lokasi: String, tujuan: String): String` | public | Menyimpan informasi dasar project dan mengembalikan ID project. |
+| `perbaruiInformasi(idProject: String, nama: String, deskripsi: String, lokasi: String, tujuan: String): void` | public | Memperbarui informasi dasar project yang sudah tersimpan. |
+| `isiKebutuhan(idProject: String, kebutuhanDana: double, kebutuhanLogistik: String, kriteriaVolunteer: String): Boolean` | public | Menyimpan kebutuhan dana, logistik, dan kriteria volunteer project. |
+| `kirimProject(idProject: String): Boolean` | public | Menjalankan validasi akhir lalu menyimpan project (KF09). |
+| `getPesanKesalahan(): String` | public | Mengembalikan pesan kesalahan terakhir untuk ditampilkan antarmuka. |
+| `getDetailProject(idProject: String): String` | public | Mengambil rincian project untuk ditampilkan DetailProjectView. |
+ 
+Tabel 5.15.b. Atribut Kelas ProjectController
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `pesanKesalahan` | private | `string` |
+ 
+## 5.16 Kelas AdminSistem
+ 
+**Nama Kelas:** AdminSistem  
+**ID Kelas:** C11
+ 
+Tabel 5.16.a. Operasi Kelas AdminSistem
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `tinjauPengajuan(idPengajuan: String, jenis: String): String` | public | Mengambil rincian pengajuan campaign atau project untuk ditinjau (KF11). |
+| `setujuiPengajuan(idPengajuan: String, jenis: String): void` | public | Menyetujui pengajuan sehingga kegiatan dipublikasikan (KF11). |
+| `tolakPengajuan(idPengajuan: String, jenis: String, alasan: String): void` | public | Menolak pengajuan beserta alasan penolakannya (KF11). |
+ 
+Tabel 5.16.b. Atribut Kelas AdminSistem
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idAdmin` | private | `string` |
+| `nama` | private | `string` |
+| `email` | private | `string` |
+ 
+## 5.17 Kelas PengajuanView
+ 
+**Nama Kelas:** PengajuanView  
+**ID Kelas:** C23
+ 
+Tabel 5.17.a. Operasi Kelas PengajuanView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `ajukanVerifikasi(idPengajuan: String, jenis: String): void` | public | Mengirimkan pengajuan verifikasi campaign atau project. |
+| `tampilkanNotifikasi(pesan: String): void` | public | Menampilkan pemberitahuan bahwa pengajuan telah dikirim. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.18 Kelas DaftarPengajuanView
+ 
+**Nama Kelas:** DaftarPengajuanView  
+**ID Kelas:** C24
+ 
+Tabel 5.18.a. Operasi Kelas DaftarPengajuanView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaDaftarPengajuan(): void` | public | Membuka halaman daftar pengajuan yang menunggu verifikasi. |
+| `tampilkanDaftar(daftar: List<String>): void` | public | Menampilkan daftar pengajuan kepada Admin Sistem. |
+| `pilihPengajuan(idPengajuan: String, jenis: String): void` | public | Menerima pilihan Admin Sistem atas satu pengajuan. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.19 Kelas DetailPengajuanView
+ 
+**Nama Kelas:** DetailPengajuanView  
+**ID Kelas:** C25
+ 
+Tabel 5.19.a. Operasi Kelas DetailPengajuanView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `tampilkanDetail(detail: String): void` | public | Menampilkan rincian pengajuan yang sedang ditinjau. |
+| `setujui(): void` | public | Menerima tindakan Admin Sistem menyetujui pengajuan. |
+| `tolak(alasan: String): void` | public | Menerima tindakan Admin Sistem menolak pengajuan beserta alasannya. |
+| `tampilkanStatus(status: String): void` | public | Menampilkan hasil peninjauan kepada Admin Sistem. |
+ 
+Tabel 5.19.b. Atribut Kelas DetailPengajuanView
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `idPengajuan` | private | `string` |
+| `jenis` | private | `string` |
+ 
+## 5.20 Kelas VerifikasiController
+ 
+**Nama Kelas:** VerifikasiController  
+**ID Kelas:** C26
+ 
+Tabel 5.20.a. Operasi Kelas VerifikasiController
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `ajukanVerifikasi(idPengajuan: String, jenis: String): void` | public | Mengubah status kegiatan menjadi menunggu verifikasi atas permintaan Pembuat Project. |
+| `getDaftarMenunggu(): List<String>` | public | Menggabungkan daftar campaign dan project yang menunggu verifikasi. |
+| `getDetailPengajuan(idPengajuan: String, jenis: String): String` | public | Mengambil rincian satu pengajuan untuk ditinjau Admin Sistem. |
+| `setujuiPengajuan(idPengajuan: String, jenis: String): String` | public | Memastikan pemanggilnya Admin Sistem lalu menyetujui pengajuan (KF12). Lihat Algo-013. |
+| `tolakPengajuan(idPengajuan: String, jenis: String, alasan: String): String` | public | Memastikan pemanggilnya Admin Sistem lalu menolak pengajuan beserta alasannya (KF12). |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+### 5.20.1 Algoritma/Query
+ 
+**Nama Kelas:** VerifikasiController  
+**Nama Operasi:** `+ setujuiPengajuan(idPengajuan: String, jenis: String): String`  
+**ID Algoritma:** Algo-013
+ 
+```text
+FUNCTION setujuiPengajuan(idPengajuan: String, jenis: String) -> String
+    { Menyetujui pengajuan setelah memastikan pemanggilnya Admin Sistem (KF12). }
+ 
+    { idSesi diambil dari cookie permintaan HTTP, bukan dari badan permintaan,
+      sesuai pola Client-Server pada BAB 2. }
+    idSesi <- konteksPermintaan.idSesi
+    sesi   <- SesiLogin BARU
+ 
+    IF NOT sesi.cekStatusLogin(idSesi) THEN           { Algo-005 }
+        RETURN "Gagal: sesi tidak valid, silakan login kembali"
+    ENDIF
+ 
+    peran <- jalankanQuery(Q-013, sesi.idPengguna)
+ 
+    IF peran <> "Admin Sistem" THEN
+        RETURN "Gagal: akses ditolak, fungsi ini hanya untuk Admin Sistem"
+    ENDIF
+ 
+    IF jenis = "campaign" THEN
+        pengajuan <- Campaign.muat(idPengajuan)
+    ELSE
+        pengajuan <- Project.muat(idPengajuan)
+    ENDIF
+ 
+    IF pengajuan = KOSONG THEN
+        RETURN "Gagal: pengajuan tidak ditemukan"
+    ENDIF
+ 
+    IF pengajuan.status <> "Menunggu Verifikasi" THEN
+        RETURN "Gagal: pengajuan sudah pernah ditinjau"
+    ENDIF
+ 
+    pengajuan.ubahStatus("Diterima")                  { Algo-010 }
+    RETURN "Diterima"
+ENDFUNCTION
+```
+ 
+Pemeriksaan peran dikerjakan di sisi peladen dan dibaca dari basis data, bukan
+dari data yang dikirim peramban, sehingga pengguna biasa tidak dapat mengaku
+sebagai Admin Sistem dengan menyunting permintaan. Pemeriksaan
+`status <> "Menunggu Verifikasi"` mencegah satu pengajuan diverifikasi dua kali
+bila tombol tertekan berulang. Nilai kembalian berupa `String` ditampilkan
+`DetailPengajuanView.tampilkanStatus()`, sehingga kelas ini tidak memerlukan
+atribut `pesanKesalahan` seperti *controller* lain.
+ 
+`tolakPengajuan(idPengajuan, jenis, alasan)` memakai algoritma yang sama persis,
+dengan dua perbedaan: ditambah pemeriksaan `trim(alasan) <> ""` sebelum
+`Campaign.muat()`, dan baris terakhirnya menjadi
+`pengajuan.ubahStatus("Ditolak", alasan)`.
+ 
+Tabel 5.20.1. Query Operasi setujuiPengajuan()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-013 | `SELECT peran FROM pengguna WHERE id_pengguna = ?;` | Mengambil peran pemilik sesi untuk penegakan KF12. |
+ 
+## 5.21 Kelas Katalog
+ 
+**Nama Kelas:** Katalog  
+**ID Kelas:** C01
+ 
+Tabel 5.21.a. Operasi Kelas Katalog
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `terimaKataKunci(kataKunci: String): void` | public | Menyimpan kata kunci pencarian yang dimasukkan pengguna. |
+| `terapkanFilter(filter: String): void` | public | Menyimpan kriteria penyaringan kategori, lokasi, dan periode. |
+| `cari(): List<String>` | public | Mencari kegiatan yang telah dipublikasikan sesuai kata kunci dan filter (KF13, KF14). Lihat Algo-014. |
+| `tampilkanHasil(): List<String>` | public | Menyusun hasil pencarian untuk ditampilkan antarmuka. |
+ 
+Tabel 5.21.b. Atribut Kelas Katalog
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `kataKunci` | private | `string` |
+| `filter` | private | `string` |
+ 
+### 5.21.1 Algoritma/Query
+ 
+**Nama Kelas:** Katalog  
+**Nama Operasi:** `+ cari(): List<String>`  
+**ID Algoritma:** Algo-014
+ 
+```text
+FUNCTION cari() -> List<String>
+    { Pencarian berfilter dinamis, hanya kegiatan yang telah dipublikasikan
+      (KF13, KF14). }
+ 
+    kunci <- trim(this.kataKunci)
+    f     <- uraikanFilter(this.filter)    { kategori, lokasi, mulai, selesai }
+ 
+    IF panjang(kunci) > 0 AND panjang(kunci) < 3 THEN
+        LEMPAR GalatValidasi("Kata kunci minimal 3 karakter")
+    ENDIF
+ 
+    hasil <- List KOSONG
+ 
+    IF f.kategori = "campaign" OR f.kategori = "semua" THEN
+        hasil.gabung(jalankanQuery(Q-014, kunci, kunci, kunci,
+                                          f.lokasi, f.lokasi,
+                                          f.mulai, f.mulai,
+                                          f.selesai, f.selesai))
+    ENDIF
+ 
+    IF f.kategori = "project" OR f.kategori = "semua" THEN
+        hasil.gabung(jalankanQuery(Q-015, kunci, kunci, kunci,
+                                          f.lokasi, f.lokasi,
+                                          f.mulai, f.mulai,
+                                          f.selesai, f.selesai))
+    ENDIF
+ 
+    urutkanMenurut(hasil, "tanggal_dibuat", MENURUN)
+    RETURN hasil
+ENDFUNCTION
+```
+ 
+Filter dibuat dinamis tanpa menyambung string SQL. Setiap syarat ditulis dengan
+pola `(? = '' OR kolom ...)`, sehingga parameter yang dikosongkan membuat syarat
+tersebut selalu benar dan filter itu seolah tidak dipasang. Dengan cara ini
+seluruh kombinasi filter dilayani oleh satu query yang bentuknya tidak pernah
+berubah, dan tidak ada celah penyuntikan SQL.
+ 
+Syarat `status = 'Diterima'` berada di dalam query dan tidak dapat dimatikan
+oleh filter mana pun, sehingga kegiatan yang masih menunggu verifikasi atau
+ditolak tidak akan pernah muncul pada hasil pencarian pengguna umum (KF14).
+Penyaringan periode memakai pola tumpang tindih rentang: sebuah campaign ikut
+terambil bila periodenya beririsan dengan rentang yang diminta, bukan hanya bila
+seluruhnya berada di dalam rentang tersebut.
+ 
+Tabel 5.21.1. Query Operasi cari()
+ 
+| No Query | Query | Keterangan |
+| :--- | :--- | :--- |
+| Q-014 | `SELECT id_campaign AS id, 'campaign' AS jenis, judul AS nama, lokasi, periode_mulai AS mulai, periode_selesai AS selesai, tanggal_dibuat FROM campaign WHERE status = 'Diterima' AND (? = '' OR judul LIKE CONCAT('%', ?, '%') OR deskripsi LIKE CONCAT('%', ?, '%')) AND (? = '' OR lokasi = ?) AND (? = '' OR periode_selesai >= ?) AND (? = '' OR periode_mulai <= ?);` | Mencari campaign yang telah dipublikasikan sesuai kata kunci, lokasi, dan periode. |
+| Q-015 | `SELECT id_project AS id, 'project' AS jenis, nama, lokasi, NULL AS mulai, NULL AS selesai, tanggal_dibuat FROM project WHERE status = 'Diterima' AND (? = '' OR nama LIKE CONCAT('%', ?, '%') OR deskripsi LIKE CONCAT('%', ?, '%')) AND (? = '' OR lokasi = ?) AND (? = '' OR tanggal_dibuat >= ?) AND (? = '' OR tanggal_dibuat <= ?);` | Query setara untuk project. Project tidak memiliki kolom periode, sehingga penyaringan waktu memakai `tanggal_dibuat`. |
+ 
+## 5.22 Kelas FormPencarianView
+ 
+**Nama Kelas:** FormPencarianView  
+**ID Kelas:** C27
+ 
+Tabel 5.22.a. Operasi Kelas FormPencarianView
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `bukaKatalog(): void` | public | Membuka halaman katalog kegiatan. |
+| `masukkanKriteria(kataKunci: String, filter: String): void` | public | Menerima kata kunci dan filter pencarian dari pengguna. |
+| `tampilkanHasil(hasil: List<String>): void` | public | Menampilkan daftar hasil pencarian kepada pengguna. |
+| `tampilkanPesanKesalahan(pesan: String): void` | public | Menampilkan pesan bahwa hasil pencarian kosong atau kriteria tidak valid. |
+ 
+Kelas ini tidak memiliki atribut. Seluruh data yang diperlukan diterima
+sebagai parameter operasi dan langsung diteruskan ke kelas lain, sehingga
+tidak ada keadaan yang disimpan di dalam objeknya.
+ 
+## 5.23 Kelas PencarianController
+ 
+**Nama Kelas:** PencarianController  
+**ID Kelas:** C28
+ 
+Tabel 5.23.a. Operasi Kelas PencarianController
+ 
+| Nama Operasi | Visibility (private, public) | Keterangan |
+| :--- | :--- | :--- |
+| `getDaftarDipublikasikan(): List<String>` | public | Mengambil seluruh kegiatan yang berstatus diterima (KF14). |
+| `cari(kataKunci: String, filter: String): List<String>` | public | Meneruskan kata kunci dan filter ke Katalog lalu mengembalikan hasilnya (KF13). |
+| `getDetailProject(idProject: String): String` | public | Mengambil rincian project yang dipilih dari hasil pencarian. |
+| `getDetailCampaign(idCampaign: String): String` | public | Mengambil rincian campaign yang dipilih dari hasil pencarian. |
+| `getPesanKesalahan(): String` | public | Mengembalikan pesan kesalahan terakhir untuk ditampilkan antarmuka. |
+ 
+Tabel 5.23.b. Atribut Kelas PencarianController
+ 
+| Nama Atribut | Visibility (private, public) | Tipe |
+| :--- | :--- | :--- |
+| `pesanKesalahan` | private | `string` |
 
 ## 5.24 Kelas PetaWilayah
 

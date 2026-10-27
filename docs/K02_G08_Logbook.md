@@ -167,8 +167,9 @@
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
-| 26-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas | 1 | Belum selesai | - | 
-| 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas | 1 | Belum selesai | - | 
+| 26-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.1-5.2 | 1 | Belum selesai | - | 
+| 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.3 | 1 | Belum selesai | - | 
+| 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.4-5.23 | 4 | Done | - | 
 
 **Catatan/Evaluasi Milestone 8:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
