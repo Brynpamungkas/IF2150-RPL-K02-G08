@@ -178,8 +178,8 @@
 | 27-10-2026 | Naya | Membuat Rancangan Antarmuka | 4 | Done | - |
 | 27-10-2026 | Bryan | Membuat Rancangan Antarmuka | 3 | Done | - |
 | 28-10-2026 | Sahla | Mengerjakan Bab 6 Perancangan Antarmuka bagian 6.1-6.5 | 1.5 | Done | - |
-| 28-10-2026 | Sahla | Mengerjakan Bab 6 Perancangan Antarmuka bagian 6.6-6.10 | 1.5 | Done | - |
-
+| 28-10-2026 | Naya | Mengerjakan Bab 6 Perancangan Antarmuka bagian 6.6-6.10 | 1.5 | Done | - |
+| 28-10-2026 | Bryan | Mengerjakan Bab 6 Perancangan Antarmuka bagian 6.11-6.14 | 1.5 | Done | - |
 
 **Catatan/Evaluasi Milestone 8:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
