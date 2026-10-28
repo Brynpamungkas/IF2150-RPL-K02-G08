@@ -4019,44 +4019,188 @@ Tabel 5.43.14. Query Operasi tambahDana()
 
 # BAB 6: Perancangan Antarmuka
 
-## 6.1 Rancangan Antarmuka [ID Layar 1]
+## 6.1 Rancangan Antarmuka I-01
 
-Masukkan versi awal prototipe antarmuka, dimana untuk setiap antarmuka/layar, tuliskan spesifikasi rinci objek yang ditampilkan dan reaksi sistem terhadap interaksi pengguna.
+Halaman pertama yang dilihat pengunjung. Bagian atas berisi navbar, foto hero, ajakan untuk berdonasi atau menjadi relawan, tiga pintasan cepat, dan tiga angka ringkas (aksi yang menerima donasi, relawan yang diterima, jumlah provinsi). Di bawahnya ada peta aksi, langkah kerja platform, aksi yang butuh dukungan, laporan lapangan, dan ajakan bagi penyelenggara. Navbar yang sama tampil di seluruh halaman. Setelah pengguna login, menu Home dan Explore tetap ada, lalu tombol Log in/Sign up berganti menjadi chip saldo dan avatar akun.
 
-**Antarmuka:** *[ID layar]*  
-**Nama Layar:** *[Nama layar]*
+**Antarmuka:** *[I-01]*  
+**Nama Layar:** *[Home]*
 
 <p align="center">
-<img alt="Contoh Logical View pada P/L E-Commerce" src="./assets/diagram/contoh-design.png" width="50%">
+<img alt="I-01 Home" src="./assets/I-01.png" width="720">
 </p>
 <p align="center">
-<i>Gambar 6.1. Rancangan Antarmuka [ID Layar] - [Nama Layar]</i>
+<i>Gambar 6.1. Rancangan Antarmuka I-01 - Home</i>
 </p>
 
-Tabel 6.1. Spesifikasi Objek Antarmuka [ID Layar]
+Tabel 6.1. Spesifikasi Objek Antarmuka I-01
 
 | Id_Objek | Jenis | Konten | Keterangan |
 | :--- | :--- | :--- | :--- |
-| *[ID objek]* | *[Jenis objek, misalnya Button, RTF Box, dll]* | *[String yang tampil pada layar]* | *[Reaksi sistem, layar tujuan, tautan, atau ID algoritma yang dijalankan]* |
-| *[ID objek]* | *[Jenis objek]* | *[Konten yang ditampilkan]* | *[Reaksi sistem atau nama file terkait beserta deskripsi ringkasnya]* |
-| *...* | *...* | *...* | *...* |
+| I-01.1 | Button | KlimPooL (logo) | Kembali ke Home (I-01). |
+| I-01.2 | Link menu | Home | Membuka Home (I-01). |
+| I-01.3 | Link menu | Explore | Membuka layar Explore (I-04). |
+| I-01.4 | Link menu | How it works | Menggulir halaman ke bagian "How it works" pada Home. |
+| I-01.5 | Link menu | Start an action | Membuka form pengajuan aksi (I-23). |
+| I-01.6 | Link menu | Impact | Menggulir halaman ke bagian Impact (angka yang tercatat) pada Home. |
+| I-01.7 | Button | Log in | Membuka modal Log in (I-02). |
+| I-01.8 | Button | Sign up | Membuka modal Sign up (I-03). |
+| I-01.9 | Image | Foto hero (pemandangan gunung dan sawah) | Gambar latar penuh pada bagian atas Home. |
+| I-01.10 | Heading | Support climate action near you, with funds or your time. | Judul utama platform. |
+| I-01.11 | Button | Explore actions | Membuka Explore (I-04). |
+| I-01.12 | Button | See how it works | Menggulir ke bagian "How it works" pada Home. |
+| I-01.13 | Card tombol | Donate from your balance — Starting at Rp10,000 | Membuka Explore (I-04). |
+| I-01.14 | Card tombol | Volunteer on site — 6 actions need help | Membuka Explore (I-04) dengan filter aksi yang membutuhkan relawan. |
+| I-01.15 | Card tombol | Start your own action — Reviewed before it goes live | Membuka form pengajuan aksi (I-09). |
+| I-01.16 | Label statistik | 9 open for donations · 108 volunteers accepted · 10 provinces | Angka dihitung otomatis dari data aksi yang sudah terbit. |
 
+## 6.2 Rancangan Antarmuka I-02
 
-## 6.X Rancangan Antarmuka [ID Layar X]
+Modal yang muncul setelah pengguna menekan tombol Log in. Pengguna memasukkan email dan kata sandi. Tiga tombol akun demo disediakan agar penguji dapat langsung masuk tanpa mengetik.
 
-*[Ulangi pola 6.1 untuk layar berikutnya sampai semua layar teridentifikasi]*
+**Antarmuka:** *[I-02]*  
+**Nama Layar:** *[log in]*
 
-## 6.Y Rancangan Antarmuka Keseluruhan
+<p align="center">
+<img alt="I-02 Log in" src="./assets/I-03.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.2. Rancangan Antarmuka I-02 Log in</i>
+</p>
+
+Tabel 6.1. Spesifikasi Objek Antarmuka I-02
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-02.1 | Heading | Log in to KlimPooL | Judul modal. |
+| I-02.2 | Button | × (Close) | Menutup modal. |
+| I-02.3 | Tab | Log in | Menampilkan form login. |
+| I-02.4 | Tab | Sign up | Berpindah ke modal Sign up (I-03). |
+| I-02.5 | Text field | Email — name@email.com | Diisi alamat email akun. |
+| I-02.6 | Password field | Password | Diisi kata sandi akun. |
+| I-02.7 | Button | Log in | Memvalidasi isian. Jika benar, pengguna masuk ke akunnya dan kembali ke halaman asal. |
+| I-02.8 | Button | Andi · donor & volunteer | Langsung login sebagai akun demo donatur dan relawan. |
+| I-02.9 | Button | Sari · project organizer | Langsung login sebagai akun demo penyelenggara aksi. |
+| I-02.10 | Button | Admin | Langsung login sebagai akun demo admin. |
+
+## 6.3 Rancangan Antarmuka I-03
+
+Modal pendaftaran akun baru. Setelah data valid dan akun dibuat, pengguna langsung masuk ke akun barunya. Satu akun dipakai untuk berdonasi, menjadi relawan, dan mengajukan aksi.
+
+**Antarmuka:** *[I-03]*  
+**Nama Layar:** *[Sign up]*
+
+<p align="center">
+<img alt="I-03 Sign up" src="./assets/I-04.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.3. Rancangan Antarmuka I-03 Sign up</i>
+</p>
+
+Tabel 6.3. Spesifikasi Objek Antarmuka I-03
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-03.1 | Heading | Create an account | Judul modal. |
+| I-03.2 | Tab | Log in | Berpindah ke modal Log in (I-02). |
+| I-03.3 | Tab | Sign up | Menampilkan form pendaftaran. |
+| I-03.4 | Text field | Full name — Your full name | Diisi nama lengkap, minimal 3 huruf. |
+| I-03.5 | Text field | Email — name@email.com | Diisi email yang belum terdaftar. |
+| I-03.6 | Password field | Password — At least 8 characters | Diisi kata sandi minimal 8 karakter. |
+| I-03.7 | Button | Create account | Memvalidasi isian. Jika valid, akun dibuat dan pengguna langsung login. |
+
+## 6.4 Rancangan Antarmuka I-04
+
+ModaHalaman pencarian seluruh aksi yang sudah lolos peninjauan. Peta dan daftar saling terhubung: menyorot kartu akan menyorot pinnya, dan mengetuk pin menampilkan ringkasan. Pengguna dapat mencari dengan kata kunci dan menyaring berdasarkan tipe, kategori, provinsi, status, dan periode.l pendaftaran akun baru. Setelah data valid dan akun dibuat, pengguna langsung masuk ke akun barunya. Satu akun dipakai untuk berdonasi, menjadi relawan, dan mengajukan aksi.
+
+**Antarmuka:** *[I-04]*  
+**Nama Layar:** *[Explore]*
+
+<p align="center">
+<img alt="I-04 Explore" src="./assets/I-08.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.4. Rancangan Antarmuka I-04 Explore</i>
+</p>
+
+Tabel 6.4. Spesifikasi Objek Antarmuka I-04
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-04.1 | Breadcrumb | Home / Explore | Home membuka Beranda (I-01). |
+| I-04.2 | Heading | Explore climate actions | Judul halaman. |
+| I-04.3 | Search field | Keyword — Search mangrove, Demak, clean water… | Diisi kata kunci judul, kota, atau kategori. |
+| I-04.4 | Button | Search | Menjalankan pencarian. |
+| I-04.5 | Segmented button | All · Action projects · Fundraising campaigns | Menyaring daftar berdasarkan tipe aksi. |
+| I-04.6 | Dropdown | All categories | Menyaring berdasarkan kategori (misal Mangroves & coast, Clean water). |
+| I-04.7 | Dropdown | All provinces | Menyaring berdasarkan provinsi. |
+| I-04.8 | Dropdown | Any status | Menyaring berdasarkan status: Open for donations, Needs volunteers, atau Closed / completed. |
+| I-04.9 | Dropdown | Any period | Menyaring berdasarkan periode: Happening now, Active in the next 3 months, atau Already ended. |
+| I-04.10 | Label | 11 actions found | Jumlah aksi yang cocok dengan filter. |
+| I-04.11 | Peta (SVG) | Peta Indonesia dengan pin | Mengetuk pin menampilkan kartu ringkasan aksi. |
+| I-04.12 | Card daftar | Foto, chip tipe & status, judul, lokasi, progres dana | Menekan kartu membuka Project Details (I-05). |
+
+## 6.5 Rancangan Antarmuka I-05
+
+Halaman detail satu aksi. Bagian atas memuat tipe, kategori, status, judul, lokasi, dan foto. Tab About menjelaskan latar belakang, tujuan di lapangan, jadwal, titik kumpul, dan periode kegiatan. Kolom di sisi kanan merangkum dana yang terkumpul dan menyediakan tombol Donate now serta Volunteer for this.
+
+**Antarmuka:** *[I-05]*  
+**Nama Layar:** *[Project Details]*
+
+<p align="center">
+<img alt="I-05 Project Details" src="./assets/I-10.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.5. Rancangan Antarmuka I-05 Project Details</i>
+</p>
+
+Tabel 6.5. Spesifikasi Objek Antarmuka I-05
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-5.1 | Breadcrumb | Explore / Mangroves & coast | Explore membuka Explore (I-04). |
+| I-5.2 | Chip | Action project · Mangroves & coast · In progress | Menunjukkan tipe aksi, kategori, dan status pelaksanaan. |
+| I-5.3 | Heading | Sayung Coastal Mangrove Restoration | Judul aksi. |
+| I-5.4 | Label | Sayung, Demak, Jawa Tengah | Lokasi aksi. |
+| I-5.5 | Image | Foto aksi | Foto utama aksi. |
+| I-5.6 | Tab | About | Menampilkan isi tab ini. |
+| I-5.10 | Text | Deskripsi, What this action aims to achieve, Schedule and location, Activity period | Konten teks aksi yang diisi penyelenggara. |
+| I-5.11 | Panel dana | Rp61,250,000 raised of Rp85,000,000 · 72% funded · 412 donations · 49 days left | Ringkasan dana beserta bilah progres. |
+| I-5.12 | Button | Donate now | Membuka modal Donasi (I-06), atau modal login (I-02) bila belum login. |
+| I-5.13 | Panel relawan | 25 of 40 people | Jumlah relawan yang sudah diterima. |
+| I-5.14 | Button | Volunteer for this | Membuka Form Relawan (I-08), atau modal Log in (I-02) bila belum login. |
+
+## 6.6 Rancangan Antarmuka I-06 (gambar I-14)
+ 
+## 6.7 Rancangan Antarmuka I-07 (gambar I-17)
+
+## 6.8 Rancangan Antarmuka I-08 (gambar I-20)
+
+## 6.9 Rancangan Antarmuka I-09 (gambar I-23)
+
+## 6.10 Rancangan Antarmuka I-10 (gambar I-27)
+
+## 6.11 Rancangan Antarmuka I-11 (gambar I-30)
+
+## 6.12 Rancangan Antarmuka I-12 (gambar I-31)
+
+## 6.13 Rancangan Antarmuka I-13 (gambar I-32)
+
+## 6.14 Rancangan Antarmuka I-14 (gambar I-33)
+
+## 6.15 Rancangan Antarmuka Keseluruhan
 
 Tuliskan daftar gambar seluruh antarmuka. Berikan ID unik untuk setiap tampilan dan gunakan ID yang sama pada subbab perancangan antarmuka masing-masing.
 
-Tabel 6.Y. Rancangan Antarmuka Keseluruhan
+Tabel 6.15. Rancangan Antarmuka Keseluruhan
 
 | No | Tampilan Antarmuka |
 | :--- | :--- |
-| *[I-01]* | <img src="./assets/diagram/contoh-design.png" alt="Contoh Desain" width="400"> |
-| *[I-02]* | *[Sisipkan gambar antarmuka I-02]* |
-| *[I-XX]* | *[Sisipkan gambar antarmuka berikutnya]* |
+| *[I-01]* | <img src="./assets/I-01.png" alt="Contoh Desain" width="400"> |
+| *[I-02]* | <img src="./assets/I-03.png" alt="Contoh Desain" width="400">  |
+| *[I-03]* | <img src="./assets/I-04.png" alt="Contoh Desain" width="400"> |
+| *[I-04]* | <img src="./assets/I-08.png" alt="Contoh Desain" width="400"> |
+| *[I-05]* | <img src="./assets/I-10.png" alt="Contoh Desain" width="400"> |
 
 <br>
 
