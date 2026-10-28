@@ -85,6 +85,10 @@ Khusus pengumpulan final, kelompok **WAJIB** membuat release dengan format tag d
 
 Tag inilah yang jadi bukti resmi apa yang kelompok kumpulkan untuk milestone tersebut. Ulangi langkah ini di setiap deadline milestone.
 
+## 7. Artefak UI/UX KlimPooL
+
+Prototype UI/UX Expressive dan board yang dapat diimpor ke Figma tersedia di [docs/M7/ui-ux/README.md](docs/M7/ui-ux/README.md). Buka [prototype.html](docs/M7/ui-ux/prototype.html) untuk mencoba alur UC05–UC10, atau impor [klimpool-figma-board.svg](docs/M7/ui-ux/figma/klimpool-figma-board.svg) ke Figma.
+
 ---
 
 <br>
