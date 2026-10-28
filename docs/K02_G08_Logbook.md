@@ -28,6 +28,7 @@
 * [Milestone 5](#milestone-5)
 * [Milestone 6](#milestone-6)
 * [Milestone 7](#milestone-7)
+* [Milestone 8](#milestone-8)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -167,9 +168,13 @@
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
-| 26-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.1-5.2 | 1 | Belum selesai | - | 
+| 26-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.1-5.2 | 1 | Belum selesai | - |
+| 26-10-2026 | Sahla | Membuat Rancangan Antarmuka | 2 | Done | - |
 | 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.3 | 1 | Belum selesai | - | 
 | 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.4-5.23 | 4 | Done | - | 
+| 27-10-2026 | Sahla | Membuat Rancangan Antarmuka | 4 | Done | - |
+| 28-10-2026 | Sahla | Mengerjakan Bab 6 Perancangan Antarmuka bagian 6.1-6.5 | 1.5 | Done | - |
+
 
 **Catatan/Evaluasi Milestone 8:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*

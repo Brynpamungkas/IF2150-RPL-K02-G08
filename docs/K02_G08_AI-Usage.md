@@ -29,6 +29,7 @@
 * [Milestone 5](#milestone-5)
 * [Milestone 6](#milestone-6)
 * [Milestone 7](#milestone-7)
+* [Milestone 8](#milestone-8)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -78,6 +79,10 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
 | Claude | Membantu menuliskan sintaks XML agar rancangan CD & Sequence Diagram yang sudah saya susun dapat diimpor ke draw.io | "Bantu ubah alur proses berikut menjadi XML draw.io | Alur proses, aktor, dan langkah ditentukan sendiri berdasarkan SKPL dan Bab 2 M6. Hasil XML diimpor ke draw.io, lalu label, urutan alur, dan tata letak diperiksa dan disesuaikan secara manual |
+
+### Milestone 8
+| Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
+| :--- | :--- | :--- | :--- |
 
 ---
 ### Pernyataan Integritas dan Persetujuan
