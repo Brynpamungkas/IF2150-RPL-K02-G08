@@ -4,8 +4,8 @@
 
 | Informasi | Keterangan |
 | --- | --- |
-| **Hari** | *Jumat* |
-| **Tanggal** | *09/10/2026* |
+| **Hari** | *Selasa* |
+| **Tanggal** | *27/10/2026* |
 | **Kelas** | K02 |
 | **Nomor Kelompok** | G08 |
 | **Nama Kelompok** | BS3N  |
@@ -36,9 +36,9 @@
 
 ## Dokumentasi
 
-<!-- ![](./assets/foto-asistensi.jpg) -->
+<!-- ![](./assets/foto-asistensi-1.png) -->
 <p align="center">
-  <img src="./assets/foto-asistensi.jpg" width="100%">
+  <img src="./assets/foto-asistensi-1.png" width="100%">
 </p>
 
 <p align="center">
