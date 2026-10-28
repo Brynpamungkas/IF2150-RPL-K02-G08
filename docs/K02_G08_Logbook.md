@@ -173,7 +173,9 @@
 | 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.3 | 1 | Belum selesai | - | 
 | 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.4-5.23 | 4 | Done | - | 
 | 27-10-2026 | Sahla | Membuat Rancangan Antarmuka | 4 | Done | - |
+| 27-10-2026 | Naya | Membuat Rancangan Antarmuka | 4 | Done | - |
 | 28-10-2026 | Sahla | Mengerjakan Bab 6 Perancangan Antarmuka bagian 6.1-6.5 | 1.5 | Done | - |
+| 28-10-2026 | Sahla | Mengerjakan Bab 6 Perancangan Antarmuka bagian 6.6-6.10 | 1.5 | Done | - |
 
 
 **Catatan/Evaluasi Milestone 8:**
