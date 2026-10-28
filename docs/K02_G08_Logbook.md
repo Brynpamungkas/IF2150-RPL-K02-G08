@@ -171,6 +171,7 @@
 | 26-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.1-5.2 | 1 | Belum selesai | - |
 | 26-10-2026 | Sahla | Membuat Rancangan Antarmuka | 2 | Done | - |
 | 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.3 | 1 | Belum selesai | - | 
+| 27-10-2026 | Neysa | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.24-5.43 | 4.5 | Done | - |
 | 27-10-2026 | Nathan | Mengerjakan Bab 5 Perancangan Rinci Kelas 5.4-5.23 | 4 | Done | - | 
 | 27-10-2026 | Sahla | Membuat Rancangan Antarmuka | 4 | Done | - |
 | 27-10-2026 | Naya | Membuat Rancangan Antarmuka | 4 | Done | - |
