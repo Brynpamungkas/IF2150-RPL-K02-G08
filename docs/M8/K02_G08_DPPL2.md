@@ -4170,15 +4170,163 @@ Tabel 6.5. Spesifikasi Objek Antarmuka I-05
 | I-5.13 | Panel relawan | 25 of 40 people | Jumlah relawan yang sudah diterima. |
 | I-5.14 | Button | Volunteer for this | Membuka Form Relawan (I-08), atau modal Log in (I-02) bila belum login. |
 
-## 6.6 Rancangan Antarmuka I-06 (gambar I-14)
- 
-## 6.7 Rancangan Antarmuka I-07 (gambar I-17)
+## 6.6 Rancangan Antarmuka I-06
 
-## 6.8 Rancangan Antarmuka I-08 (gambar I-20)
+Modal donasi yang muncul setelah pengguna menekan tombol Donate now pada Project Details (I-05). Pengguna memilih nominal cepat atau mengetik nominal sendiri, lalu dapat menuliskan pesan untuk penyelenggara. Ringkasan di bagian bawah menunjukkan saldo donasi sebelum dan sesudah donasi. Saat donasi dikonfirmasi, saldo dipotong dan donasi dicatat dalam satu transaksi. Jika ada langkah yang gagal, seluruh proses dibatalkan.
 
-## 6.9 Rancangan Antarmuka I-09 (gambar I-23)
+**Antarmuka:** *[I-06]*  
+**Nama Layar:** *[Donate]*
 
-## 6.10 Rancangan Antarmuka I-10 (gambar I-27)
+<p align="center">
+<img alt="I-06 Donate" src="./assets/I-14.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.6. Rancangan Antarmuka I-06 Donate</i>
+</p>
+
+Tabel 6.6. Spesifikasi Objek Antarmuka I-06
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-06.1 | Heading | Donate | Judul modal. |
+| I-06.2 | Label | to Sayung Coastal Mangrove Restoration | Nama aksi yang menerima donasi. |
+| I-06.3 | Button | × (Close) | Menutup modal tanpa menyimpan donasi. |
+| I-06.4 | Button pilihan | Rp25,000 · Rp50,000 · Rp100,000 · Rp250,000 | Memilih nominal cepat. Nominal terpilih disorot dan otomatis terisi pada kolom nominal (I-06.5). |
+| I-06.5 | Text field | Rp 100,000 (Or enter another amount) | Diisi nominal donasi lain secara manual, hanya angka. |
+| I-06.6 | Text area | Message for the organizer (optional) — Good luck to the team on the ground | Diisi pesan untuk penyelenggara. Boleh dikosongkan. |
+| I-06.7 | Panel ringkasan | Your donation balance Rp750,000 · Donation amount −Rp100,000 · Balance after donation Rp650,000 | Menampilkan saldo saat ini, nominal donasi, dan sisa saldo. Nilainya dihitung ulang otomatis setiap nominal berubah. |
+| I-06.8 | Button | Confirm donation | Memvalidasi nominal (lebih dari nol dan tidak melebihi saldo). Jika valid, saldo dipotong, donasi dicatat, dan dana aksi bertambah. |
+| I-06.9 | Text | Your balance is deducted and the donation recorded in a single transaction. If any step fails, everything is cancelled. | Keterangan bahwa proses donasi bersifat atomik, yaitu berhasil seluruhnya atau dibatalkan seluruhnya. |
+
+## 6.7 Rancangan Antarmuka I-07
+
+Modal untuk menambah saldo donasi. Pengguna melihat saldo saat ini, memilih nominal top up dan metode pembayaran, lalu melanjutkan ke pembayaran. Pembayaran pada prototipe ini hanya simulasi dan tidak memproses uang sungguhan. Setelah berhasil, saldo bertambah dan transaksi tercatat sebagai Balance top-up pada My activity (I-10).
+
+**Antarmuka:** *[I-07]*  
+**Nama Layar:** *[Top up balance]*
+
+<p align="center">
+<img alt="I-07 Top up balance" src="./assets/I-17.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.7. Rancangan Antarmuka I-07 Top up balance</i>
+</p>
+
+Tabel 6.7. Spesifikasi Objek Antarmuka I-07
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-07.1 | Heading | Top up balance | Judul modal. |
+| I-07.2 | Button | × (Close) | Menutup modal tanpa menambah saldo. |
+| I-07.3 | Text | Your balance is used for donations. Payments in this prototype are simulated only. | Penjelasan fungsi saldo dan pemberitahuan bahwa pembayaran hanya simulasi. |
+| I-07.4 | Panel saldo | Current balance — Rp650,000 | Menampilkan saldo donasi pengguna saat ini. |
+| I-07.5 | Button pilihan | Rp50,000 · Rp100,000 · Rp250,000 · Rp500,000 | Memilih nominal top up. Hanya satu nominal yang bisa dipilih dalam satu waktu. |
+| I-07.6 | Radio button | Bank transfer (virtual account) | Memilih metode pembayaran transfer bank melalui virtual account. Menjadi pilihan awal. |
+| I-07.7 | Radio button | E-wallet (QR) | Memilih metode pembayaran dompet digital dengan kode QR. |
+| I-07.8 | Button | Continue to payment | Memvalidasi pilihan nominal dan metode. Jika valid, pembayaran simulasi diproses, saldo bertambah, dan transaksi dicatat. |
+
+## 6.8 Rancangan Antarmuka I-08
+
+Modal formulir pendaftaran relawan yang muncul setelah pengguna menekan tombol Volunteer for this pada Project Details (I-05). Bagian atas menampilkan nama aksi, lokasi, titik kumpul, dan sisa kuota relawan. Pengguna melengkapi data diri, memilih keahlian yang dibutuhkan aksi, menuliskan pengalaman terkait, memilih sesi yang bisa dihadiri, dan menyetujui pernyataan kesediaan sebelum mengirim lamaran.
+
+**Antarmuka:** *[I-08]*  
+**Nama Layar:** *[Volunteer for this action]*
+
+<p align="center">
+<img alt="I-08 Volunteer for this action" src="./assets/I-20.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.8. Rancangan Antarmuka I-08 Volunteer for this action</i>
+</p>
+
+Tabel 6.8. Spesifikasi Objek Antarmuka I-08
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-08.1 | Heading | Volunteer for this action | Judul modal. |
+| I-08.2 | Button | × (Close) | Menutup modal tanpa mengirim lamaran. |
+| I-08.3 | Label | Galala Coastal Waste Bank · Sirimau, Ambon City | Nama aksi dan lokasi yang dilamar. |
+| I-08.4 | Panel informasi | Meeting point: RW 03 community hall, Galala. 15:00 WIT. · Spots left: 8 of 12 | Menampilkan titik kumpul relawan dan sisa kuota dari total kuota relawan. |
+| I-08.5 | Text field | Full name — Andi Rahman | Diisi nama lengkap relawan. Terisi otomatis dari data akun dan dapat diubah. |
+| I-08.6 | Text field | Phone number — 0812-3344-5566 | Diisi nomor telepon yang bisa dihubungi koordinator. |
+| I-08.7 | Text field | Home city — Semarang | Diisi kota tempat tinggal relawan. |
+| I-08.8 | Checkbox group | Your relevant skills: Record keeping · Community outreach · Sorting waste | Memilih keahlian yang relevan. Pilihan berasal dari kebutuhan aksi dan wajib dipilih minimal satu. |
+| I-08.9 | Text area | Related experience — e.g. joined a tree planting in my neighborhood, Red Cross volunteer for 2 years | Diisi pengalaman yang berkaitan dengan aksi. |
+| I-08.10 | Checkbox group | Sessions you can attend: Every Friday afternoon, from 14 Nov 2026 | Memilih sesi kegiatan yang bisa dihadiri. Pilihan berasal dari jadwal yang diisi penyelenggara. |
+| I-08.11 | Checkbox | I agree to be contacted by the coordinator and to attend the sessions I chose. | Pernyataan kesediaan dihubungi koordinator dan menghadiri sesi terpilih. Wajib dicentang agar lamaran bisa dikirim. |
+| I-08.12 | Button | Send application | Memvalidasi isian. Jika valid, lamaran tersimpan dengan status Sent dan muncul pada tab Volunteer applications di My activity (I-10). |
+
+## 6.9 Rancangan Antarmuka I-09
+
+Halaman pengajuan aksi iklim baru yang dibuka melalui menu Start an action. Pengguna memilih tipe pengajuan, yaitu Climate action project atau Fundraising campaign, lalu mengisi informasi dasar serta lokasi dan jadwal. Panel Card preview di sisi kanan menampilkan pratinjau kartu aksi yang berubah sesuai isian. Pengajuan tidak langsung tayang karena harus ditinjau oleh tim peninjau terlebih dahulu.
+
+**Antarmuka:** *[I-09]*  
+**Nama Layar:** *[Submit your climate action]*
+
+<p align="center">
+<img alt="I-09 Submit your climate action" src="./assets/I-23.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.9. Rancangan Antarmuka I-09 Submit your climate action</i>
+</p>
+
+Tabel 6.9. Spesifikasi Objek Antarmuka I-09
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-09.1 | Breadcrumb | Home / Start an action | Home membuka Home (I-01). |
+| I-09.2 | Heading | Submit your climate action | Judul halaman. |
+| I-09.3 | Text | Fill in as much as you can. Submissions do not go live right away: the review team checks them first. | Petunjuk pengisian dan pemberitahuan bahwa pengajuan ditinjau dulu. |
+| I-09.4 | Card pilihan | Climate action project — Needs funds, supplies, and volunteers; has a location and activity schedule | Memilih tipe aksi yang membutuhkan dana, perlengkapan, dan relawan. Tipe ini menampilkan isian lokasi dan jadwal kegiatan. |
+| I-09.5 | Card pilihan | Fundraising campaign — Raises funds only; has a target and a fundraising period | Memilih tipe penggalangan dana saja, dengan target dan periode penggalangan. |
+| I-09.6 | Text field | Title — e.g. Sayung Coastal Mangrove Restoration | Diisi judul aksi. |
+| I-09.7 | Dropdown | Category — Choose a category | Memilih kategori aksi. |
+| I-09.8 | Text area | Description — What problem are you solving, and what will you do? | Diisi latar belakang masalah dan rencana kegiatan. |
+| I-09.9 | Text field | Expected result on the ground — e.g. 12,000 seedlings planted before December | Diisi hasil yang ditargetkan di lapangan. |
+| I-09.10 | Dropdown | Province — Choose a province | Memilih provinsi lokasi aksi. Lokasi harus berada di Indonesia. |
+| I-09.11 | Text field | City / regency — e.g. Sayung, Demak | Diisi kota atau kabupaten lokasi aksi. |
+| I-09.12 | Text field | Volunteer meeting point — e.g. Bedono Village Hall, 06:30 | Diisi titik kumpul dan jam berkumpul relawan. |
+| I-09.13 | Date picker | Activity start date — mm/dd/yyyy | Memilih tanggal mulai kegiatan. |
+| I-09.14 | Date picker | Activity end date — mm/dd/yyyy | Memilih tanggal selesai kegiatan. Tidak boleh lebih awal dari tanggal mulai. |
+| I-09.15 | Text field | Volunteer sessions — Separate with semicolons. e.g. Saturday, 8 Nov 2026; Saturday, 22 Nov 2026 | Diisi daftar sesi relawan, dipisahkan titik koma. Daftar ini muncul sebagai pilihan sesi pada form relawan (I-08). |
+| I-09.16 | Card preview | Action project · City, Province · Your action title · Rp0 raised of Rp0 | Pratinjau kartu aksi seperti yang tampil di Explore (I-04). Isinya mengikuti isian formulir. |
+| I-09.17 | Panel informasi | What the review team checks: Location within Indonesia, a reasonable funding target, a valid period, and a clear plan for the funds. | Menjelaskan kriteria peninjauan agar penyelenggara mengisi dengan benar. |
+
+## 6.10 Rancangan Antarmuka I-10
+
+Halaman ringkasan aktivitas pengguna yang dibuka dari avatar akun. Bagian atas menyapa pengguna dan menampilkan dua saldo: saldo donasi untuk berdonasi, dan saldo penggalangan dana dari donasi ke aksi yang ia selenggarakan. Di bawahnya ada tiga tab, yaitu Activity history, Volunteer applications, dan My actions. Tab Activity history memuat riwayat donasi, top up, lamaran relawan, dan laporan progres aksi, yang dapat disaring dan dikelompokkan per bulan.
+
+**Antarmuka:** *[I-10]*  
+**Nama Layar:** *[My activity]*
+
+<p align="center">
+<img alt="I-10 My activity" src="./assets/I-27.png" width="720">
+</p>
+<p align="center">
+<i>Gambar 6.10. Rancangan Antarmuka I-10 My activity</i>
+</p>
+
+Tabel 6.10. Spesifikasi Objek Antarmuka I-10
+
+| Id_Objek | Jenis | Konten | Keterangan |
+| :--- | :--- | :--- | :--- |
+| I-10.1 | Chip saldo (navbar) | Balance Rp1,000,000 | Menampilkan saldo donasi pengguna di navbar. |
+| I-10.2 | Avatar (navbar) | AR | Avatar akun pengguna yang sedang login. |
+| I-10.3 | Label | My activity | Penanda halaman. |
+| I-10.4 | Heading | Hi, Andi | Sapaan dengan nama pengguna. |
+| I-10.5 | Text | All your donations, volunteer applications, and actions in one place. | Penjelasan singkat fungsi halaman. |
+| I-10.6 | Card saldo | Donation balance — Rp1,000,000 · Used for donations | Menampilkan saldo yang dipakai untuk berdonasi. |
+| I-10.7 | Button | Top up | Membuka modal Top up balance (I-07). |
+| I-10.8 | Card saldo | Fundraising balance — Rp0 | Menampilkan dana yang terkumpul dari donasi ke aksi yang diselenggarakan pengguna. Dipisah dari saldo donasi. |
+| I-10.9 | Tab | Activity history | Menampilkan riwayat aktivitas pengguna (tab aktif). |
+| I-10.10 | Tab | Volunteer applications | Menampilkan daftar lamaran relawan beserta statusnya. |
+| I-10.11 | Tab | My actions | Menampilkan aksi yang diajukan atau diselenggarakan pengguna. |
+| I-10.12 | Chip filter | All · Donations · Top-ups · Volunteering · Progress | Menyaring riwayat berdasarkan jenis aktivitas. Pilihan awal adalah All. |
+| I-10.13 | Label | OCT 2026 | Judul kelompok riwayat per bulan. |
+| I-10.14 | Item riwayat | Donation to Sayung Coastal Mangrove Restoration · 27 Oct 2026, 10:10 WIB · TRX-20261027-8351 · −Rp100,000 · Successful | Riwayat donasi: nama aksi, waktu, nomor transaksi, nominal pengurang saldo (merah), dan status. |
+| I-10.15 | Item riwayat | Balance top-up · 27 Oct 2026, 10:10 WIB · Bank transfer (simulated) · +Rp350,000 · Successful | Riwayat top up: waktu, metode, nominal penambah saldo (hijau), dan status. |
+| I-10.16 | Item riwayat | Volunteer application · Galala Coastal Waste Bank · 27 Oct 2026, 10:10 WIB · Sent | Riwayat lamaran relawan beserta status pengiriman. |
+| I-10.17 | Item riwayat | Planting phase 1 complete · Sayung Coastal Mangrove Restoration · 21 Oct 2026, 16:20 WIB · 35% complete | Riwayat laporan progres aksi yang pernah didukung pengguna, beserta persentase penyelesaian. |
 
 ## 6.11 Rancangan Antarmuka I-11 (gambar I-30)
 
@@ -4201,7 +4349,11 @@ Tabel 6.15. Rancangan Antarmuka Keseluruhan
 | *[I-03]* | <img src="./assets/I-04.png" alt="Contoh Desain" width="400"> |
 | *[I-04]* | <img src="./assets/I-08.png" alt="Contoh Desain" width="400"> |
 | *[I-05]* | <img src="./assets/I-10.png" alt="Contoh Desain" width="400"> |
-
+| *[I-06]* | <img src="./assets/I-14.png" alt="Contoh Desain" width="400"> |
+| *[I-07]* | <img src="./assets/I-17.png" alt="Contoh Desain" width="400">  |
+| *[I-08]* | <img src="./assets/I-20.png" alt="Contoh Desain" width="400"> |
+| *[I-09]* | <img src="./assets/I-23.png" alt="Contoh Desain" width="400"> |
+| *[I-10]* | <img src="./assets/I-27.png" alt="Contoh Desain" width="400"> |
 <br>
 
 ---
