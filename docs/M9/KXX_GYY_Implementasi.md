@@ -7,24 +7,24 @@ IMPLEMENTASI PERANGKAT LUNAK
 </h1>
 <br>
 
-## *Nama Perangkat Lunak*
+## KlimPooL
 ### *[Logo Perangkat Lunak]*
-
-### Untuk: *[Nama Asisten]*
-
+ 
+### Untuk: Made Branenda Jordhy
+ 
 Dipersiapkan oleh:
 | Informasi | Keterangan |
 | --- | --- |
-| Kelas | *\[Kelas\]* |
-| Kelompok | *\[Nomor Kelompok\]*  |
-
+| Kelas | 02 |
+| Kelompok | 08  |
+ 
 | NIM | Nama |
 |---|---|
-| *[NIM 1]* | *[Nama Anggota 1]* |
-| *[NIM 2]* | *[Nama Anggota 2]* |
-| *[NIM 3]* | *[Nama Anggota 3]* |
-| *[NIM 4]* | *[Nama Anggota 4]* |
-| *[NIM 5]* | *[Nama Anggota 5]* |
+| 13525023 | Shaquille Nathan Kalevi |
+| 13525080 | Neysa Alya Mukhbita |
+| 13525092 | Bryan Pamungkas Prahara |
+| 13525134 | Sahla Nailah Salsabilla |
+| 13525140 | Nayla Putri Ghaisani |
 ---
 
 > **Petunjuk pengerjaan:** *[Silahkan hapus bagian ini setelah selesai mengerjakan]*
@@ -184,14 +184,20 @@ Ketentuan:
 
 ## B.1 Perubahan dari DPPL
 
-Catat semua perbedaan antara perancangan (DPPL) dan implementasi akhir. Jika tidak ada perubahan, tuliskan "Tidak ada perubahan".
-
 Tabel B.1. Perubahan dari DPPL
-
+ 
 | No | Bagian DPPL | Rancangan Awal | Implementasi Akhir | Alasan |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | *[mis. Kelas C05, layar I-03, tabel `orders`]* | *[Yang direncanakan]* | *[Yang dibuat]* | *[Alasan perubahan]* |
-| *...* | *...* | *...* | *...* | *...* |
+| 1 | Kelas C04 Donatur, tabel baru | Tidak ada top-up saldo; saldo hanya berkurang oleh donasi (tidak ada use case top-up di SKPL) | Top-up saldo simulasi tanpa payment gateway. Tabel `topup_saldo` (`id_topup`, `id_donatur`, `nominal`, `metode`, `waktu`); saldo bertambah dalam satu transaksi MySQL. Muncul di riwayat dengan filter Top-ups | Prototipe memiliki top-up dan alur saldo kurang; tanpa top-up donasi tidak dapat didemokan. Tabel terpisah agar atomisitas `transaksi_donasi` (KF15–KF18) tidak tercampur |
+| 2 | Kelas C02 Project, atribut `statusPelaksanaan` | Atribut `statusPelaksanaan: String` tanpa daftar nilai | ENUM empat nilai: `persiapan`, `berjalan`, `ditunda`, `selesai`. Awalnya `persiapan` saat project terpublikasi; tiap pembaruan progres menyimpan nilai pada saat itu | Mengikuti empat nilai pada prototipe, dan mencegah nilai di luar daftar |
+| 3 | Kelas C02 Project dan C03 Campaign, lokasi dan peta (C05) | Atribut `lokasi: String`; sebaran peta dihitung dengan `ST_Distance_Sphere` | Kolom `provinsi`, `kota`, `latitude`, `longitude`. Lat/lng diisi otomatis dari tabel koordinat provinsi (`src/lib/provinsi.ts`) saat disimpan; query peta tetap memakai `ST_Distance_Sphere` | Formulir tetap sederhana seperti prototipe (pengguna memilih provinsi dan kota), tanpa mengubah algoritma peta di DPPL. Pin dalam satu provinsi berada di titik yang sama |
+| 4 | Kelas C02 Project dan C03 Campaign, `status` (UC02, UC03, UC04) | Pembuatan langsung menyimpan data; status mengikuti KF06 (draft, pending verification, published) | Pembuatan dua langkah: simpan draf (`draft`), lalu kirim (`menunggu_verifikasi`); admin mengubah menjadi `terpublikasi` atau `ditolak` (alasan wajib). Yang `ditolak` dapat diedit dan dikirim ulang. `ubahStatus` dipakai pada setiap transisi | Mengikuti prototipe (Draft, Pending review, Published, Rejected) dan KF06; memungkinkan tab "My actions" menampilkan status, alasan penolakan, dan kirim ulang |
+| 5 | Kelas C02 Project, atribut jadwal (KF08, KF10, KF22) | Tidak ada atribut jadwal dan titik kumpul pada `Project`, padahal KF08, KF10, dan KF22 memerlukannya | Kolom `jadwal_mulai`, `jadwal_selesai` (DATE, wajib, mulai ≤ selesai) dan `lokasi_kumpul`. `tampilkanInstruksiKegiatan` mengambil lokasi dan jadwal ini untuk relawan berstatus `accepted` | Memenuhi KF10 (jadwal kosong ditolak) dan KF22 tanpa tabel baru; `ketersediaanJadwal` milik relawan tetap terpisah |
+| 6 | Halaman Akun (UC10), saldo penggalangan | Tidak ada saldo penggalangan pada rancangan | Kartu "Fundraising balance" dihitung dari `SUM(dana_terkumpul)` project dan campaign milik pengguna; tidak disimpan di kolom | Menghindari dua sumber kebenaran untuk dana yang sama, sehingga tidak perlu sinkronisasi dan atomisitas donasi tidak terganggu |
+| 7 | Penyimpanan, `Project.dokumentasiProgres` (UC09) | Berkas dokumentasi disimpan pada object storage (DPPL, Tabel 2.1) | Berkas disimpan di folder lokal `uploads/` (tidak di-commit) melalui satu antarmuka penyimpanan sehingga dapat diganti object storage | Aplikasi harus dapat dijalankan asisten tanpa akun cloud pribadi (ketentuan A.2) |
+| 8 | Kelas C08 Volunteer, C10 PembuatProject, C11 AdminSistem | Tiga kelas aktor terpisah | Peran (`volunteer`, `pembuat_project`, `admin`) pada tabel `pengguna`; hak akses ditegakkan oleh `requireRole()` dan pemeriksaan kepemilikan di query | Ketiganya adalah peran satu akun, bukan entitas dengan data berbeda; operasinya dipanggil lewat controller. Dicatat di Tabel B.5 |
+| 9 | Halaman Home dan tab My actions | Tidak ada use case untuk beranda dan tab My actions | Beranda (hero, cara kerja, angka dampak, ajakan bertindak) dan tab My actions diimplementasikan sesuai prototipe | Keduanya ada di prototipe dan mendukung navigasi, tetapi tidak dipetakan ke use case SKPL |
+
 
 ## B.2 Bukti Penerapan Best Practices
 
