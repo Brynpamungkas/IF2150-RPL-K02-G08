@@ -38,14 +38,27 @@ Perintah lain:
 
 ## Struktur Folder
 
-Arsitektur berlapis (View, Controller, Service, Repository) sesuai DPPL.
+## Struktur Folder
 
-- `app/`: halaman dan route (View)
-- `controllers/`: Controller
-- `services/`: logika bisnis (Service)
-- `repositories/`: akses database (Repository)
-- `lib/`: utilitas bersama
-- `tests/`: pengujian
+```
+src/
+  app/              entry point Next.js: layout, page; app/api/ = batas HTTP client-server
+  components/
+    ui/             komponen umum (Modal, Toast, Navbar, Footer)
+    views/          kelas boundary (FormLoginView, dst.)
+  db/               migration SQL (schema + seed)
+  models/           entitas
+  scripts/          skrip bantu
+  server/           kode server-only
+    controllers/
+    services/
+    repositories/
+    db.ts           koneksi MySQL (connection pool)
+  shared/           hanya yang aman dibaca browser: tipe, konstanta, validasi murni
+  tests/            pengujian
+```
+
+## Konfigurasi, Akun Uji, Modul, dan Skema Database
 
 ## Konfigurasi, Akun Uji, Modul, dan Skema Database
 
@@ -73,7 +86,7 @@ cp .env.example .env
 | `DB_ROOT_PASSWORD` | Password root, hanya dipakai Docker | sesuaikan |
 | `DB_CONNECTION_LIMIT` | Jumlah maksimum koneksi di pool | `10` |
 
-Koneksi dikelola oleh `lib/db.ts` (connection pool `mysql2`). Repository memakai fungsi `query`, `execute`, dan `withTransaction` dari file tersebut.
+Koneksi dikelola oleh `server/db.ts` (connection pool `mysql2`). Repository memakai fungsi `query`, `execute`, dan `withTransaction` dari file tersebut.
 
 ### Menyiapkan Database
 
