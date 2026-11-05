@@ -85,8 +85,29 @@ cp .env.example .env
 | `DB_PASSWORD` | Password user database | sesuaikan |
 | `DB_ROOT_PASSWORD` | Password root, hanya dipakai Docker | sesuaikan |
 | `DB_CONNECTION_LIMIT` | Jumlah maksimum koneksi di pool | `10` |
+| `DOKUMENTASI_DRIVER` | Jenis penyimpanan berkas dokumentasi progres | `lokal` |
+| `DOKUMENTASI_DIR` | Folder penyimpanan berkas dokumentasi | `./uploads` |
 
 Koneksi dikelola oleh `server/db.ts` (connection pool `mysql2`). Repository memakai fungsi `query`, `execute`, dan `withTransaction` dari file tersebut.
+
+### Berkas Dokumentasi Progres
+
+Berkas dokumentasi yang diunggah Pembuat Project disimpan di sistem berkas lokal,
+bukan di layanan penyimpanan objek seperti yang ditulis DPPL, agar aplikasi dapat
+dijalankan tanpa akun layanan awan. Perbedaan ini dicatat pada laporan B.1.
+
+- Lokasi default `src/uploads/progres/<id_project>/<uuid>.<ekstensi>`. Folder
+  `uploads/` sudah masuk `.gitignore`, jadi berkas unggahan tidak ikut ter-commit.
+- Format yang diterima: JPG, PNG, WebP, dan PDF. Ukuran maksimal 50 MB per berkas
+  sesuai Tabel 4.2 DPPL.
+- Tipe MIME dari peramban diperiksa ulang di peladen terhadap beberapa byte
+  pertama berkas, sehingga berkas yang diganti namanya tetap ditolak.
+- Berkas disajikan lewat `GET /api/dokumentasi/<id_project>/<nama>`. Dokumentasi
+  project yang sudah terpublikasi terbuka untuk umum; project yang masih draft,
+  menunggu verifikasi, atau ditolak hanya dapat dilihat pembuatnya dan Admin Sistem.
+- Mengganti ke penyimpanan objek nanti cukup menambah satu implementasi
+  `PenyimpananDokumentasi` di `server/storage/dokumentasiStorage.ts` dan satu
+  cabang pada `getPenyimpananDokumentasi()`.
 
 ### Menyiapkan Database
 
