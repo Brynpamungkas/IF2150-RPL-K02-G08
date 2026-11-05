@@ -2,15 +2,21 @@
   "name": "src",
   "version": "0.1.0",
   "private": true,
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:reset": "docker compose down -v && docker compose up -d"
   },
   "dependencies": {
+    "mysql2": "^3.24.6",
     "next": "16.4.4",
     "react": "19.3.0",
     "react-dom": "19.3.0"
