@@ -1,26 +1,610 @@
 @import 'tailwindcss';
 
+/*
+ * Desain mengikuti prototipe: KlimPooL-prototype-final.html
+ * Token warna, tipografi, navbar, footer, modal, dan toast dipindahkan apa adanya.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #1f2420; /* teks utama */
+  --ink-2: #4a544b; /* teks sekunder */
+  --forest: #3f6b3e; /* aksi utama */
+  --forest-d: #2d4f2d; /* band gelap, footer */
+  --sage: #e5ecdc; /* isian lembut, chip */
+  --cream: #f7f6f2; /* band selang-seling */
+  --paper: #ffffff;
+  --line: #dce0d6;
+  --gold: #c9a45c;
+  --ok: #2f7d32;
+  --ok-bg: #e3f1e1;
+  --warn: #9a5b00;
+  --warn-bg: #fbefd9;
+  --bad: #b3261e;
+  --bad-bg: #fbe4e2;
+  --info: #2e5e7e;
+  --info-bg: #e2edf4;
+  --f-display: var(--font-lora), Georgia, 'Times New Roman', serif;
+  --f-body:
+    var(--font-manrope), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --r-card: 20px;
+  --r-ctl: 14px;
+  --shadow: 0 18px 40px rgba(31, 36, 32, 0.1);
+  color-scheme: light;
 }
 
+/* Agar bisa dipakai sebagai kelas Tailwind: bg-forest, text-ink, font-display, dst. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-forest: var(--forest);
+  --color-forest-d: var(--forest-d);
+  --color-sage: var(--sage);
+  --color-cream: var(--cream);
+  --color-line: var(--line);
+  --color-gold: var(--gold);
+  --color-ok: var(--ok);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-info: var(--info);
+  --font-display: var(--f-display);
+  --font-sans: var(--f-body);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 17px;
+  line-height: 1.6;
+  min-width: 320px;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+}
+a {
+  color: var(--forest);
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+strong,
+b {
+  font-weight: 800;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  text-wrap: balance;
+}
+h1,
+h2 {
+  font-family: var(--f-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+h3,
+h4 {
+  font-family: var(--f-body);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+p {
+  margin: 0;
+}
+:focus-visible {
+  outline: 3px solid #8db580;
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+[id] {
+  scroll-margin-top: 110px;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ---------- Tata letak umum ---------- */
+.wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+.band {
+  padding-block: 88px;
+}
+.band.cream {
+  background: var(--cream);
+}
+.band.dark {
+  background: var(--forest-d);
+  color: #fff;
+}
+.band.tight {
+  padding-block: 56px;
+}
+/* Judul halaman non-beranda; ruang atas untuk navbar yang melayang */
+.page-top {
+  padding-block: 132px 40px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+}
+.page-top h1 {
+  font-size: clamp(36px, 5vw, 56px);
+  margin: 12px 0 12px;
+}
+.muted {
+  color: var(--ink-2);
+}
+.small {
+  font-size: 15px;
+}
+
+/* ---------- Tombol ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 24px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  font-weight: 800;
+  font-size: 16px;
+  text-decoration: none;
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-primary {
+  background: var(--forest);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--forest-d);
+}
+.btn-light {
+  background: #fff;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn-light:hover {
+  border-color: var(--forest);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+.btn-ghost:hover {
+  border-color: var(--forest);
+  color: var(--forest);
+}
+.btn-danger {
+  background: #fff;
+  color: var(--bad);
+  border-color: #e8b4af;
+}
+.btn-danger:hover {
+  background: var(--bad-bg);
+}
+.btn-sm {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: 15px;
+}
+.btn-block {
+  width: 100%;
+}
+
+/* ---------- Navbar ---------- */
+.nav-shell {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  padding-top: 14px;
+  margin-bottom: -90px;
+  pointer-events: none;
+}
+.nav {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 8px 8px 8px 18px;
+  box-shadow: 0 8px 30px rgba(31, 36, 32, 0.12);
+  border: 1px solid rgba(31, 36, 32, 0.06);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+.brand img {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+}
+.brand i {
+  font-style: normal;
+  color: #2ba06b;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  margin-left: 12px;
+}
+.nav-links a {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav-links a:hover {
+  background: var(--cream);
+}
+.nav-links a.on {
+  background: var(--sage);
+  color: var(--forest-d);
+}
+.nav-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+.saldo-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 0 14px;
+  min-height: 44px;
+  background: #fff;
+  font-weight: 800;
+  font-size: 15px;
+}
+.saldo-chip span {
+  color: var(--ink-2);
+  font-weight: 700;
+}
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  border: 0;
+  font-size: 15px;
+}
+.menu-btn {
+  display: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: #fff;
+}
+.user-menu {
+  position: absolute;
+  right: 0;
+  top: 56px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 8px;
+  min-width: 250px;
+  display: grid;
+}
+.user-menu .who {
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 6px;
+}
+.user-menu .who strong {
+  display: block;
+}
+.user-menu a,
+.user-menu button {
+  display: block;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.user-menu a:hover,
+.user-menu button:hover {
+  background: var(--cream);
+}
+.mobile-panel {
+  display: none;
+}
+
+/* ---------- Footer ---------- */
+footer {
+  background: var(--forest-d);
+  color: #e5ecdc;
+  padding-block: 64px 32px;
+}
+.foot-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 32px;
+}
+footer h4 {
+  color: #fff;
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+footer a {
+  color: #e5ecdc;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+}
+footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+footer .brand {
+  color: #fff;
+}
+.foot-bottom {
+  margin-top: 48px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 15px;
+  color: #c9d6c3;
+}
+
+/* ---------- Modal ---------- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 26, 19, 0.5);
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  padding-top: max(20px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+}
+.modal {
+  background: #fff;
+  border-radius: 26px;
+  width: min(600px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+}
+.modal.wide {
+  width: min(760px, 100%);
+}
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 26px 28px 0;
+}
+.modal-head h2 {
+  font-size: 32px;
+}
+.modal-head p {
+  color: var(--ink-2);
+  margin-top: 6px;
+}
+.modal-body {
+  padding: 22px 28px 28px;
+  display: grid;
+  gap: 18px;
+}
+.x-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  font-size: 22px;
+  line-height: 1;
+  flex: none;
+}
+
+/* ---------- Notice (dipakai di dalam modal) ---------- */
+.notice {
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 16px;
+  display: grid;
+  gap: 4px;
+}
+.notice.warn {
+  background: var(--warn-bg);
+  color: #5c3a00;
+}
+.notice.bad {
+  background: var(--bad-bg);
+  color: #6e1712;
+}
+.notice.ok {
+  background: var(--ok-bg);
+  color: #1e4e20;
+}
+.notice.info {
+  background: var(--info-bg);
+  color: #1b3e55;
+}
+
+/* ---------- Toast ---------- */
+.toasts {
+  position: fixed;
+  right: max(20px, env(safe-area-inset-right, 0px));
+  bottom: max(20px, env(safe-area-inset-bottom, 0px));
+  display: grid;
+  gap: 10px;
+  z-index: 200;
+  width: min(420px, calc(100% - 40px));
+}
+.toast {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.5;
+  box-shadow: var(--shadow);
+  display: block;
+  animation: tin 0.25s ease;
+}
+.toast b {
+  font-weight: 800;
+}
+.toast.bad {
+  background: #7a1c16;
+}
+.toast.ok {
+  background: var(--forest-d);
+}
+@keyframes tin {
+  from {
+    transform: translateY(10px);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ---------- Responsif ---------- */
+@media (max-width: 1080px) {
+  .nav-links {
+    display: none;
+  }
+  .menu-btn {
+    display: grid;
+    place-items: center;
+  }
+  .mobile-panel.open {
+    display: grid;
+    gap: 4px;
+    background: #fff;
+    border-radius: 22px;
+    margin-top: 8px;
+    padding: 10px;
+    box-shadow: 0 8px 30px rgba(31, 36, 32, 0.12);
+    pointer-events: auto;
+  }
+  .mobile-panel a,
+  .mobile-panel button {
+    border: 0;
+    background: none;
+    text-align: left;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .mobile-panel a.on {
+    background: var(--sage);
+  }
+  .foot-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .band {
+    padding-block: 64px;
+  }
+  .saldo-chip span {
+    display: none;
+  }
+  .nav {
+    gap: 8px;
+    padding-left: 12px;
+  }
+  .foot-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .modal-head h2 {
+    font-size: 26px;
+  }
+}
+@media (max-width: 480px) {
+  .saldo-chip {
+    display: none;
+  }
+}
+@media (max-width: 400px) {
+  .nav .btn-galang {
+    display: none;
+  }
 }
