@@ -60,7 +60,10 @@ export async function execute(
   sql: string,
   params: unknown[] = [],
 ): Promise<ResultSetHeader> {
-  const [result] = await getPool().execute<ResultSetHeader>(sql, params as never[]);
+  const [result] = await getPool().execute<ResultSetHeader>(
+    sql,
+    params as never[],
+  );
   return result;
 }
 
