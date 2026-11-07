@@ -109,6 +109,24 @@ dijalankan tanpa akun layanan awan. Perbedaan ini dicatat pada laporan B.1.
   `PenyimpananDokumentasi` di `server/storage/dokumentasiStorage.ts` dan satu
   cabang pada `getPenyimpananDokumentasi()`.
 
+### API Relawan
+
+Pendaftaran relawan dan pengelolaannya (UC07, UC08) ditangani `RelawanController`
+(C34) di `server/controllers/`, dengan aturan bisnis di `server/services/relawanService.ts`.
+Sesi sementara dibaca dari cookie `klimpool_dev_user` sampai issue #14 selesai.
+
+| Metode dan alamat | Fungsi | Akses |
+| --- | --- | --- |
+| `POST /api/projects/<id>/relawan` | Mendaftar sebagai relawan, status awal `pending` | Pengguna yang sudah masuk |
+| `GET /api/projects/<id>/relawan` | Daftar pendaftar (kosong bila belum ada) | Pembuat project |
+| `PATCH /api/projects/<id>/relawan/<idPendaftaran>` | Terima atau tolak, badan `{"keputusan":"accepted"}` atau `"rejected"` | Pembuat project |
+
+Badan `POST`: `{ "dataDiri": { "nama", "telepon", "kota" }, "keahlian": [], "pengalaman": "", "jadwal": [] }`.
+Semua kolom wajib diisi; kesalahan per kolom dikembalikan pada `galat` dengan status 400.
+Pendaftaran ditolak (409) bila pendaftaran project ditutup, pengguna sudah pernah
+mendaftar, atau kuota relawan yang berstatus `accepted` sudah penuh. Pendaftaran ganda
+juga dijaga `UNIQUE KEY (id_volunteer, id_project)` di basis data.
+
 ### Menyiapkan Database
 
 Pilih salah satu opsi. Keduanya memakai file migration yang sama di `db/migrations/`:
