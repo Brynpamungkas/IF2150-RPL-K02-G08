@@ -608,3 +608,143 @@ footer .brand {
     display: none;
   }
 }
+
+/* ---------- Form, tab login, dan halaman gerbang (dari prototipe) ---------- */
+.lead {
+  font-size: 19px;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  color: var(--forest);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 16px;
+}
+.link-arrow:hover {
+  text-decoration: underline;
+}
+.form {
+  display: grid;
+  gap: 22px;
+}
+.form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.field {
+  display: grid;
+  gap: 8px;
+}
+.field label,
+.field .lbl {
+  font-weight: 800;
+  font-size: 16px;
+}
+.field .opt {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.field .hint {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.inp {
+  width: 100%;
+  border: 1.5px solid #cbd2c3;
+  border-radius: var(--r-ctl);
+  background: #fff;
+  padding: 13px 16px;
+  font-size: 17px;
+  min-height: 52px;
+}
+.inp:focus {
+  outline: none;
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(63, 107, 62, 0.18);
+}
+.inp.err {
+  border-color: var(--bad);
+  background: #fffbfa;
+}
+.err-msg {
+  color: var(--bad);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.err-summary {
+  background: var(--bad-bg);
+  color: #6e1712;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: grid;
+  gap: 6px;
+}
+.err-summary strong {
+  font-size: 17px;
+}
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--cream);
+  border-radius: 999px;
+  padding: 5px;
+}
+.auth-tabs button {
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  padding: 11px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--ink-2);
+}
+.auth-tabs button.on {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.demo-acc {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.demo-acc .btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gate {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-block: 170px 120px;
+  text-align: center;
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+.gate .ic {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: var(--bad-bg);
+  color: var(--bad);
+  display: grid;
+  place-items: center;
+}
+.gate h1 {
+  font-size: 44px;
+}
+
