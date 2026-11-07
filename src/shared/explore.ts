@@ -1,4 +1,3 @@
-
 import {
   BATAS_MAKS,
   KATA_KUNCI_MAKS,
@@ -136,7 +135,6 @@ export function adaFilter(filter: FilterExplore): boolean {
   );
 }
 
-
 export const rupiah = (n: number): string =>
   'Rp' + Math.round(n).toLocaleString('en-US');
 
@@ -170,7 +168,6 @@ const LABEL_PELAKSANAAN: Record<
   ditunda: 'On hold',
   selesai: 'Completed',
 };
-
 
 export function labelStatus(item: ItemKatalog): LabelChip {
   if (item.statusPelaksanaan === 'selesai') {

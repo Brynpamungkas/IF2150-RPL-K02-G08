@@ -65,8 +65,7 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
     fetch('/api/katalog/opsi', { signal: ac.signal })
       .then((r) => (r.ok ? (r.json() as Promise<OpsiKatalog>) : null))
       .then((hasil) => hasil && setOpsi(hasil))
-      .catch(() => {
-      });
+      .catch(() => {});
     return () => ac.abort();
   }, []);
 
