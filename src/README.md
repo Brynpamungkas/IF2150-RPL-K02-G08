@@ -109,6 +109,22 @@ dijalankan tanpa akun layanan awan. Perbedaan ini dicatat pada laporan B.1.
   `PenyimpananDokumentasi` di `server/storage/dokumentasiStorage.ts` dan satu
   cabang pada `getPenyimpananDokumentasi()`.
 
+### API Progres Project
+
+Pembaruan progres (UC09) ditangani `ProgresController` (C38) di `server/controllers/`,
+aturannya di `server/services/progresService.ts`.
+
+| Metode dan alamat | Fungsi | Akses |
+| --- | --- | --- |
+| `POST /api/projects/<id>/progres` | Menyimpan satu pembaruan progres (`multipart/form-data`) | Pembuat project atau Admin |
+| `GET /api/projects/<id>/progres` | Riwayat progres, terbaru lebih dulu | Umum bila project terpublikasi; selain itu pembuat dan Admin |
+
+Isian `POST`: `milestone` dan `statusPelaksanaan` (`persiapan`, `berjalan`, `ditunda`, `selesai`) wajib;
+`catatan`, `persentase` (0-100), `danaTerpakai`, dan `dokumentasi` (maksimal 5 berkas, aturan format
+dan ukuran sama dengan bagian Berkas Dokumentasi Progres) opsional. Setiap pembaruan menjadi
+baris baru di `progres_project`, lalu milestone, status, dan waktu terbarunya disalin ke tabel
+`project` dalam satu transaksi. Bila penulisan gagal, berkas yang sudah tersimpan dihapus lagi.
+
 ### API Relawan
 
 Pendaftaran relawan dan pengelolaannya (UC07, UC08) ditangani `RelawanController`
