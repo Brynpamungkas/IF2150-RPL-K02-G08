@@ -7,8 +7,8 @@ import type {
   JenisTujuan,
   PermintaanDonasi,
   RingkasanTransaksi,
-} from '@/shared/dto';
-import { GalatAplikasi } from '@/shared/galat';
+} from '@/shared/donasi';
+import { GalatAplikasi } from '@/shared/galatDonasi';
 import { adalahKunciGanda, withTransaction } from '../db';
 import { CampaignProjectRepository } from '../repositories/CampaignProjectRepository';
 import { DonasiRepository } from '../repositories/DonasiRepository';

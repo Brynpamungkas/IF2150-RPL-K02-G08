@@ -1,19 +1,19 @@
 /**
- * STUB milik Orang 1 (Autentikasi). Hanya kontrak yang dipakai alur donasi:
- * memastikan pengguna sudah login. Ganti dengan implementasi sebenarnya.
+ * STUB milik modul Autentikasi (#14). Hanya kontrak yang dipakai alur donasi:
+ * memastikan pengguna sudah login. Memakai getIdPenggunaSaatIni() yang sama dengan
+ * modul relawan, sehingga penggantian ke sesi sungguhan cukup dilakukan di sesiSementara.ts.
  */
-import { GalatAplikasi } from '@/shared/galat';
-import { UserRepository } from '../repositories/UserRepository';
+import { GalatAplikasi } from '@/shared/galatDonasi';
+import { getIdPenggunaSaatIni } from '../auth/sesiSementara';
 
 export interface PenggunaLogin {
   idPengguna: string;
 }
 
 export const AutentikasiService = {
-  /** @throws BELUM_LOGIN bila token kosong, tidak dikenal, atau sesi sudah kedaluwarsa. */
-  async wajibLogin(tokenSesi: string | null): Promise<PenggunaLogin> {
-    if (!tokenSesi) throw new GalatAplikasi('BELUM_LOGIN');
-    const idPengguna = await UserRepository.getSesiAktif(tokenSesi);
+  /** @throws BELUM_LOGIN bila belum login. TODO(#14): ganti dengan sesi sungguhan. */
+  async wajibLogin(): Promise<PenggunaLogin> {
+    const idPengguna = await getIdPenggunaSaatIni();
     if (!idPengguna) throw new GalatAplikasi('BELUM_LOGIN');
     return { idPengguna };
   },

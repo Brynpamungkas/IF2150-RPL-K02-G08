@@ -10,8 +10,8 @@ import { after, before, describe, it, type TestContext } from 'node:test';
 import type { RowDataPacket } from 'mysql2/promise';
 import { execute, getPool, query } from '@/server/db';
 import { DonasiService } from '@/server/services/DonasiService';
-import type { JenisTujuan, PermintaanDonasi } from '@/shared/dto';
-import { GalatAplikasi, type KodeGalat } from '@/shared/galat';
+import type { JenisTujuan, PermintaanDonasi } from '@/shared/donasi';
+import { GalatAplikasi, type KodeGalat } from '@/shared/galatDonasi';
 
 const akhiran = randomUUID().slice(0, 8);
 const ID = {

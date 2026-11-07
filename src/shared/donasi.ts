@@ -2,7 +2,7 @@
  * Kontrak data antara View (client) dan API (server) untuk alur donasi atomik (UC06).
  * Modul ini aman di-import oleh kedua sisi.
  */
-import type { KodeGalat } from './galat';
+import type { KodeGalat } from './galatDonasi';
 
 export type JenisTujuan = 'campaign' | 'project';
 /** Sama dengan ENUM transaksi_donasi.status_transaksi. */

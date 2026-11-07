@@ -1,60 +1,102 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  NOMINAL_MAKS,
-  type ApiGagal,
-  type FormDonasiInfo,
-  type HasilDonasi,
-  type JenisTujuan,
-  type PermintaanDonasi,
-} from '@/shared/dto';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import type {
+  ApiGagal,
+  FormDonasiInfo,
+  HasilDonasi,
+  JenisTujuan,
+  PermintaanDonasi,
+} from '@/shared/donasi';
 import { Modal } from '../../ui/Modal';
-import { rupiah } from '../format';
-import { panggilApi } from '../panggilApi';
+import { rupiah } from './format';
+import {
+  NOMINAL_CEPAT,
+  angkaDari,
+  bersihkanMasukan,
+  buatIdempotencyKey,
+  formatMasukan,
+  pesanSaldoKurang,
+  ringkasanSaldo,
+  validasiFormDonasi,
+} from './logikaDonasi';
+import { panggilApi } from './panggilApi';
 
 interface Props {
   jenisTujuan: JenisTujuan;
   idTujuan: string;
   onTutup: () => void;
-  /** Dipanggil setelah donasi berhasil, dengan ringkasan untuk struk. */
-  onBerhasil: (hasil: HasilDonasi) => void;
+  /** Dipanggil setelah donasi berhasil, dengan ringkasan untuk struk dan nominalnya. */
+  onBerhasil: (hasil: HasilDonasi, nominal: number) => void;
+  /** Bila ada, galat BELUM_LOGIN menampilkan tombol "Log in". TODO(#14). */
+  onPerluLogin?: () => void;
+  /** Bila ada, notice saldo kurang menampilkan "Top up now" (I-07). */
+  onTopup?: () => void;
 }
 
-/** Nominal cepat pada prototipe I-06. */
-const NOMINAL_CEPAT = [25_000, 50_000, 100_000, 250_000];
-
 /** Galat yang ditampilkan sebagai layar "Donation not processed" dengan tombol Try again. */
-const GALAT_ULANG = new Set(['GAGAL_KONEKSI', 'TRANSAKSI_GAGAL']);
+const GALAT_ULANG = new Set<ApiGagal['kode']>([
+  'GAGAL_KONEKSI',
+  'TRANSAKSI_GAGAL',
+]);
+/** Galat yang membuat formulir ini tidak boleh dikirim lagi. */
+const GALAT_KUNCI = new Set<ApiGagal['kode']>(['TUJUAN_DITUTUP', 'DUPLIKAT']);
 
-const angkaDari = (nilai: string) => Number(nilai.replace(/\D/g, '')) || 0;
-
-const kunciBaru = () => crypto.randomUUID();
+function IkonPanah() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="18"
+      height="18"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  );
+}
 
 /**
- * C30 - FormDonasiView (Boundary). Modal donasi.
- * tekanDonasi() ada pada tombol "Donate now" di halaman pemanggil yang memunculkan modal ini.
+ * C30 - FormDonasiView (Boundary). Modal donasi I-06.
+ * tekanDonasi() ada pada tombol "Donate now" di pemanggil (lihat AlurDonasi).
  *
- * Idempotency key dibangkitkan sekali per formulir (DPPL C30) dan dipakai ulang saat
- * "Try again", sehingga server menolak permintaan yang sama bila ternyata sudah diproses
- * (KF18). Donasi yang ditolak/di-rollback tidak menyimpan key, jadi key tetap bisa dipakai.
+ * Idempotency key dibangkitkan sekali per formulir (DPPL C30) dan dipakai ulang pada
+ * setiap kiriman dari formulir yang sama, termasuk "Try again". Bila kiriman sebelumnya
+ * ternyata sudah masuk, server menolak kiriman ulang sebagai DUPLIKAT (KF18). Kiriman
+ * yang ditolak/di-rollback tidak menyimpan key, jadi key tetap boleh dipakai lagi.
  */
 export function FormDonasiView({
   jenisTujuan,
   idTujuan,
   onTutup,
   onBerhasil,
+  onPerluLogin,
+  onTopup,
 }: Props) {
+  const idDasar = useId();
+  const idNominal = `${idDasar}-damt`;
+  const idGalatNominal = `${idDasar}-damt-err`;
+  const idPesan = `${idDasar}-dmsg`;
+
   const [info, setInfo] = useState<FormDonasiInfo | null>(null);
   const [galatMuat, setGalatMuat] = useState<ApiGagal | null>(null);
   const [nominal, setNominal] = useState('');
   const [pesan, setPesan] = useState('');
+  const [galatNominal, setGalatNominal] = useState<string | null>(null);
   const [galat, setGalat] = useState<ApiGagal | null>(null);
+  const [setelahUlang, setSetelahUlang] = useState(false);
   const [mengirim, setMengirim] = useState(false);
-  const [kunci] = useState(kunciBaru);
-  const sedangKirim = useRef(false);
+  const [kunci] = useState(buatIdempotencyKey);
 
-  // bukaFormDonasi: ambil nama tujuan dan saldo terbaru dari server.
+  const sedangKirim = useRef(false); // penjaga sinkron klik ganda
+  const pernahGagalKirim = useRef(false); // sudah pernah GAGAL_KONEKSI/TRANSAKSI_GAGAL
+  const inputNominal = useRef<HTMLInputElement>(null);
+
+  // bukaFormDonasi (Algo-120): nama tujuan dan saldo terbaru dari server.
   const ambilForm = useCallback(
     () =>
       panggilApi<FormDonasiInfo>(
@@ -76,19 +118,45 @@ export function FormDonasiView({
   }, [ambilForm]);
 
   const nominalAngka = angkaDari(nominal);
+  const terkunci = galat !== null && GALAT_KUNCI.has(galat.kode);
 
-  // isiNominal: menerima nominal dari tombol cepat atau kolom teks.
-  function isiNominal(nilai: string) {
-    setNominal(nilai.replace(/\D/g, '').slice(0, 13));
-    setGalat(null);
+  /** Modal tidak boleh ditutup selama proses, agar hasil donasi tidak hilang. */
+  function tutupBilaBoleh() {
+    if (!sedangKirim.current) onTutup();
   }
 
-  // konfirmasiPembayaran: mengirim permintaan donasi dengan key milik formulir ini.
-  async function konfirmasiPembayaran() {
-    if (sedangKirim.current) return; // cegah klik ganda
+  // isiNominal: dari tombol cepat atau kolom teks. Key TIDAK diganti.
+  function isiNominal(teks: string) {
+    setNominal(bersihkanMasukan(teks));
+    setGalatNominal(null);
+  }
+
+  async function muatUlangSaldo(): Promise<number | null> {
+    const h = await ambilForm();
+    if (!h.ok) return null;
+    setInfo(h.data);
+    return h.data.saldo;
+  }
+
+  // konfirmasiPembayaran: validasi di client (I-06.8), lalu kirim.
+  function konfirmasiPembayaran() {
+    if (!info || sedangKirim.current || terkunci) return;
+    const pesanGalat = validasiFormDonasi(nominalAngka, info.saldo);
+    if (pesanGalat) {
+      setGalatNominal(pesanGalat);
+      inputNominal.current?.focus();
+      return;
+    }
+    void kirim();
+  }
+
+  /** Mengirim permintaan donasi dengan key milik formulir ini (dipakai juga oleh Try again). */
+  async function kirim() {
+    if (sedangKirim.current) return;
     sedangKirim.current = true;
     setMengirim(true);
     setGalat(null);
+    setGalatNominal(null);
 
     const minta: PermintaanDonasi = {
       jenisTujuan,
@@ -97,64 +165,94 @@ export function FormDonasiView({
       pesan: pesan.trim() || undefined,
       idempotencyKey: kunci,
     };
-    const h = await panggilApi<HasilDonasi>('/api/donasi', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(minta),
-    });
-
-    sedangKirim.current = false;
-    setMengirim(false);
-    if (h.ok) {
-      onBerhasil(h.data);
-      return;
-    }
-    setGalat(h);
-    // Saldo bisa berubah di tab lain; tampilkan angka terbaru.
-    if (h.kode === 'SALDO_KURANG') {
-      const segar = await ambilForm();
-      if (segar.ok) setInfo(segar.data);
+    try {
+      const h = await panggilApi<HasilDonasi>('/api/donasi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(minta),
+      });
+      if (h.ok) {
+        onBerhasil(h.data, minta.nominal);
+        return;
+      }
+      await tanganiGalat(h);
+    } finally {
+      sedangKirim.current = false;
+      setMengirim(false);
     }
   }
 
-  // tampilkanPesanKesalahan: saldo kurang, nominal tidak valid, tujuan ditutup, duplikasi.
-  function tampilkanPesanKesalahan(g: ApiGagal | null) {
-    if (!g) return null;
+  // tampilkanPesanKesalahan: memilih tempat dan isi pesan per kode galat (AC4).
+  async function tanganiGalat(h: ApiGagal) {
+    switch (h.kode) {
+      case 'GAGAL_KONEKSI':
+      case 'TRANSAKSI_GAGAL':
+        pernahGagalKirim.current = true;
+        setGalat(h);
+        return;
+      case 'NOMINAL_TIDAK_VALID':
+        setGalatNominal(h.pesan);
+        inputNominal.current?.focus();
+        return;
+      case 'SALDO_KURANG': {
+        const saldo = (await muatUlangSaldo()) ?? info?.saldo ?? 0;
+        setGalatNominal(pesanSaldoKurang(nominalAngka, saldo));
+        inputNominal.current?.focus();
+        return;
+      }
+      case 'DUPLIKAT':
+        setSetelahUlang(pernahGagalKirim.current);
+        setGalat(h);
+        void muatUlangSaldo();
+        return;
+      default:
+        setGalat(h);
+    }
+  }
+
+  function tombolLogin(g: ApiGagal) {
+    if (g.kode !== 'BELUM_LOGIN' || !onPerluLogin) return null;
+    return (
+      <button type="button" className="btn btn-primary" onClick={onPerluLogin}>
+        Log in
+      </button>
+    );
+  }
+
+  function noticeGalat(g: ApiGagal, judul: string) {
+    const duplikatUlang = g.kode === 'DUPLIKAT' && setelahUlang;
     return (
       <div className="notice bad" role="alert">
-        <strong>Donation not processed</strong>
+        <strong>
+          {duplikatUlang ? 'This donation was already processed' : judul}
+        </strong>
         <span>
-          {g.pesan}
-          {g.kode === 'SALDO_KURANG' && info
-            ? ` Your balance is ${rupiah(info.saldo)}.`
-            : null}
+          {duplikatUlang
+            ? 'Your earlier attempt went through, so it was not charged again. Check My activity for the receipt.'
+            : g.pesan}
         </span>
+        {tombolLogin(g)}
       </div>
     );
   }
 
-  // tampilkanFormulir: isi modal donasi beserta saldo Donatur.
+  // tampilkanFormulir: isi modal donasi beserta saldo Donatur (AC1).
   function tampilkanFormulir(data: FormDonasiInfo) {
-    const kurang = nominalAngka > data.saldo;
-    const melebihiMaks = nominalAngka > NOMINAL_MAKS;
-    const bisaKirim = nominalAngka > 0 && !kurang && !melebihiMaks && !mengirim;
+    const { kurang, sisa, selisih } = ringkasanSaldo(data.saldo, nominalAngka);
 
     return (
       <>
-        <div className="grid gap-2">
-          <span className="text-[16px] font-extrabold">Choose an amount</span>
-          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+        <div className="field">
+          <span className="lbl">Choose an amount</span>
+          <div className="amounts">
             {NOMINAL_CEPAT.map((n) => (
               <button
                 key={n}
                 type="button"
+                className={nominalAngka === n ? 'on' : undefined}
                 aria-pressed={nominalAngka === n}
+                disabled={mengirim}
                 onClick={() => isiNominal(String(n))}
-                className={`rounded-[14px] border-[1.5px] px-1.5 py-3.5 text-[15px] font-extrabold sm:text-[16px] ${
-                  nominalAngka === n
-                    ? 'border-[#3F6B3E] bg-[#E5ECDC]'
-                    : 'border-[#CBD2C3] bg-white hover:border-[#3F6B3E]'
-                }`}
               >
                 {rupiah(n)}
               </button>
@@ -162,79 +260,89 @@ export function FormDonasiView({
           </div>
         </div>
 
-        <label className="grid gap-2 text-[16px] font-extrabold">
-          Or enter another amount
-          <span className="relative block">
-            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 font-extrabold text-[#4A544B]">
-              Rp
-            </span>
+        <div className="field">
+          <label htmlFor={idNominal}>Or enter another amount</label>
+          <div className="prefix">
+            <span>Rp</span>
             <input
+              ref={inputNominal}
+              id={idNominal}
+              className={`inp${galatNominal ? ' err' : ''}`}
               inputMode="numeric"
+              autoComplete="off"
               autoFocus
-              value={
-                nominalAngka > 0 ? nominalAngka.toLocaleString('en-US') : ''
-              }
-              onChange={(e) => isiNominal(e.target.value)}
               placeholder="0"
-              aria-invalid={melebihiMaks}
-              className="min-h-[52px] w-full rounded-[14px] border-[1.5px] border-[#CBD2C3] bg-white py-[13px] pl-12 pr-4 text-[17px] font-normal focus:border-[#3F6B3E] focus:outline-none focus:ring-[3px] focus:ring-[#3F6B3E]/[0.18]"
+              value={formatMasukan(nominalAngka)}
+              onChange={(e) => isiNominal(e.target.value)}
+              disabled={mengirim}
+              aria-invalid={galatNominal ? true : undefined}
+              aria-describedby={galatNominal ? idGalatNominal : undefined}
             />
-          </span>
-          {melebihiMaks ? (
-            <span className="text-[15px] font-bold text-[#B3261E]">
-              The maximum donation is {rupiah(NOMINAL_MAKS)}.
+          </div>
+          {galatNominal ? (
+            <span id={idGalatNominal} className="err-msg" role="alert">
+              {galatNominal}
             </span>
           ) : null}
-        </label>
+        </div>
 
-        <label className="grid gap-2 text-[16px] font-extrabold">
-          <span>
-            Message for the organizer{' '}
-            <span className="font-semibold text-[#4A544B]">(optional)</span>
-          </span>
+        <div className="field">
+          <label htmlFor={idPesan}>
+            Message for the organizer <span className="opt">(optional)</span>
+          </label>
           <input
+            id={idPesan}
+            className="inp"
             value={pesan}
-            onChange={(e) => setPesan(e.target.value)}
             maxLength={200}
             placeholder="Good luck to the team on the ground"
-            className="min-h-[52px] w-full rounded-[14px] border-[1.5px] border-[#CBD2C3] bg-white px-4 py-[13px] text-[17px] font-normal focus:border-[#3F6B3E] focus:outline-none focus:ring-[3px] focus:ring-[#3F6B3E]/[0.18]"
+            onChange={(e) => setPesan(e.target.value)}
+            disabled={mengirim}
           />
-        </label>
+        </div>
 
-        <div className="grid gap-2 rounded-2xl bg-[#F7F6F2] px-[18px] py-4">
-          <div className="flex justify-between gap-2.5 text-[16px]">
+        <div className="sum" aria-live="polite">
+          <div className="r">
             <span>Your donation balance</span>
             <b>{rupiah(data.saldo)}</b>
           </div>
-          <div className="flex justify-between gap-2.5 text-[16px]">
+          <div className="r">
             <span>Donation amount</span>
             <b>−{rupiah(nominalAngka)}</b>
           </div>
-          <div className="flex justify-between border-t border-[#DCE0D6] pt-2.5 text-[18px]">
-            <span className="font-extrabold">Balance after donation</span>
-            <b className={kurang ? 'text-[#B3261E]' : ''}>
-              {kurang ? 'Not enough' : rupiah(data.saldo - nominalAngka)}
+          <div className="r total">
+            <span>
+              <b>Balance after donation</b>
+            </span>
+            <b style={{ color: kurang ? 'var(--bad)' : 'var(--ink)' }}>
+              {kurang ? 'Not enough' : rupiah(sisa)}
             </b>
           </div>
         </div>
 
         {kurang ? (
           <div className="notice warn">
-            <strong>You are {rupiah(nominalAngka - data.saldo)} short</strong>
+            <strong>You are {rupiah(selisih)} short</strong>
             <span>
               Top up first, then come back here. The amount you chose will be
               kept.
             </span>
+            {onTopup ? (
+              <button type="button" className="link-arrow" onClick={onTopup}>
+                Top up now <IkonPanah />
+              </button>
+            ) : null}
           </div>
         ) : null}
 
-        {tampilkanPesanKesalahan(galat)}
+        {galat ? noticeGalat(galat, 'Donation not processed') : null}
 
         <button
           type="button"
+          className="btn btn-primary btn-block"
           onClick={konfirmasiPembayaran}
-          disabled={!bisaKirim}
-          className="btn btn-primary btn-block disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={mengirim || terkunci}
+          aria-busy={mengirim}
         >
           {mengirim ? 'Processing donation…' : 'Confirm donation'}
         </button>
@@ -248,28 +356,46 @@ export function FormDonasiView({
     );
   }
 
-  // Layar gagal pada prototipe: koneksi putus atau transaksi di-rollback.
+  // Layar gagal (prototipe m.failed): koneksi putus atau transaksi di-rollback.
   if (galat && GALAT_ULANG.has(galat.kode)) {
+    const koneksi = galat.kode === 'GAGAL_KONEKSI';
     return (
-      <Modal open onClose={onTutup} title="Donation not processed">
+      <Modal open onClose={tutupBilaBoleh} title="Donation not processed">
         <div className="notice bad" role="alert">
           <strong>
-            {galat.kode === 'GAGAL_KONEKSI'
+            {koneksi
               ? 'The connection dropped while processing the transaction'
               : 'The transaction was cancelled'}
           </strong>
-          <span>{galat.pesan}</span>
+          <span>
+            {koneksi ? (
+              galat.pesan
+            ) : (
+              <>
+                The whole process was cancelled.{' '}
+                <b>Your balance is unchanged</b>
+                {info ? ` (${rupiah(info.saldo)})` : ''} and no transaction was
+                recorded.
+              </>
+            )}
+          </span>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="form-actions">
           <button
             type="button"
             className="btn btn-primary"
-            onClick={konfirmasiPembayaran}
+            onClick={() => void kirim()}
             disabled={mengirim}
+            aria-busy={mengirim}
           >
             {mengirim ? 'Processing donation…' : 'Try again'}
           </button>
-          <button type="button" className="btn btn-ghost" onClick={onTutup}>
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={tutupBilaBoleh}
+            disabled={mengirim}
+          >
             Close
           </button>
         </div>
@@ -280,32 +406,31 @@ export function FormDonasiView({
   return (
     <Modal
       open
-      onClose={onTutup}
+      onClose={tutupBilaBoleh}
       title="Donate"
       subtitle={
         info ? (
           <>
-            to <b className="text-[#1F2420]">{info.tujuan.nama}</b>
+            to <b style={{ color: 'var(--ink)' }}>{info.tujuan.nama}</b>
           </>
         ) : undefined
       }
     >
       {info ? (
         tampilkanFormulir(info)
-      ) : (
+      ) : galatMuat ? (
         <>
-          {!galatMuat ? <p className="muted">Loading donation form…</p> : null}
-          {tampilkanPesanKesalahan(galatMuat)}
-          {galatMuat ? (
-            <button
-              type="button"
-              onClick={onTutup}
-              className="btn btn-primary btn-block"
-            >
-              Close
-            </button>
-          ) : null}
+          {noticeGalat(galatMuat, 'Donation form not available')}
+          <button
+            type="button"
+            className="btn btn-primary btn-block"
+            onClick={onTutup}
+          >
+            Close
+          </button>
         </>
+      ) : (
+        <p className="muted">Loading donation form…</p>
       )}
     </Modal>
   );
