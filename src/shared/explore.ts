@@ -1,4 +1,11 @@
-
+/**
+ * logika murni halaman Explore (UC05, KF13): filter di URL, pemetaan ke
+ * parameter /api/katalog, dan teks tampilan. tidak menyentuh DOM atau database.
+ *
+ * kosakata filter di URL mengikuti prototipe dan tautan Footer
+ * (mis. /explore?type=campaign, /explore?status=volunteer),
+ * lalu diterjemahkan ke kosakata API (semua|project|campaign, donasi|relawan|selesai, ...).
+ */
 import {
   BATAS_MAKS,
   KATA_KUNCI_MAKS,
@@ -72,6 +79,7 @@ const KE_PERIODE_API: Record<Exclude<PeriodeUI, ''>, FilterPeriode> = {
   past: 'lalu',
 };
 
+/** ambil nilai pertama bila parameter URL muncul berulang. */
 function satuNilai(nilai: string | string[] | undefined): string {
   const mentah = Array.isArray(nilai) ? nilai[0] : nilai;
   return (mentah ?? '').trim();
@@ -85,6 +93,7 @@ function pilih<T extends string>(
   return (pilihan as readonly string[]).includes(nilai) ? (nilai as T) : bawaan;
 }
 
+/** membaca ?q=&type=&cat=&prov=&status=&period= dari URL. nilai tak dikenal diabaikan, bukan galat. */
 export function bacaFilterUrl(
   params: Record<string, string | string[] | undefined>,
 ): FilterExplore {
@@ -98,6 +107,7 @@ export function bacaFilterUrl(
   };
 }
 
+/** query string untuk alamat halaman (hanya filter yang aktif). */
 export function keQueryUrl(filter: FilterExplore): string {
   const p = new URLSearchParams();
   if (filter.q.trim()) p.set('q', filter.q.trim());
@@ -109,6 +119,7 @@ export function keQueryUrl(filter: FilterExplore): string {
   return p.toString();
 }
 
+/** parameter untuk GET /api/katalog. */
 export function keQueryApi(
   filter: FilterExplore,
   halaman = 1,
@@ -125,6 +136,8 @@ export function keQueryApi(
   p.set('batas', String(batas));
   return p;
 }
+
+/** true bila ada filter atau kata kunci yang aktif (menampilkan tombol Clear all filters). */
 export function adaFilter(filter: FilterExplore): boolean {
   return Boolean(
     filter.q.trim() ||
@@ -136,16 +149,19 @@ export function adaFilter(filter: FilterExplore): boolean {
   );
 }
 
+/** ---------- teks dan angka tampilan ---------- */
 
 export const rupiah = (n: number): string =>
   'Rp' + Math.round(n).toLocaleString('en-US');
 
+/** rupiah ringkas: Rp61.3M, Rp1.2B. */
 export function rupiahRingkas(n: number): string {
   if (n >= 1e9) return 'Rp' + (n / 1e9).toFixed(1).replace('.0', '') + 'B';
   if (n >= 1e6) return 'Rp' + (n / 1e6).toFixed(1).replace('.0', '') + 'M';
   return rupiah(n);
 }
 
+/** persentase capaian untuk batang progres, dibatasi 0 sampai 100. */
 export function persenBatang(terkumpul: number, target: number): number {
   return target > 0 ? Math.min(100, Math.round((terkumpul / target) * 100)) : 0;
 }
@@ -161,7 +177,7 @@ export function labelTipe(tipe: ItemKatalog['tipe']): string {
   return tipe === 'project' ? 'Action project' : 'Fundraising campaign';
 }
 
-const LABEL_PELAKSANAAN: Record<
+export const LABEL_PELAKSANAAN: Record<
   NonNullable<ItemKatalog['statusPelaksanaan']>,
   string
 > = {
@@ -171,8 +187,22 @@ const LABEL_PELAKSANAAN: Record<
   selesai: 'Completed',
 };
 
+/**
+ * chip status pada kartu dan popup (runChip di prototipe).
+ * campaign tidak punya status pelaksanaan di database, jadi campaign yang
+ * masih terbuka diberi label "Open for donations".
+ */
+export type ItemStatus = Pick<
+  ItemKatalog,
+  | 'tipe'
+  | 'statusPelaksanaan'
+  | 'terbukaDonasi'
+  | 'terbukaRelawan'
+  | 'kuotaRelawan'
+  | 'relawanDiterima'
+>;
 
-export function labelStatus(item: ItemKatalog): LabelChip {
+export function labelStatus(item: ItemStatus): LabelChip {
   if (item.statusPelaksanaan === 'selesai') {
     return { kelas: 'info', teks: 'Completed' };
   }
@@ -196,11 +226,13 @@ export function labelStatus(item: ItemKatalog): LabelChip {
   };
 }
 
+/** "24/40 volunteers" untuk project yang punya kuota, selain itu null. */
 export function teksRelawan(item: ItemKatalog): string | null {
   if (item.tipe !== 'project' || !item.kuotaRelawan) return null;
   return `${item.relawanDiterima ?? 0}/${item.kuotaRelawan} volunteers`;
 }
 
+/** alamat halaman detail (dikerjakan di issue terpisah). */
 export function hrefDetail(item: Pick<ItemKatalog, 'tipe' | 'id'>): string {
   return `/${item.tipe}/${encodeURIComponent(item.id)}`;
 }
@@ -208,11 +240,16 @@ export function hrefDetail(item: Pick<ItemKatalog, 'tipe' | 'id'>): string {
 export function teksLokasi(item: Pick<ItemKatalog, 'kota' | 'provinsi'>) {
   return `${item.kota}, ${item.provinsi}`;
 }
+
+/** warna pin: hijau untuk project, emas untuk campaign. */
 export const WARNA_PIN = {
   project: '#3F6B3E',
   campaign: '#B7832F',
 } as const;
 
+/** ---------- foto ---------- */
+
+/** id seed yang punya foto di public/images/aksi/<id>.jpg (diambil dari prototipe). */
 const ID_BERFOTO = new Set([
   'mgv',
   'air',
@@ -230,6 +267,7 @@ const ID_BERFOTO = new Set([
   'tamankali',
 ]);
 
+/** foto cadangan per kategori untuk project/campaign baru yang belum punya foto sendiri. */
 const FOTO_KATEGORI: Record<(typeof KATEGORI)[number], string> = {
   'Mangroves & coast': 'mgv',
   Reforestation: 'leuser',
@@ -247,4 +285,8 @@ export function fotoAksi(item: Pick<ItemKatalog, 'id' | 'kategori'>): string {
     ? item.id
     : (berdasarkanKategori ?? 'mgv');
   return `/images/aksi/${kunci}.jpg`;
+}
+
+export function fotoBesar(item: Pick<ItemKatalog, 'id' | 'kategori'>): string {
+  return fotoAksi(item).replace('/aksi/', '/aksi/besar/');
 }
