@@ -1,4 +1,3 @@
-
 export function IkonPanah() {
   return (
     <svg
