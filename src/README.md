@@ -30,11 +30,11 @@ Buka http://localhost:3000.
 
 Perintah lain:
 
-| Perintah | Fungsi |
-| --- | --- |
-| `npm run lint` | Cek kode dengan ESLint |
+| Perintah         | Fungsi                       |
+| ---------------- | ---------------------------- |
+| `npm run lint`   | Cek kode dengan ESLint       |
 | `npm run format` | Rapikan kode dengan Prettier |
-| `npm run build` | Build untuk produksi |
+| `npm run build`  | Build untuk produksi         |
 
 ## Struktur Folder
 
@@ -191,25 +191,25 @@ Setelah database siap, jalankan aplikasi dengan `npm run dev`.
 
 Semua akun demo memakai password **`klimpool123`** (disimpan sebagai hash bcrypt cost 12). Data hanya untuk pengembangan dan sepenuhnya fiktif.
 
-| Peran | Nama | Email |
-| --- | --- | --- |
-| Admin | Review Team | `admin@klimpool.id` |
-| Pembuat project | Sari Wulandari | `sari@klimpool.id` |
-| Pembuat project | Dimas Pratama | `dimas@klimpool.id` |
-| Pembuat project | Rina Hapsari | `rina@klimpool.id` |
-| Volunteer / donatur | Andi Rahman | `andi@klimpool.id` |
-| Volunteer / donatur | Nadia Putri | `nadia@klimpool.id` |
-| Volunteer / donatur | Fajar Nugroho | `fajar@klimpool.id` |
-| Volunteer / donatur | Lestari Ayu | `lestari@klimpool.id` |
-| Volunteer / donatur | Bima Saputra | `bima@klimpool.id` |
-| Volunteer / donatur | Sekar Ningrum | `sekar@klimpool.id` |
+| Peran               | Nama           | Email                 |
+| ------------------- | -------------- | --------------------- |
+| Admin               | Review Team    | `admin@klimpool.id`   |
+| Pembuat project     | Sari Wulandari | `sari@klimpool.id`    |
+| Pembuat project     | Dimas Pratama  | `dimas@klimpool.id`   |
+| Pembuat project     | Rina Hapsari   | `rina@klimpool.id`    |
+| Volunteer / donatur | Andi Rahman    | `andi@klimpool.id`    |
+| Volunteer / donatur | Nadia Putri    | `nadia@klimpool.id`   |
+| Volunteer / donatur | Fajar Nugroho  | `fajar@klimpool.id`   |
+| Volunteer / donatur | Lestari Ayu    | `lestari@klimpool.id` |
+| Volunteer / donatur | Bima Saputra   | `bima@klimpool.id`    |
+| Volunteer / donatur | Sekar Ningrum  | `sekar@klimpool.id`   |
 
 ### Modul dan Pembagian Anggota
 
-| Modul | PIC | Reviewer |
-| --- | --- | --- |
-| Kerangka aplikasi, database, autentikasi (login, sesi, `requireLogin()` dan `requireRole()`), komponen bersama (navbar, footer, modal, toast), beranda | Naya | Ney |
-| Explore (pencarian, filter, peta) dan halaman detail | Ney | - |
+| Modul                                                                                                                                                  | PIC  | Reviewer |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- | -------- |
+| Kerangka aplikasi, database, autentikasi (login, sesi, `requireLogin()` dan `requireRole()`), komponen bersama (navbar, footer, modal, toast), beranda | Naya | Ney      |
+| Explore (pencarian, filter, peta) dan halaman detail                                                                                                   | Ney  | -        |
 
 Anggota lain: lengkapi baris modul masing-masing di tabel ini.
 
@@ -217,19 +217,19 @@ Anggota lain: lengkapi baris modul masing-masing di tabel ini.
 
 Ada 11 tabel, semuanya InnoDB. Acuan: DPPL Tabel 4.1 dan 4.2, query Q-001 sampai Q-137, serta Tabel B.1 laporan M9.
 
-| Tabel | Fungsi |
-| --- | --- |
-| `pengguna` | Data profil pengguna dan perannya (`volunteer`, `pembuat_project`, `admin`) |
-| `akun` | Kredensial login: email (unik) dan hash password |
-| `sesi_login` | Sesi login aktif beserta waktu kedaluwarsa |
-| `donatur` | Saldo donasi tiap pengguna non-admin (`saldo >= 0`) |
-| `campaign` | Campaign penggalangan dana beserta status verifikasi |
-| `project` | Project lapangan beserta kuota relawan dan status pelaksanaan |
-| `transaksi_donasi` | Riwayat donasi (`nominal > 0`, `idempotency_key` unik agar donasi tidak terproses ganda) |
-| `bukti_transaksi` | Bukti/rincian untuk setiap transaksi donasi (satu per transaksi) |
-| `pendaftaran_relawan` | Pendaftaran relawan ke project (unik per pasangan `id_volunteer` dan `id_project`) |
-| `progres_project` | Catatan progres, milestone, dan dana terpakai tiap project |
-| `topup_saldo` | Riwayat top up saldo donatur (`nominal > 0`) |
+| Tabel                 | Fungsi                                                                                   |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| `pengguna`            | Data profil pengguna dan perannya (`volunteer`, `pembuat_project`, `admin`)              |
+| `akun`                | Kredensial login: email (unik) dan hash password                                         |
+| `sesi_login`          | Sesi login aktif beserta waktu kedaluwarsa                                               |
+| `donatur`             | Saldo donasi tiap pengguna non-admin (`saldo >= 0`)                                      |
+| `campaign`            | Campaign penggalangan dana beserta status verifikasi                                     |
+| `project`             | Project lapangan beserta kuota relawan dan status pelaksanaan                            |
+| `transaksi_donasi`    | Riwayat donasi (`nominal > 0`, `idempotency_key` unik agar donasi tidak terproses ganda) |
+| `bukti_transaksi`     | Bukti/rincian untuk setiap transaksi donasi (satu per transaksi)                         |
+| `pendaftaran_relawan` | Pendaftaran relawan ke project (unik per pasangan `id_volunteer` dan `id_project`)       |
+| `progres_project`     | Catatan progres, milestone, dan dana terpakai tiap project                               |
+| `topup_saldo`         | Riwayat top up saldo donatur (`nominal > 0`)                                             |
 
 Catatan: `dana_terkumpul` pada data seed memakai angka prototipe (statis), sehingga tidak sama dengan jumlah di `transaksi_donasi`. Donasi baru akan menambahkannya.
 
@@ -256,12 +256,12 @@ Catatan: `dana_terkumpul` pada data seed memakai angka prototipe (statis), sehin
 
 `<tipe>(<scope>): <deskripsi>`, contoh `feat(auth): add email validation`.
 
-| Tipe | Kegunaan |
-| --- | --- |
-| `feat` | Menambahkan fitur baru |
-| `fix` | Memperbaiki bug |
-| `docs` | Mengubah dokumentasi |
-| `style` | Perubahan format, tanpa mengubah logika |
+| Tipe       | Kegunaan                                                 |
+| ---------- | -------------------------------------------------------- |
+| `feat`     | Menambahkan fitur baru                                   |
+| `fix`      | Memperbaiki bug                                          |
+| `docs`     | Mengubah dokumentasi                                     |
+| `style`    | Perubahan format, tanpa mengubah logika                  |
 | `refactor` | Perubahan kode tanpa menambah fitur atau memperbaiki bug |
-| `test` | Menambah atau memperbaiki pengujian |
-| `chore` | Tugas rutin (build, dependensi, konfigurasi) |
+| `test`     | Menambah atau memperbaiki pengujian                      |
+| `chore`    | Tugas rutin (build, dependensi, konfigurasi)             |
