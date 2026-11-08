@@ -7,7 +7,7 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   /** Teks kecil di bawah judul (opsional) */
-  subtitle?: string;
+  subtitle?: ReactNode;
   /** Modal lebih lebar (760px) untuk form yang panjang */
   wide?: boolean;
   children: ReactNode;

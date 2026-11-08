@@ -69,8 +69,20 @@ const SUMBER = `
     FROM campaign c
    WHERE c.status = 'terpublikasi'`;
 
-/** masih menerima donasi: belum selesai dan tanggal selesai belum lewat. parameter: hariIni. */
-const TERBUKA_DONASI = `(COALESCE(k.status_pelaksanaan, '') <> 'selesai' AND k.selesai >= ?)`;
+/**
+ * masih menerima donasi: belum selesai, tanggal selesai belum lewat, dan campaign sudah mulai
+ * (sama dengan pengecekan di alur donasi). parameter: hariIni dua kali.
+ */
+const TERBUKA_DONASI = `(COALESCE(k.status_pelaksanaan, '') <> 'selesai' AND k.selesai >= ?
+   AND (k.tipe <> 'campaign' OR k.mulai <= ?))`;
+
+/** campaign yang periodenya belum mulai: belum terbuka, tetapi juga belum berakhir. parameter: hariIni. */
+const CAMPAIGN_BELUM_MULAI = `(k.tipe = 'campaign' AND k.mulai > ?)`;
+
+const parameterDonasi = (tanggal: KonteksTanggal): string[] => [
+  tanggal.hariIni,
+  tanggal.hariIni,
+];
 
 /** masih butuh relawan: hanya project. parameter: hariIni. */
 const TERBUKA_RELAWAN = `(k.tipe = 'project' AND k.pendaftaran_dibuka = 1 AND k.status_pelaksanaan <> 'selesai'
@@ -117,13 +129,15 @@ export function bangunKueri(
   }
   if (filter.status === 'donasi') {
     syarat.push(TERBUKA_DONASI);
-    params.push(tanggal.hariIni);
+    params.push(...parameterDonasi(tanggal));
   } else if (filter.status === 'relawan') {
     syarat.push(TERBUKA_RELAWAN);
     params.push(tanggal.hariIni);
   } else if (filter.status === 'selesai') {
-    syarat.push(`NOT COALESCE(${TERBUKA_DONASI}, 0)`);
-    params.push(tanggal.hariIni);
+    syarat.push(
+      `(NOT COALESCE(${TERBUKA_DONASI}, 0) AND NOT ${CAMPAIGN_BELUM_MULAI})`,
+    );
+    params.push(...parameterDonasi(tanggal), tanggal.hariIni);
   }
   if (filter.periode === 'berjalan') {
     syarat.push('(k.mulai <= ? AND k.selesai >= ?)');
@@ -153,7 +167,7 @@ SELECT k.id, k.tipe, k.judul, k.deskripsi, k.kategori, k.provinsi, k.kota, k.lat
  ORDER BY k.tanggal_dibuat DESC, k.id ASC
  LIMIT ? OFFSET ?`;
   const paramsData = [
-    tanggal.hariIni,
+    ...parameterDonasi(tanggal),
     tanggal.hariIni,
     ...params,
     filter.batas,

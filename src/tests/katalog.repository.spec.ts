@@ -92,6 +92,43 @@ describe('bangunKueri', () => {
   });
 });
 
+describe('aturan terbuka donasi', () => {
+  const hari = tanggal.hariIni;
+
+  it('campaign hanya terbuka bila periodenya sudah mulai', () => {
+    const { sqlData, paramsData } = bangunKueri(dasar, tanggal);
+    expect(sqlData).toContain("(k.tipe <> 'campaign' OR k.mulai <= ?)");
+    expect(paramsData.slice(0, 3)).toEqual([hari, hari, hari]);
+  });
+
+  it('filter status donasi memakai aturan yang sama dengan kolom terbukaDonasi', () => {
+    const { sqlTotal, paramsTotal } = bangunKueri(
+      { ...dasar, status: 'donasi' },
+      tanggal,
+    );
+    expect(sqlTotal).toContain("(k.tipe <> 'campaign' OR k.mulai <= ?)");
+    expect(paramsTotal).toEqual([hari, hari]);
+  });
+
+  it('filter status selesai tidak memasukkan campaign yang belum mulai', () => {
+    const { sqlTotal, paramsTotal } = bangunKueri(
+      { ...dasar, status: 'selesai' },
+      tanggal,
+    );
+    expect(sqlTotal).toContain("NOT (k.tipe = 'campaign' AND k.mulai > ?)");
+    expect(paramsTotal).toEqual([hari, hari, hari]);
+  });
+
+  it('filter status relawan tidak terpengaruh aturan campaign', () => {
+    const { sqlTotal, paramsTotal } = bangunKueri(
+      { ...dasar, status: 'relawan' },
+      tanggal,
+    );
+    expect(sqlTotal).not.toContain('k.mulai > ?');
+    expect(paramsTotal).toEqual([hari]);
+  });
+});
+
 describe('escapeLike', () => {
   it('meloloskan %, _, dan karakter escape agar dicari apa adanya', () => {
     expect(escapeLike('100%_air|')).toBe('100|%|_air||');
