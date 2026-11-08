@@ -1,15 +1,25 @@
 'use client';
 
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
-import type { HasilKatalog, ItemKatalog, OpsiKatalog } from '@/shared/katalog';
+import type { HasilKatalog, OpsiKatalog } from '@/shared/katalog';
 import {
   FILTER_KOSONG,
   adaFilter,
   keQueryApi,
   keQueryUrl,
+  selarasFilter,
   type FilterExplore,
 } from '@/shared/explore';
+import {
+  PESAN_GALAT_UMUM,
+  gabungHalaman,
+  muatHalamanBerikut,
+  type Termuat,
+} from '@/shared/explorePaging';
+import { kunciTitik } from '@/shared/peta';
+import { AksiMuatLagi } from './AksiMuatLagi';
 import { KartuHasil } from '@/components/ui/KartuHasil';
 import { IkonCari } from '@/components/ui/Ikon';
 import { FormPencarianView } from './FormPencarianView';
@@ -17,19 +27,10 @@ import { FormPetaWilayahView } from './FormPetaWilayahView';
 
 const JEDA_KETIK_MS = 300;
 
-interface Termuat {
-  kunci: string;
-  data: ItemKatalog[];
-  total: number;
-  halaman: number;
-}
-
 interface Gagal {
   kunci: string;
   pesan: string;
 }
-
-const PESAN_GALAT_UMUM = 'The actions could not be loaded. Please try again.';
 
 async function ambilKatalog(
   query: URLSearchParams,
@@ -51,14 +52,28 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
   const [teks, setTeks] = useState(awal.q);
   const [termuat, setTermuat] = useState<Termuat | null>(null);
   const [gagal, setGagal] = useState<Gagal | null>(null);
+  const [gagalLagi, setGagalLagi] = useState<Gagal | null>(null);
   const [memuatLagi, setMemuatLagi] = useState(false);
   const [percobaan, setPercobaan] = useState(0);
   const [opsi, setOpsi] = useState<OpsiKatalog>({ kategori: [], provinsi: [] });
-  const [terpilihId, setTerpilihId] = useState<string | null>(null);
-  const [sorotId, setSorotId] = useState<string | null>(null);
+  const [terpilihKunci, setTerpilihKunci] = useState<string | null>(null);
+  const [sorotKunci, setSorotKunci] = useState<string | null>(null);
   const [kunciAwal] = useState(() => keQueryApi(awal).toString());
 
   const kunci = keQueryApi(filter).toString();
+
+  const paramsUrl = useSearchParams();
+  const urlSekarang = paramsUrl.toString();
+  const [urlTerbaca, setUrlTerbaca] = useState(urlSekarang);
+  if (urlSekarang !== urlTerbaca) {
+    setUrlTerbaca(urlSekarang);
+    const baru = selarasFilter(filter, Object.fromEntries(paramsUrl));
+    if (baru) {
+      setFilter(baru);
+      setTeks(baru.q);
+      setTerpilihKunci(null);
+    }
+  }
 
   useEffect(() => {
     const ac = new AbortController();
@@ -83,6 +98,7 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
     ambilKatalog(new URLSearchParams(kunci), ac.signal)
       .then((h) => {
         setGagal(null);
+        setGagalLagi(null);
         setTermuat({
           kunci,
           data: h.data,
@@ -107,38 +123,32 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
 
   const ubahFilter = useCallback((ubah: Partial<FilterExplore>) => {
     setFilter((f) => ({ ...f, ...ubah }));
-    setTerpilihId(null);
+    setTerpilihKunci(null);
   }, []);
 
   const hapusFilter = () => {
     setTeks('');
     setFilter(FILTER_KOSONG);
-    setTerpilihId(null);
+    setTerpilihKunci(null);
   };
 
   const muatLagi = async () => {
     if (!termuat || memuatLagi) return;
     setMemuatLagi(true);
-    try {
-      const h = await ambilKatalog(
-        keQueryApi(filter, termuat.halaman + 1),
-        new AbortController().signal,
-      );
-      setTermuat((lama) =>
-        lama && lama.kunci === kunci
-          ? {
-              ...lama,
-              data: [...lama.data, ...h.data],
-              total: h.total,
-              halaman: h.halaman,
-            }
-          : lama,
-      );
-    } catch {
-      setGagal({ kunci, pesan: PESAN_GALAT_UMUM });
-    } finally {
-      setMemuatLagi(false);
+    setGagalLagi(null);
+    const kunciMuat = kunci;
+    const hasil = await muatHalamanBerikut(
+      (halaman) =>
+        ambilKatalog(keQueryApi(filter, halaman), new AbortController().signal),
+      termuat.halaman,
+    );
+    if (hasil.status === 'ok') {
+      setTermuat((lama) => gabungHalaman(lama, kunciMuat, hasil.halaman));
+    } else {
+      // error khusus Show more: hasil yang sudah termuat tetap ditampilkan
+      setGagalLagi({ kunci: kunciMuat, pesan: hasil.pesan });
     }
+    setMemuatLagi(false);
   };
 
   const sesuai = termuat !== null && termuat.kunci === kunci;
@@ -217,32 +227,36 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
               <div className="explore" aria-busy={sedangMemuat}>
                 <FormPetaWilayahView
                   hasil={daftar}
-                  terpilihId={terpilihId}
-                  sorotId={sorotId}
-                  onPilih={setTerpilihId}
+                  terpilihKunci={terpilihKunci}
+                  sorotKunci={sorotKunci}
+                  onPilih={setTerpilihKunci}
                 />
 
-                <div className="list-col" onMouseLeave={() => setSorotId(null)}>
+                <div
+                  className="list-col"
+                  onMouseLeave={() => setSorotKunci(null)}
+                >
                   {termuat === null ? null : daftar.length > 0 ? (
                     <>
                       {daftar.map((item) => (
                         <KartuHasil
-                          key={`${item.tipe}-${item.id}`}
+                          key={kunciTitik(item)}
                           item={item}
-                          terpilih={terpilihId === item.id}
+                          terpilih={terpilihKunci === kunciTitik(item)}
                           animasi={animasi}
-                          onHover={setSorotId}
+                          onHover={setSorotKunci}
                         />
                       ))}
                       {daftar.length < total && (
-                        <button
-                          type="button"
-                          className="btn btn-ghost"
-                          onClick={muatLagi}
-                          disabled={memuatLagi}
-                        >
-                          {memuatLagi ? 'Loading…' : 'Show more'}
-                        </button>
+                        <AksiMuatLagi
+                          memuatLagi={memuatLagi}
+                          galat={
+                            gagalLagi && gagalLagi.kunci === kunci
+                              ? gagalLagi.pesan
+                              : null
+                          }
+                          onMuatLagi={muatLagi}
+                        />
                       )}
                     </>
                   ) : (

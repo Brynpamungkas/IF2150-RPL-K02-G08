@@ -3,36 +3,35 @@
 import { useMemo } from 'react';
 import type { ItemKatalog } from '@/shared/katalog';
 import type { TitikSebaran } from '@/shared/peta';
+import { adaKoordinat } from '@/shared/explore';
 import { PetaSebaran } from '@/components/ui/PetaSebaran';
 
 interface FormPetaWilayahViewProps {
   hasil: ItemKatalog[];
-  terpilihId: string | null;
-  sorotId: string | null;
-  onPilih: (id: string | null) => void;
+  /** kunci titik (kunciTitik: tipe + id), bukan id saja. */
+  terpilihKunci: string | null;
+  sorotKunci: string | null;
+  onPilih: (kunci: string | null) => void;
 }
-
-type ItemBerpin = ItemKatalog & { latitude: number; longitude: number };
-
-const dapatDipasang = (i: ItemKatalog): i is ItemBerpin =>
-  i.terbukaDonasi && i.latitude !== null && i.longitude !== null;
 
 export function FormPetaWilayahView({
   hasil,
-  terpilihId,
-  sorotId,
+  terpilihKunci,
+  sorotKunci,
   onPilih,
 }: FormPetaWilayahViewProps) {
+  // peta mengikuti hasil filter: aksi yang donasinya tutup/selesai tetap muncul,
+  // selama punya koordinat (catatan marker aksi selesai, #54).
   const titik: TitikSebaran[] = useMemo(
-    () => hasil.filter(dapatDipasang),
+    () => hasil.filter(adaKoordinat),
     [hasil],
   );
 
   return (
     <PetaSebaran
       titik={titik}
-      terpilihId={terpilihId}
-      sorotId={sorotId}
+      terpilihKunci={terpilihKunci}
+      sorotKunci={sorotKunci}
       onPilih={onPilih}
     />
   );

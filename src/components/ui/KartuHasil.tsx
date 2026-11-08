@@ -10,6 +10,7 @@ import {
   teksLokasi,
   teksRelawan,
 } from '@/shared/explore';
+import { kunciTitik } from '@/shared/peta';
 import { BarProgres } from './BarProgres';
 import { ChipStatus, ChipTipe } from './Chip';
 import { IkonLokasi } from './Ikon';
@@ -19,7 +20,8 @@ interface KartuHasilProps {
   /** kartu yang pin-nya sedang dipilih di peta */
   terpilih?: boolean;
   animasi?: boolean;
-  onHover?: (id: string) => void;
+  /** kunci titik (kunciTitik: tipe + id), bukan id saja. */
+  onHover?: (kunci: string) => void;
 }
 
 /** satu hasil pencarian (row-card di prototipe). seluruh kartu adalah tautan ke halaman detail. */
@@ -36,8 +38,8 @@ export function KartuHasil({
     <Link
       href={hrefDetail(item)}
       className={`row-card${terpilih ? ' on' : ''}`}
-      onMouseEnter={() => onHover?.(item.id)}
-      onFocus={() => onHover?.(item.id)}
+      onMouseEnter={() => onHover?.(kunciTitik(item))}
+      onFocus={() => onHover?.(kunciTitik(item))}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={fotoAksi(item)} alt="" loading="lazy" />

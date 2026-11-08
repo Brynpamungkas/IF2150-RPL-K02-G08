@@ -7,6 +7,7 @@ import {
   PATH_PULAU,
   TINGGI_PETA,
   aturPin,
+  kunciTitik,
   letakPopup,
   type TitikSebaran,
 } from '@/shared/peta';
@@ -23,30 +24,31 @@ import { IkonPanah } from '@/components/ui/Ikon';
 
 interface PetaSebaranProps {
   titik: TitikSebaran[];
-  terpilihId?: string | null;
-  sorotId?: string | null;
-  onPilih?: (id: string | null) => void;
+  /** kunci titik (kunciTitik: tipe + id), bukan id saja. */
+  terpilihKunci?: string | null;
+  sorotKunci?: string | null;
+  onPilih?: (kunci: string | null) => void;
   aksiPopup?: (titik: TitikSebaran) => ReactNode;
 }
 
 export function PetaSebaran({
   titik,
-  terpilihId,
-  sorotId = null,
+  terpilihKunci,
+  sorotKunci = null,
   onPilih,
   aksiPopup,
 }: PetaSebaranProps) {
-  const terkontrol = terpilihId !== undefined;
+  const terkontrol = terpilihKunci !== undefined;
   const [lokal, setLokal] = useState<string | null>(null);
-  const aktifId = terkontrol ? terpilihId : lokal;
+  const aktifKunci = terkontrol ? terpilihKunci : lokal;
 
-  const pilih = (id: string | null) => {
-    if (!terkontrol) setLokal(id);
-    onPilih?.(id);
+  const pilih = (kunci: string | null) => {
+    if (!terkontrol) setLokal(kunci);
+    onPilih?.(kunci);
   };
 
   const posisi = useMemo(() => aturPin(titik), [titik]);
-  const terpilih = titik.find((t) => t.id === aktifId) ?? null;
+  const terpilih = titik.find((t) => kunciTitik(t) === aktifKunci) ?? null;
 
   const garis: ReactNode[] = [];
   for (let x = 0; x <= LEBAR_PETA; x += 80) {
@@ -69,22 +71,23 @@ export function PetaSebaran({
             <g className="grid">{garis}</g>
             <path className="island" d={PATH_PULAU} />
             {titik.map((t) => {
-              const [x, y] = posisi[t.id];
+              const kunci = kunciTitik(t);
+              const [x, y] = posisi[kunci];
               const warna = WARNA_PIN[t.tipe];
-              const aktif = aktifId === t.id || sorotId === t.id;
+              const aktif = aktifKunci === kunci || sorotKunci === kunci;
               return (
                 <g
-                  key={`${t.tipe}-${t.id}`}
+                  key={kunci}
                   className={`pin${aktif ? ' on' : ''}`}
                   style={{ color: warna }}
                   tabIndex={0}
                   role="button"
                   aria-label={`${t.judul}, ${t.kota}`}
-                  onClick={() => pilih(aktifId === t.id ? null : t.id)}
+                  onClick={() => pilih(aktifKunci === kunci ? null : kunci)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      pilih(aktifId === t.id ? null : t.id);
+                      pilih(aktifKunci === kunci ? null : kunci);
                     }
                   }}
                 >
@@ -98,7 +101,7 @@ export function PetaSebaran({
           {terpilih && (
             <PopupPin
               titik={terpilih}
-              posisi={posisi[terpilih.id]}
+              posisi={posisi[kunciTitik(terpilih)]}
               onTutup={() => pilih(null)}
               aksi={aksiPopup?.(terpilih)}
             />

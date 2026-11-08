@@ -1,13 +1,8 @@
-/**
- * data dan perhitungan peta Indonesia untuk halaman Explore (C29 FormPetaWilayahView).
- * diambil dari prototipe: poligon pulau digambar di kanvas SVG 960 x 350,
- * pin diletakkan dari latitude/longitude. murni (tanpa DOM), aman dibaca browser.
- */
+
 
 export const LEBAR_PETA = 960;
 export const TINGGI_PETA = 350;
 
-/** poligon kasar pulau-pulau Indonesia, tiap titik [longitude, latitude]. */
 const PULAU: [number, number][][] = [
   [
     [95.3, 5.6],
@@ -198,7 +193,6 @@ const PULAU: [number, number][][] = [
   ],
 ];
 
-/** proyeksi sederhana longitude/latitude ke koordinat SVG (satu desimal, seperti prototipe). */
 export function proyeksi(
   longitude: number,
   latitude: number,
@@ -209,7 +203,6 @@ export function proyeksi(
   ];
 }
 
-/** atribut d untuk <path> seluruh pulau. */
 export const PATH_PULAU = PULAU.map(
   (poligon) =>
     'M' +
@@ -218,28 +211,13 @@ export const PATH_PULAU = PULAU.map(
 ).join('');
 
 export interface TitikPeta {
+  tipe: TipeTitik;
   id: string;
   latitude: number;
   longitude: number;
 }
 
-export interface TitikSebaran extends TitikPeta {
-  tipe: 'project' | 'campaign';
-  judul: string;
-  kota: string;
-  provinsi: string;
-  kategori: string | null;
-  targetDana: number;
-  danaTerkumpul: number;
-}
 
-export const JENIS_SEBARAN = ['semua', 'project', 'campaign'] as const;
-export type JenisSebaran = (typeof JENIS_SEBARAN)[number];
-
-/**
- * meletakkan pin. pin yang menumpuk (jarak < 24) digeser melingkar
- * supaya semuanya tetap bisa diklik, seperti prototipe.
- */
 export function aturPin(titik: TitikPeta[]): Record<string, [number, number]> {
   const posisi: Record<string, [number, number]> = {};
   const terpasang: [number, number][] = [];
@@ -256,12 +234,11 @@ export function aturPin(titik: TitikPeta[]): Record<string, [number, number]> {
       k++;
     }
     terpasang.push([x, y]);
-    posisi[t.id] = [Number(x.toFixed(1)), Number(y.toFixed(1))];
+    posisi[kunciTitik(t)] = [Number(x.toFixed(1)), Number(y.toFixed(1))];
   }
   return posisi;
 }
 
-/** letak kartu ringkasan di atas peta, dalam persen. muncul di bawah pin bila pin ada di bagian atas. */
 export function letakPopup(
   x: number,
   y: number,
@@ -274,3 +251,26 @@ export function letakPopup(
   const atas = (y / TINGGI_PETA) * 100;
   return { kiri, atas, dibawah: atas < 55 };
 }
+
+export type TipeTitik = 'project' | 'campaign';
+
+/** satu titik pada peta sebaran (hasil GET /api/peta). */
+export interface TitikSebaran extends TitikPeta {
+  judul: string;
+  kota: string;
+  provinsi: string;
+  kategori: string | null;
+  targetDana: number;
+  danaTerkumpul: number;
+}
+
+export const JENIS_SEBARAN = ['semua', 'project', 'campaign'] as const;
+export type JenisSebaran = (typeof JENIS_SEBARAN)[number];
+
+/**
+ * identitas satu titik di peta. project dan campaign berasal dari tabel berbeda,
+ * jadi id yang sama pada keduanya tetap valid; id saja tidak cukup untuk
+ * memilih, menyorot, atau mencari posisi sebuah marker.
+ */
+export const kunciTitik = (t: Pick<TitikPeta, 'tipe' | 'id'>): string =>
+  `${t.tipe}-${t.id}`;

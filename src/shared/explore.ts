@@ -1,3 +1,4 @@
+
 import {
   BATAS_MAKS,
   KATA_KUNCI_MAKS,
@@ -97,6 +98,14 @@ export function bacaFilterUrl(
   };
 }
 
+export function selarasFilter(
+  sekarang: FilterExplore,
+  params: Record<string, string | string[] | undefined>,
+): FilterExplore | null {
+  const dariUrl = bacaFilterUrl(params);
+  return keQueryUrl(dariUrl) === keQueryUrl(sekarang) ? null : dariUrl;
+}
+
 export function keQueryUrl(filter: FilterExplore): string {
   const p = new URLSearchParams();
   if (filter.q.trim()) p.set('q', filter.q.trim());
@@ -124,6 +133,16 @@ export function keQueryApi(
   p.set('batas', String(batas));
   return p;
 }
+
+export interface ItemBerkoordinat extends ItemKatalog {
+  latitude: number;
+  longitude: number;
+}
+
+
+export const adaKoordinat = (i: ItemKatalog): i is ItemBerkoordinat =>
+  i.latitude !== null && i.longitude !== null;
+
 export function adaFilter(filter: FilterExplore): boolean {
   return Boolean(
     filter.q.trim() ||
@@ -134,6 +153,7 @@ export function adaFilter(filter: FilterExplore): boolean {
     filter.period,
   );
 }
+
 
 export const rupiah = (n: number): string =>
   'Rp' + Math.round(n).toLocaleString('en-US');
@@ -168,6 +188,7 @@ const LABEL_PELAKSANAAN: Record<
   ditunda: 'On hold',
   selesai: 'Completed',
 };
+
 
 export function labelStatus(item: ItemKatalog): LabelChip {
   if (item.statusPelaksanaan === 'selesai') {
