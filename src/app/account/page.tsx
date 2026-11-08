@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { GateLogin } from '@/components/ui/GateLogin';
 import { DompetKartu } from '@/components/views/DonasiView/DompetKartu';
 import { FormRiwayatView } from '@/components/views/RiwayatView/FormRiwayatView';
+import { TabRiwayat } from '@/components/views/RiwayatView/TabRiwayat';
 
 export const metadata: Metadata = { title: 'My activity | KlimPooL' };
 
@@ -46,9 +47,8 @@ export default function HalamanAccount() {
 
       <section className="pb-16 pt-7">
         <div className="mx-auto max-w-[1240px] px-5">
-          {/* Isi tab dipasang dari sini, mis.
-              <FormRiwayatView riwayat={<TabRiwayat />} relawan={...} aksi={...} /> */}
-          <FormRiwayatView />
+          {/* Tab lain dipasang lewat props relawan={...} dan aksi={...}. */}
+          <FormRiwayatView riwayat={<TabRiwayat />} />
         </div>
       </section>
     </main>

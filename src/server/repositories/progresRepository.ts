@@ -121,6 +121,7 @@ export type RingkasanProgresPengguna = {
   namaProject: string;
   milestone: string;
   statusPelaksanaan: StatusPelaksanaan;
+  persentase: number | null;
   timestampPembaruan: Date;
 };
 
@@ -130,6 +131,7 @@ type BarisRingkasanProgres = RowDataPacket & {
   nama_project: string;
   milestone: string;
   status_pelaksanaan: StatusPelaksanaan;
+  persentase: number | null;
   timestamp_pembaruan: Date;
 };
 
@@ -150,7 +152,7 @@ export async function daftarProgresPengguna(
 ): Promise<RingkasanProgresPengguna[]> {
   const baris = await query<BarisRingkasanProgres>(
     `SELECT g.id_progres, g.id_project, g.milestone, g.status_pelaksanaan,
-            g.timestamp_pembaruan, p.nama AS nama_project
+            g.persentase, g.timestamp_pembaruan, p.nama AS nama_project
        FROM progres_project g
        JOIN project p ON p.id_project = g.id_project
       WHERE ${SYARAT_PROGRES_PENGGUNA}
@@ -163,6 +165,7 @@ export async function daftarProgresPengguna(
     namaProject: b.nama_project,
     milestone: b.milestone,
     statusPelaksanaan: b.status_pelaksanaan,
+    persentase: b.persentase,
     timestampPembaruan: b.timestamp_pembaruan,
   }));
 }

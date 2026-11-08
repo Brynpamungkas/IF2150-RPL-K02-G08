@@ -65,6 +65,7 @@ export async function riwayatPengguna(
       namaProject: g.namaProject,
       milestone: g.milestone,
       statusPelaksanaan: g.statusPelaksanaan,
+      persentase: g.persentase,
     })),
   );
 }
