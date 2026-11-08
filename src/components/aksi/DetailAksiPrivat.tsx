@@ -51,10 +51,7 @@ export function DetailAksiPrivat({ aksi }: { aksi: Aksi }) {
           <ul>
             {aksi.rincianDana.map((r, i) => (
               <li key={i}>
-                {'uraian' in r && typeof r.uraian === 'string'
-                  ? r.uraian
-                  : r.label}
-                : Rp{r.nominal.toLocaleString('id-ID')}
+                {r.uraian}: Rp{r.nominal.toLocaleString('id-ID')}
               </li>
             ))}
           </ul>

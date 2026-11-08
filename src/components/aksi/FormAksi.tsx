@@ -103,8 +103,7 @@ export function FormAksi({ jenis, aksi }: { jenis: JenisAksi; aksi?: Aksi }) {
   const [rincian, setRincian] = useState(
     () =>
       aksi?.rincianDana.map((r) => ({
-        label:
-          'uraian' in r && typeof r.uraian === 'string' ? r.uraian : r.label,
+        label: r.uraian,
         nominal: String(r.nominal),
       })) ?? [],
   );
@@ -164,7 +163,7 @@ export function FormAksi({ jenis, aksi }: { jenis: JenisAksi; aksi?: Aksi }) {
       }
       if (!infoProject)
         badan.rincianDana = rincian.map((r) => ({
-          label: r.label,
+          uraian: r.label,
           nominal: Number(r.nominal),
         }));
       badan.tahap = infoProject ? 'informasi' : 'lengkap';
