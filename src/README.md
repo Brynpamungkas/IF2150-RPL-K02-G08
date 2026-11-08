@@ -210,8 +210,11 @@ Semua akun demo memakai password **`klimpool123`** (disimpan sebagai hash bcrypt
 | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- | -------- |
 | Kerangka aplikasi, database, autentikasi (login, sesi, `requireLogin()` dan `requireRole()`), komponen bersama (navbar, footer, modal, toast), beranda | Naya | Ney      |
 | Explore (pencarian, filter, peta) dan halaman detail                                                                                                   | Ney  | -        |
+| Pembuatan campaign/project, verifikasi admin, dan My Actions (UC02–UC04, #16–22, #45) | Bryan | Sahla |
 
 Anggota lain: lengkapi baris modul masing-masing di tabel ini.
+
+Panduan API, pengujian, dan batas integrasi modul aksi: [Implementasi Aksi](../docs/M9/IMPLEMENTASI-AKSI.md).
 
 ### Skema Database
 
