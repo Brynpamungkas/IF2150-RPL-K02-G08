@@ -29,6 +29,7 @@
 * [Milestone 6](#milestone-6)
 * [Milestone 7](#milestone-7)
 * [Milestone 8](#milestone-8)
+* [Milestone 9](#milestone-9)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -185,5 +186,13 @@
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
+
+### Milestone 9
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 08-11-2026 | Bryan | Implementasi lokal UC02–UC04 dan komponen My Actions (#16–22, #45), commit per bagian; pengujian validasi/akses/database/browser; pemeriksaan PR #52–56 dengan bantuan alat yang dicatat pada deklarasi penggunaan AI | Belum dicatat | Implementasi lokal dan tes fitur tersedia; menunggu review/UAT manusia dan integrasi tim | UI login/detail/progres serta penyatuan slot Account belum terintegrasi di basis branch; build basis terhambat prerender halaman donasi |
+
+**Catatan/Evaluasi Milestone 9:** Hasil dan batas pengujian ada pada [Implementasi Aksi](M9/IMPLEMENTASI-AKSI.md). Durasi, persentase kontribusi, dan validasi manusia tidak diperkirakan oleh alat; perlu dikonfirmasi anggota terkait. Belum ada push/merge branch implementasi ini.
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``
