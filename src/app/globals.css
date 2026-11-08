@@ -995,3 +995,91 @@ footer .brand {
     white-space: nowrap;
   }
 }
+
+/* ---------- Beranda (#40) ---------- */
+.home-hero {
+  padding-block: 168px 96px;
+  background: linear-gradient(180deg, var(--sage) 0%, var(--cream) 100%);
+}
+.home-judul {
+  font-size: clamp(40px, 6vw, 72px);
+  margin: 18px 0 20px;
+  max-width: 16ch;
+}
+.home-aksi {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+.home-kepala {
+  max-width: 640px;
+  margin-bottom: 44px;
+  display: grid;
+  gap: 12px;
+}
+.home-kepala h2 {
+  font-size: clamp(30px, 4vw, 44px);
+}
+.home-langkah {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+.home-kartu {
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: var(--r-card);
+  padding: 28px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.home-nomor {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--sage);
+  color: var(--forest-d);
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+.home-terang {
+  color: #c9d6c3;
+  font-size: 19px;
+}
+.home-statistik {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 28px;
+}
+.home-nilai {
+  margin: 0;
+  font-family: var(--f-display);
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.1;
+}
+.home-label {
+  color: #c9d6c3;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.home-catatan {
+  margin-top: 32px;
+  font-size: 14px;
+  color: #c9d6c3;
+}
+.home-cta {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+  text-align: center;
+}
+.home-cta h2 {
+  font-size: clamp(30px, 4vw, 44px);
+}
