@@ -128,6 +128,11 @@ async function waitManage(page, jenis) {
   await page.getByRole('heading', { level: 1 }).waitFor();
   return new URL(page.url()).pathname.split('/').at(-1);
 }
+async function openAccountActions(target) {
+  await target.goto(`${base}/account`);
+  await target.getByRole('tab', { name: 'My actions', exact: true }).click();
+  return target.getByRole('tabpanel');
+}
 async function submitAction(page) {
   const response = page.waitForResponse(
     (r) => r.url().includes('/pengajuan') && r.request().method() === 'POST',
@@ -234,7 +239,7 @@ async function run() {
     .locator('.notice[role="status"]')
     .filter({ hasText: 'Status pengajuan: Ditolak' })
     .waitFor();
-  await page.goto(`${base}/my-actions`);
+  await openAccountActions(page);
   const card = page
     .getByRole('article')
     .filter({ hasText: `Campaign ${stamp}` });
@@ -245,6 +250,34 @@ async function run() {
     .waitFor({ state: 'detached' });
   await card
     .getByText('Campaign · Menunggu Verifikasi', { exact: true })
+    .waitFor();
+  assert.equal(
+    await page
+      .getByRole('tab', { name: 'My actions', exact: true })
+      .getAttribute('aria-selected'),
+    'true',
+    'Refresh pengajuan ulang tidak memindahkan tab Account.',
+  );
+  const otherPanel = await openAccountActions(outsider);
+  await otherPanel
+    .getByText('Belum ada project atau campaign milik Anda.', { exact: false })
+    .waitFor();
+  assert.equal(
+    await outsider.getByText(`Campaign ${stamp}`, { exact: true }).count(),
+    0,
+    'Account pengguna lain tidak mendapat daftar pemilik.',
+  );
+  const guestPanel = await openAccountActions(guest);
+  await guestPanel
+    .getByText('Log in to see your actions.', { exact: false })
+    .waitFor();
+  await db.execute(
+    'UPDATE sesi_login SET waktu_kedaluwarsa = UTC_TIMESTAMP() WHERE id_sesi = ?',
+    [tokens[other]],
+  );
+  const expiredPanel = await openAccountActions(outsider);
+  await expiredPanel
+    .getByText('Log in to see your actions.', { exact: false })
     .waitFor();
   await reviewer.reload();
   await reviewer.getByRole('button', { name: 'Setujui', exact: true }).click();
@@ -300,6 +333,20 @@ async function run() {
     'Kembali ke tahap pertama tidak membuat project ganda.',
   );
   const restricted = await pageFor(volunteer);
+  const volunteerPanel = await openAccountActions(restricted);
+  await volunteerPanel
+    .getByText(
+      'Creating and managing actions is available to project creators.',
+      { exact: false },
+    )
+    .waitFor();
+  const adminPanel = await openAccountActions(reviewer);
+  assert.equal(
+    await adminPanel
+      .getByRole('link', { name: 'Review submissions' })
+      .getAttribute('href'),
+    '/admin',
+  );
   await restricted.goto(`${base}/admin`);
   await restricted
     .getByRole('alert')
@@ -335,7 +382,8 @@ async function run() {
         'network retry mempertahankan isian',
         'campaign draft/ajukan/tolak/ulang/setujui',
         'project dua tahap/kembali/satu ID/setujui',
-        'My Actions + Progres',
+        'My Actions dalam Account: pemilik/tamu/volunteer/admin/sesi kedaluwarsa + refresh tab',
+        'tautan Progres (halaman tujuan masih milik modul tim)',
         'mobile 375px',
       ],
       campaignId,
