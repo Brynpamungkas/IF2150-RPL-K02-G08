@@ -93,8 +93,8 @@ describe('peta mengikuti hasil filter, termasuk aksi yang sudah tutup', () => {
     renderToStaticMarkup(
       createElement(FormPetaWilayahView, {
         hasil,
-        terpilihId: null,
-        sorotId: null,
+        terpilihKunci: null,
+        sorotKunci: null,
         onPilih: () => {},
       }),
     );
@@ -108,8 +108,8 @@ describe('peta mengikuti hasil filter, termasuk aksi yang sudah tutup', () => {
     const html = renderToStaticMarkup(
       createElement(FormPetaWilayahView, {
         hasil: [tutup],
-        terpilihId: 'tutup1',
-        sorotId: null,
+        terpilihKunci: 'project-tutup1',
+        sorotKunci: null,
         onPilih: () => {},
       }),
     );
@@ -117,7 +117,11 @@ describe('peta mengikuti hasil filter, termasuk aksi yang sudah tutup', () => {
   });
 
   it('campuran terbuka dan tutup: semua yang berkoordinat dipetakan', () => {
-    const hasil = [item({ id: 'a' }), tutup, item({ id: 'c', tipe: 'campaign' })];
+    const hasil = [
+      item({ id: 'a' }),
+      tutup,
+      item({ id: 'c', tipe: 'campaign' }),
+    ];
     expect(jumlahPin(render(hasil))).toBe(3);
   });
 
