@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ChipStatus, ChipTipe } from '@/components/ui/Chip';
 import { IkonLokasi } from '@/components/ui/Ikon';
-import { posisiFoto, type DetailAksi } from '@/shared/detail';
+import { formatTanggal, posisiFoto, type DetailAksi } from '@/shared/detail';
 import { fotoBesar } from '@/shared/explore';
 
 export function HeroDetail({ detail }: { detail: DetailAksi }) {
@@ -16,7 +16,13 @@ export function HeroDetail({ detail }: { detail: DetailAksi }) {
         <div className="chips">
           <ChipTipe tipe={detail.tipe} />
           <span className="chip soft">{detail.kategori}</span>
-          <ChipStatus item={detail} />
+          {detail.belumMulai && !detail.terbukaDonasi ? (
+            <span className="chip info">
+              Opens {formatTanggal(detail.mulai)}
+            </span>
+          ) : (
+            <ChipStatus item={detail} />
+          )}
         </div>
         <h1>{detail.judul}</h1>
         <p className="by">

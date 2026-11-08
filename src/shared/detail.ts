@@ -5,6 +5,17 @@ export interface RincianDana {
   nominal: number;
 }
 
+/** satu berkas dokumentasi progres. href null = bukan tautan yang aman dibuka, tampil sebagai teks. */
+export interface DokumenProgres {
+  nama: string;
+  href: string | null;
+}
+
+/** instruksi kegiatan yang hanya boleh dilihat relawan yang diterima (KF22). */
+export interface InstruksiRelawan {
+  lokasiKumpul: string;
+}
+
 export interface ProgresItem {
   id: string;
   milestone: string;
@@ -12,7 +23,7 @@ export interface ProgresItem {
   catatan: string | null;
   persentase: number | null;
   danaTerpakai: number | null;
-  dokumen: string[];
+  dokumen: DokumenProgres[];
   waktu: string;
 }
 
@@ -31,6 +42,8 @@ export interface DetailAksi {
   mulai: string | null;
   selesai: string | null;
   sisaHari: number | null;
+  /** true bila tanggal mulai belum tiba. campaign belum menerima donasi sebelum itu. */
+  belumMulai: boolean;
   statusPelaksanaan: StatusPelaksanaan | null;
   terbukaDonasi: boolean;
   terbukaRelawan: boolean;
@@ -39,7 +52,11 @@ export interface DetailAksi {
   relawanDiterima: number | null;
   logistik: string[];
   keahlian: string[];
-  lokasiKumpul: string | null;
+  /**
+   * titik kumpul hanya diisi server untuk relawan yang pendaftarannya accepted (KF22).
+   * sengaja bukan bagian data publik, supaya tidak ikut terkirim ke peramban pengunjung.
+   */
+  instruksiRelawan: InstruksiRelawan | null;
   penyelenggara: string;
   diverifikasi: string | null;
   rincianDana: RincianDana[];
@@ -86,4 +103,65 @@ const POSISI_FOTO: Record<string, string> = {
 
 export function posisiFoto(id: string): string {
   return POSISI_FOTO[id] ?? 'center';
+}
+
+const AWALAN_DOKUMENTASI = '/api/dokumentasi/';
+
+/** sama dengan pola id project di penyimpanan dokumentasi (VARCHAR(36)). */
+const POLA_ID_PROJECT = /^[A-Za-z0-9_-]{1,36}$/;
+
+function bacaSegmen(segmen: string): string | null {
+  try {
+    const nilai = decodeURIComponent(segmen);
+    return nilai &&
+      nilai !== '.' &&
+      nilai !== '..' &&
+      !/[\\/?#\u0000]/.test(nilai)
+      ? nilai
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function hrefDokumentasi(idProject: string, nama: string): string {
+  return `${AWALAN_DOKUMENTASI}${encodeURIComponent(idProject)}/${encodeURIComponent(nama)}`;
+}
+
+/**
+ * mengubah kolom progres_project.dokumentasi_url (daftar dipisah koma) menjadi
+ * berkas yang bisa dibuka. dua bentuk diterima:
+ *   - alamat dari penyimpanan: /api/dokumentasi/{idProject}/{nama}
+ *   - nama berkas saja (data awal): dipetakan ke /api/dokumentasi/{idProject}/{nama}
+ * tautan hanya dibuat ke endpoint dokumentasi milik project yang sama. alamat
+ * lain (situs luar, project lain, ../, skema aneh) tetap tampil sebagai teks.
+ */
+export function bentukDokumen(
+  idProject: string,
+  mentah: string | null,
+): DokumenProgres[] {
+  if (!mentah) return [];
+  const idAman = POLA_ID_PROJECT.test(idProject);
+
+  return mentah
+    .split(',')
+    .map((e) => e.trim())
+    .filter(Boolean)
+    .map((entri): DokumenProgres => {
+      if (!idAman) return { nama: entri, href: null };
+
+      if (entri.startsWith(AWALAN_DOKUMENTASI)) {
+        const bagian = entri.slice(AWALAN_DOKUMENTASI.length).split('/');
+        const id = bagian.length === 2 ? bacaSegmen(bagian[0]) : null;
+        const nama = bagian.length === 2 ? bacaSegmen(bagian[1]) : null;
+        return id === idProject && nama
+          ? { nama, href: hrefDokumentasi(idProject, nama) }
+          : { nama: entri, href: null };
+      }
+
+      const nama = /[/\\:?#]/.test(entri) ? null : bacaSegmen(entri);
+      return nama
+        ? { nama, href: hrefDokumentasi(idProject, nama) }
+        : { nama: entri, href: null };
+    });
 }

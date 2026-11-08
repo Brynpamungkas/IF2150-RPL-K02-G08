@@ -44,12 +44,26 @@ export function PanelProgres({ progres }: { progres: ProgresItem[] }) {
             )}
             {p.dokumen.length > 0 && (
               <div className="docs">
-                {p.dokumen.map((d) => (
-                  <span key={d} className="doc">
-                    <IkonDokumen />
-                    {d}
-                  </span>
-                ))}
+                {p.dokumen.map((d) =>
+                  d.href ? (
+                    <a
+                      key={d.href}
+                      className="doc"
+                      href={d.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${d.nama} (opens in a new tab)`}
+                    >
+                      <IkonDokumen />
+                      {d.nama}
+                    </a>
+                  ) : (
+                    <span key={d.nama} className="doc">
+                      <IkonDokumen />
+                      {d.nama}
+                    </span>
+                  ),
+                )}
               </div>
             )}
           </div>

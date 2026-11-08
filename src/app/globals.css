@@ -1198,6 +1198,17 @@ footer .brand {
   font-weight: 700;
   background: #fff;
 }
+a.doc {
+  color: inherit;
+  text-decoration: none;
+}
+a.doc:hover {
+  border-color: var(--forest);
+}
+a.doc:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+}
 .fund {
   width: 100%;
   border-collapse: collapse;

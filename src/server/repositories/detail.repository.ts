@@ -23,7 +23,6 @@ export interface BarisDetail extends RowDataPacket {
   keahlian: string | null;
   kuota: number | null;
   pendaftaran_dibuka: number | null;
-  lokasi_kumpul: string | null;
   relawan_diterima: number | null;
 }
 
@@ -53,7 +52,6 @@ SELECT p.id_project AS id, p.nama AS judul, p.deskripsi, p.tujuan, p.kategori, p
        ${JUMLAH_DONASI('project', 'p.id_project')} AS jumlah_donasi,
        p.status_pelaksanaan, p.kebutuhan_logistik AS logistik, p.kriteria_volunteer AS keahlian,
        p.kuota_relawan AS kuota, (p.status_pendaftaran_project = 'dibuka') AS pendaftaran_dibuka,
-       p.lokasi_kumpul,
        (SELECT COUNT(*) FROM pendaftaran_relawan r
          WHERE r.id_project = p.id_project AND r.status_pendaftaran = 'accepted') AS relawan_diterima
   FROM project p
@@ -70,10 +68,23 @@ SELECT c.id_campaign AS id, c.judul, c.deskripsi, c.kebutuhan AS tujuan, c.kateg
        u.nama AS penyelenggara,
        ${JUMLAH_DONASI('campaign', 'c.id_campaign')} AS jumlah_donasi,
        NULL AS status_pelaksanaan, NULL AS logistik, NULL AS keahlian,
-       NULL AS kuota, NULL AS pendaftaran_dibuka, NULL AS lokasi_kumpul, NULL AS relawan_diterima
+       NULL AS kuota, NULL AS pendaftaran_dibuka, NULL AS relawan_diterima
   FROM campaign c
   JOIN pengguna u ON u.id_pengguna = c.id_pembuat
  WHERE c.id_campaign = ? AND c.status = 'terpublikasi'`;
+
+/**
+ * titik kumpul adalah instruksi kegiatan untuk relawan yang diterima (KF22, DPPL Algo-126).
+ * kolomnya tidak ikut query detail publik di atas; satu-satunya jalan keluar adalah query ini,
+ * dan syarat pendaftaran accepted milik pengguna yang login ada di WHERE, bukan di antarmuka.
+ */
+const SQL_INSTRUKSI = `
+SELECT p.lokasi_kumpul AS lokasi
+  FROM project p
+  JOIN pendaftaran_relawan r ON r.id_project = p.id_project
+ WHERE p.id_project = ? AND p.status = 'terpublikasi'
+   AND r.id_volunteer = ? AND r.status_pendaftaran = 'accepted'
+   AND p.lokasi_kumpul IS NOT NULL AND TRIM(p.lokasi_kumpul) <> ''`;
 
 const SQL_PROGRES = `
 SELECT id_progres AS id, milestone, status_pelaksanaan, catatan, persentase, dana_terpakai,
@@ -91,6 +102,18 @@ export class DetailRepository {
   async cariCampaign(id: string): Promise<BarisDetail | null> {
     const baris = await query<BarisDetail>(SQL_CAMPAIGN, [id]);
     return baris[0] ?? null;
+  }
+
+  /** titik kumpul bila pengguna ini relawan accepted pada project tsb, selain itu null. */
+  async instruksiRelawan(
+    idProject: string,
+    idPengguna: string,
+  ): Promise<string | null> {
+    const baris = await query<RowDataPacket & { lokasi: string }>(
+      SQL_INSTRUKSI,
+      [idProject, idPengguna],
+    );
+    return baris[0]?.lokasi ?? null;
   }
 
   daftarProgres(idProject: string): Promise<BarisProgres[]> {

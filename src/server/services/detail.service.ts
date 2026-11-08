@@ -4,13 +4,23 @@ import {
   type BarisProgres,
 } from '@/server/repositories/detail.repository';
 import { tanggalWib } from '@/server/services/katalog.service';
-import type { DetailAksi, ProgresItem, RincianDana } from '@/shared/detail';
+import {
+  bentukDokumen,
+  type DetailAksi,
+  type InstruksiRelawan,
+  type ProgresItem,
+  type RincianDana,
+} from '@/shared/detail';
 import type { TipeItem } from '@/shared/katalog';
 
 export interface SumberDetail {
   cariProject(id: string): Promise<BarisDetail | null>;
   cariCampaign(id: string): Promise<BarisDetail | null>;
   daftarProgres(idProject: string): Promise<BarisProgres[]>;
+  instruksiRelawan(
+    idProject: string,
+    idPengguna: string,
+  ): Promise<string | null>;
 }
 
 const MS_PER_HARI = 86_400_000;
@@ -53,7 +63,15 @@ export function hitungSisaHari(
   return Math.round(selisih / MS_PER_HARI);
 }
 
-function keProgres(b: BarisProgres): ProgresItem {
+/**
+ * hari ini menurut API donasi. API memakai CURDATE() pada DB berzona UTC
+ * (docker-compose TZ=UTC), sedangkan halaman memakai tanggal WIB. untuk batas
+ * mulai, pakai tanggal yang lebih awal dari keduanya supaya halaman tidak menawarkan
+ * donasi beberapa jam sebelum backend menerimanya.
+ */
+const tanggalUtc = (waktu: Date): string => waktu.toISOString().slice(0, 10);
+
+function keProgres(b: BarisProgres, idProject: string): ProgresItem {
   return {
     id: b.id,
     milestone: b.milestone,
@@ -61,7 +79,7 @@ function keProgres(b: BarisProgres): ProgresItem {
     catatan: b.catatan,
     persentase: b.persentase === null ? null : Number(b.persentase),
     danaTerpakai: b.dana_terpakai === null ? null : Number(b.dana_terpakai),
-    dokumen: pecahDaftar(b.dokumentasi_url, ','),
+    dokumen: bentukDokumen(idProject, b.dokumentasi_url),
     waktu: b.waktu,
   };
 }
@@ -72,7 +90,15 @@ export class DetailService {
     private readonly sekarang: () => Date = () => new Date(),
   ) {}
 
-  async ambil(tipe: TipeItem, id: string): Promise<DetailAksi | null> {
+  /**
+   * @param idPengguna pengguna yang sedang melihat (null bila belum login). dipakai
+   *   hanya untuk memutuskan apakah instruksi relawan boleh disertakan (KF22).
+   */
+  async ambil(
+    tipe: TipeItem,
+    id: string,
+    idPengguna: string | null = null,
+  ): Promise<DetailAksi | null> {
     const baris =
       tipe === 'project'
         ? await this.repo.cariProject(id)
@@ -81,11 +107,29 @@ export class DetailService {
 
     const progres =
       tipe === 'project'
-        ? (await this.repo.daftarProgres(id)).map(keProgres)
+        ? (await this.repo.daftarProgres(id)).map((b) => keProgres(b, id))
         : [];
-    const hariIni = tanggalWib(this.sekarang());
+    const waktu = this.sekarang();
+    const hariIni = tanggalWib(waktu);
     const berlaku = baris.selesai !== null && baris.selesai >= hariIni;
+    // campaign hanya menerima donasi dalam periodenya: periode_mulai <= hari ini
+    // <= periode_selesai (DPPL Algo-132, sama dengan API donasi). project tidak
+    // dibatasi tanggal mulai untuk donasi (Algo-131); tanggal mulai hanya untuk tampilan.
+    const mulaiTercapai =
+      baris.mulai !== null &&
+      baris.mulai <= hariIni &&
+      (tipe !== 'campaign' || baris.mulai <= tanggalUtc(waktu));
+    const belumMulai = baris.mulai !== null && !mulaiTercapai;
+    const periodeDonasiBerlaku =
+      tipe === 'campaign' ? berlaku && mulaiTercapai : berlaku;
     const belumSelesai = baris.status_pelaksanaan !== 'selesai';
+    const lokasiKumpul =
+      tipe === 'project' && idPengguna
+        ? await this.repo.instruksiRelawan(id, idPengguna)
+        : null;
+    const instruksiRelawan: InstruksiRelawan | null = lokasiKumpul
+      ? { lokasiKumpul }
+      : null;
     const kuota = baris.kuota === null ? null : Number(baris.kuota);
     const diterima =
       baris.relawan_diterima === null ? null : Number(baris.relawan_diterima);
@@ -106,8 +150,9 @@ export class DetailService {
       mulai: baris.mulai,
       selesai: baris.selesai,
       sisaHari: hitungSisaHari(baris.selesai, hariIni),
+      belumMulai,
       statusPelaksanaan: baris.status_pelaksanaan,
-      terbukaDonasi: belumSelesai && berlaku,
+      terbukaDonasi: belumSelesai && periodeDonasiBerlaku,
       terbukaRelawan:
         tipe === 'project' &&
         pendaftaranDibuka &&
@@ -119,7 +164,7 @@ export class DetailService {
       relawanDiterima: diterima,
       logistik: pecahDaftar(baris.logistik, ';'),
       keahlian: pecahDaftar(baris.keahlian, ';'),
-      lokasiKumpul: baris.lokasi_kumpul,
+      instruksiRelawan,
       penyelenggara: baris.penyelenggara,
       diverifikasi: baris.diverifikasi,
       rincianDana: bacaRincian(baris.rincian),

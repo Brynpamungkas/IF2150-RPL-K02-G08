@@ -28,8 +28,20 @@ export function PanelTentang({ detail }: { detail: DetailAksi }) {
               </ul>
             </div>
             <div className="need">
+              <h4>Area</h4>
+              <p>
+                {detail.kota}, {detail.provinsi}
+              </p>
+            </div>
+            <div className="need">
               <h4>Meeting point</h4>
-              <p>{detail.lokasiKumpul ?? '-'}</p>
+              {detail.instruksiRelawan ? (
+                <p>{detail.instruksiRelawan.lokasiKumpul}</p>
+              ) : (
+                <p className="small muted">
+                  The exact meeting point is shared with accepted volunteers.
+                </p>
+              )}
             </div>
           </div>
         </>
@@ -37,9 +49,11 @@ export function PanelTentang({ detail }: { detail: DetailAksi }) {
       <h3>{project ? 'Activity' : 'Fundraising'} period</h3>
       <p>
         <b>{rentang}</b>
-        {detail.sisaHari !== null && detail.sisaHari >= 0
-          ? ` · ${plural(detail.sisaHari, 'day')} left`
-          : ' · ended'}
+        {detail.belumMulai
+          ? ` · starts on ${formatTanggal(detail.mulai)}`
+          : detail.sisaHari !== null && detail.sisaHari >= 0
+            ? ` · ${plural(detail.sisaHari, 'day')} left`
+            : ' · ended'}
       </p>
     </div>
   );

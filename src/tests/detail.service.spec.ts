@@ -35,7 +35,6 @@ function barisProject(ubah: Record<string, unknown> = {}): BarisDetail {
     keahlian: 'P3K; Dokumentasi',
     kuota: 10,
     pendaftaran_dibuka: 1,
-    lokasi_kumpul: 'Balai desa',
     relawan_diterima: 4,
     ...ubah,
   } as unknown as BarisDetail;
@@ -59,11 +58,19 @@ function sumber(
   project: BarisDetail | null,
   campaign: BarisDetail | null = null,
   progres: BarisProgres[] = [],
-): SumberDetail {
+  instruksi: (idProject: string, idPengguna: string) => string | null = () =>
+    null,
+): SumberDetail & { instruksiDipanggil: [string, string][] } {
+  const dipanggil: [string, string][] = [];
   return {
     cariProject: async () => project,
     cariCampaign: async () => campaign,
     daftarProgres: async () => progres,
+    instruksiRelawan: async (idProject, idPengguna) => {
+      dipanggil.push([idProject, idPengguna]);
+      return instruksi(idProject, idPengguna);
+    },
+    instruksiDipanggil: dipanggil,
   };
 }
 
@@ -97,7 +104,10 @@ describe('DetailService.ambil', () => {
       keahlian: ['P3K', 'Dokumentasi'],
       danaTerpakai: 300,
     });
-    expect(d?.progres[0].dokumen).toEqual(['a.jpg', 'b.jpg']);
+    expect(d?.progres[0].dokumen).toEqual([
+      { nama: 'a.jpg', href: '/api/dokumentasi/p1/a.jpg' },
+      { nama: 'b.jpg', href: '/api/dokumentasi/p1/b.jpg' },
+    ]);
     expect(d?.rincianDana).toHaveLength(2);
   });
 
@@ -156,6 +166,157 @@ describe('DetailService.ambil', () => {
       kuotaRelawan: null,
       progres: [],
       danaTerpakai: 0,
+    });
+  });
+});
+
+function barisCampaign(ubah: Record<string, unknown> = {}): BarisDetail {
+  return barisProject({
+    status_pelaksanaan: null,
+    kuota: null,
+    pendaftaran_dibuka: null,
+    relawan_diterima: null,
+    logistik: null,
+    keahlian: null,
+    ...ubah,
+  });
+}
+
+/** service dengan jam tetap; waktu dalam UTC, tanggal WIB = UTC + 7 jam. */
+const pada = (iso: string) => () => new Date(iso);
+
+describe('periode donasi campaign (DPPL Algo-132, sama dengan API donasi)', () => {
+  const donasiTerbuka = async (
+    ubah: Record<string, unknown>,
+    waktu = '2026-11-08T03:00:00Z',
+  ) => {
+    const service = new DetailService(
+      sumber(null, barisCampaign(ubah)),
+      pada(waktu),
+    );
+    return service.ambil('campaign', 'c1');
+  };
+
+  it('sebelum tanggal mulai: donasi tertutup dan ditandai belum mulai', async () => {
+    const d = await donasiTerbuka({
+      mulai: '2026-11-09',
+      selesai: '2026-12-31',
+    });
+    expect(d).toMatchObject({ terbukaDonasi: false, belumMulai: true });
+  });
+
+  it('tepat tanggal mulai: donasi terbuka', async () => {
+    const d = await donasiTerbuka({
+      mulai: '2026-11-08',
+      selesai: '2026-12-31',
+    });
+    expect(d).toMatchObject({ terbukaDonasi: true, belumMulai: false });
+  });
+
+  it('di tengah periode dan pada hari terakhir: donasi terbuka', async () => {
+    const tengah = await donasiTerbuka({
+      mulai: '2026-10-01',
+      selesai: '2026-12-31',
+    });
+    const terakhir = await donasiTerbuka({
+      mulai: '2026-10-01',
+      selesai: '2026-11-08',
+    });
+    expect(tengah?.terbukaDonasi).toBe(true);
+    expect(terakhir?.terbukaDonasi).toBe(true);
+  });
+
+  it('setelah tanggal selesai: donasi tertutup, bukan belum mulai', async () => {
+    const d = await donasiTerbuka({
+      mulai: '2026-10-01',
+      selesai: '2026-11-07',
+    });
+    expect(d).toMatchObject({ terbukaDonasi: false, belumMulai: false });
+  });
+
+  it('tanggal mulai di WIB tetapi DB (UTC) masih hari sebelumnya: belum dibuka', async () => {
+    // 2026-11-07 17:30 UTC = 2026-11-08 00:30 WIB. API memakai CURDATE() UTC
+    // (2026-11-07) dan akan menolak donasi, jadi halaman tidak boleh menawarkannya.
+    const dini = await donasiTerbuka(
+      { mulai: '2026-11-08', selesai: '2026-12-31' },
+      '2026-11-07T17:30:00Z',
+    );
+    expect(dini).toMatchObject({ terbukaDonasi: false, belumMulai: true });
+    const siang = await donasiTerbuka(
+      { mulai: '2026-11-08', selesai: '2026-12-31' },
+      '2026-11-08T00:30:00Z',
+    );
+    expect(siang?.terbukaDonasi).toBe(true);
+  });
+
+  it('project tidak dibatasi tanggal mulai untuk donasi (Algo-131)', async () => {
+    const service = new DetailService(
+      sumber(barisProject({ mulai: '2026-11-09', selesai: '2026-12-31' })),
+      pada('2026-11-08T03:00:00Z'),
+    );
+    const d = await service.ambil('project', 'p1');
+    expect(d).toMatchObject({ terbukaDonasi: true, belumMulai: true });
+  });
+});
+
+describe('instruksi relawan / titik kumpul (KF22, DPPL Algo-126)', () => {
+  const lokasi = (id: string, pengguna: string) =>
+    id === 'p1' && pengguna === 'relawan-diterima' ? 'Balai desa 06:30' : null;
+
+  it('pengunjung tanpa login tidak mendapat titik kumpul dan query tidak dijalankan', async () => {
+    const repo = sumber(barisProject(), null, [], lokasi);
+    const d = await new DetailService(repo, HARI_INI).ambil('project', 'p1');
+    expect(d?.instruksiRelawan).toBeNull();
+    expect(repo.instruksiDipanggil).toEqual([]);
+    expect(JSON.stringify(d)).not.toContain('Balai desa');
+    expect(JSON.stringify(d)).not.toContain('lokasiKumpul');
+  });
+
+  it('pengguna yang bukan relawan diterima (pending, rejected, orang lain) tidak mendapat titik kumpul', async () => {
+    for (const pengguna of ['pending', 'rejected', 'orang-lain']) {
+      const repo = sumber(barisProject(), null, [], lokasi);
+      const d = await new DetailService(repo, HARI_INI).ambil(
+        'project',
+        'p1',
+        pengguna,
+      );
+      expect(d?.instruksiRelawan).toBeNull();
+      expect(JSON.stringify(d)).not.toContain('Balai desa');
+    }
+  });
+
+  it('relawan yang diterima mendapat titik kumpul', async () => {
+    const repo = sumber(barisProject(), null, [], lokasi);
+    const d = await new DetailService(repo, HARI_INI).ambil(
+      'project',
+      'p1',
+      'relawan-diterima',
+    );
+    expect(d?.instruksiRelawan).toEqual({ lokasiKumpul: 'Balai desa 06:30' });
+    expect(repo.instruksiDipanggil).toEqual([['p1', 'relawan-diterima']]);
+  });
+
+  it('campaign tidak punya instruksi relawan', async () => {
+    const repo = sumber(null, barisCampaign(), [], () => 'Balai desa');
+    const d = await new DetailService(repo, HARI_INI).ambil(
+      'campaign',
+      'c1',
+      'relawan-diterima',
+    );
+    expect(d?.instruksiRelawan).toBeNull();
+    expect(repo.instruksiDipanggil).toEqual([]);
+  });
+
+  it('data publik (jadwal, wilayah) tetap ada tanpa login', async () => {
+    const d = await new DetailService(sumber(barisProject()), HARI_INI).ambil(
+      'project',
+      'p1',
+    );
+    expect(d).toMatchObject({
+      kota: 'Tabanan',
+      provinsi: 'Bali',
+      mulai: '2026-10-01',
+      selesai: '2026-12-31',
     });
   });
 });
