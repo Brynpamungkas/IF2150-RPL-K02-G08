@@ -12,7 +12,7 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "test": "npm run test:node && npm run test:vitest",
-    "test:node": "node --env-file-if-exists=.env --import tsx --test tests/donasi.integrasi.test.ts tests/donasi.unit.test.ts",
+    "test:node": "node --env-file-if-exists=.env scripts/test-node.mjs",
     "test:vitest": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "test:aksi": "node --env-file-if-exists=.env --import tsx --test tests/aksi.akses.test.ts tests/aksi.validasi.test.ts tests/aksi.integrasi.test.ts",

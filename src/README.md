@@ -30,11 +30,18 @@ Buka http://localhost:3000.
 
 Perintah lain:
 
-| Perintah         | Fungsi                       |
-| ---------------- | ---------------------------- |
-| `npm run lint`   | Cek kode dengan ESLint       |
-| `npm run format` | Rapikan kode dengan Prettier |
-| `npm run build`  | Build untuk produksi         |
+| Perintah            | Fungsi                                                 |
+| ------------------- | ------------------------------------------------------ |
+| `npm run lint`      | Cek kode dengan ESLint                                 |
+| `npm run format`    | Rapikan kode dengan Prettier                           |
+| `npm run build`     | Build untuk produksi                                   |
+| `npm test`          | Semua `*.test.ts` (node:test) dan `*.spec.ts` (Vitest) |
+| `npm run test:aksi` | Validasi/akses/database modul aksi saja                |
+
+Runner node:test menemukan file secara rekursif lewat `scripts/test-node.mjs`,
+bukan glob shell atau daftar donasi saja. Tes aksi baru ikut `npm test` pada Node 20
+tanpa menyingkirkan pengujian Vitest tim. Integrasi database tetap opt-in memakai
+database khusus uji; lihat [panduan aksi](../docs/M9/IMPLEMENTASI-AKSI.md).
 
 ## Struktur Folder
 
@@ -76,17 +83,17 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-| Variabel | Fungsi | Contoh |
-| --- | --- | --- |
-| `DB_HOST` | Alamat server MySQL | `localhost` |
-| `DB_PORT` | Port MySQL (lihat opsi di bawah) | `3307` (Docker) atau `3306` (XAMPP) |
-| `DB_NAME` | Nama database | `klimpool` |
-| `DB_USER` | User database | `klimpool` (Docker) atau `root` (XAMPP) |
-| `DB_PASSWORD` | Password user database | sesuaikan |
-| `DB_ROOT_PASSWORD` | Password root, hanya dipakai Docker | sesuaikan |
-| `DB_CONNECTION_LIMIT` | Jumlah maksimum koneksi di pool | `10` |
-| `DOKUMENTASI_DRIVER` | Jenis penyimpanan berkas dokumentasi progres | `lokal` |
-| `DOKUMENTASI_DIR` | Folder penyimpanan berkas dokumentasi | `./uploads` |
+| Variabel              | Fungsi                                       | Contoh                                  |
+| --------------------- | -------------------------------------------- | --------------------------------------- |
+| `DB_HOST`             | Alamat server MySQL                          | `localhost`                             |
+| `DB_PORT`             | Port MySQL (lihat opsi di bawah)             | `3307` (Docker) atau `3306` (XAMPP)     |
+| `DB_NAME`             | Nama database                                | `klimpool`                              |
+| `DB_USER`             | User database                                | `klimpool` (Docker) atau `root` (XAMPP) |
+| `DB_PASSWORD`         | Password user database                       | sesuaikan                               |
+| `DB_ROOT_PASSWORD`    | Password root, hanya dipakai Docker          | sesuaikan                               |
+| `DB_CONNECTION_LIMIT` | Jumlah maksimum koneksi di pool              | `10`                                    |
+| `DOKUMENTASI_DRIVER`  | Jenis penyimpanan berkas dokumentasi progres | `lokal`                                 |
+| `DOKUMENTASI_DIR`     | Folder penyimpanan berkas dokumentasi        | `./uploads`                             |
 
 Koneksi dikelola oleh `server/db.ts` (connection pool `mysql2`). Repository memakai fungsi `query`, `execute`, dan `withTransaction` dari file tersebut.
 
@@ -115,11 +122,11 @@ Pendaftaran relawan dan pengelolaannya (UC07, UC08) ditangani `RelawanController
 (C34) di `server/controllers/`, dengan aturan bisnis di `server/services/relawanService.ts`.
 Sesi sementara dibaca dari cookie `klimpool_dev_user` sampai issue #14 selesai.
 
-| Metode dan alamat | Fungsi | Akses |
-| --- | --- | --- |
-| `POST /api/projects/<id>/relawan` | Mendaftar sebagai relawan, status awal `pending` | Pengguna yang sudah masuk |
-| `GET /api/projects/<id>/relawan` | Daftar pendaftar (kosong bila belum ada) | Pembuat project |
-| `PATCH /api/projects/<id>/relawan/<idPendaftaran>` | Terima atau tolak, badan `{"keputusan":"accepted"}` atau `"rejected"` | Pembuat project |
+| Metode dan alamat                                  | Fungsi                                                                | Akses                     |
+| -------------------------------------------------- | --------------------------------------------------------------------- | ------------------------- |
+| `POST /api/projects/<id>/relawan`                  | Mendaftar sebagai relawan, status awal `pending`                      | Pengguna yang sudah masuk |
+| `GET /api/projects/<id>/relawan`                   | Daftar pendaftar (kosong bila belum ada)                              | Pembuat project           |
+| `PATCH /api/projects/<id>/relawan/<idPendaftaran>` | Terima atau tolak, badan `{"keputusan":"accepted"}` atau `"rejected"` | Pembuat project           |
 
 Badan `POST`: `{ "dataDiri": { "nama", "telepon", "kota" }, "keahlian": [], "pengalaman": "", "jadwal": [] }`.
 Semua kolom wajib diisi; kesalahan per kolom dikembalikan pada `galat` dengan status 400.
@@ -206,11 +213,11 @@ Semua akun demo memakai password **`klimpool123`** (disimpan sebagai hash bcrypt
 
 ### Modul dan Pembagian Anggota
 
-| Modul                                                                                                                                                  | PIC  | Reviewer |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- | -------- |
-| Kerangka aplikasi, database, autentikasi (login, sesi, `requireLogin()` dan `requireRole()`), komponen bersama (navbar, footer, modal, toast), beranda | Naya | Ney      |
-| Explore (pencarian, filter, peta) dan halaman detail                                                                                                   | Ney  | -        |
-| Pembuatan campaign/project, verifikasi admin, dan My Actions (UC02–UC04, #16–22, #45) | Bryan | Sahla |
+| Modul                                                                                                                                                  | PIC   | Reviewer |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----- | -------- |
+| Kerangka aplikasi, database, autentikasi (login, sesi, `requireLogin()` dan `requireRole()`), komponen bersama (navbar, footer, modal, toast), beranda | Naya  | Ney      |
+| Explore (pencarian, filter, peta) dan halaman detail                                                                                                   | Ney   | -        |
+| Pembuatan campaign/project, verifikasi admin, dan My Actions (UC02–UC04, #16–22, #45)                                                                  | Bryan | Sahla    |
 
 Anggota lain: lengkapi baris modul masing-masing di tabel ini.
 
