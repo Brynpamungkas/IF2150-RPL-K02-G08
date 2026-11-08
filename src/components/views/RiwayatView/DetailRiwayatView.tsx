@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   DetailProgresRiwayat,
   DetailTransaksiRiwayat,
@@ -8,6 +8,7 @@ import type {
 } from '@/shared/riwayat';
 import { Modal } from '../../ui/Modal';
 import { rupiah, waktuLokal } from '../format';
+import { IkonDokumen } from './ikon';
 import { LABEL_STATUS_PELAKSANAAN, LABEL_STATUS_TRANSAKSI } from './label';
 import { mintaRiwayat } from './mintaRiwayat';
 
@@ -27,9 +28,12 @@ type Keadaan =
   | { tahap: 'siap'; detail: Detail };
 
 /**
- * C40 DetailRiwayatView (UC10, KF27). Modal rincian satu entri riwayat:
- * transaksi dari GET /api/riwayat/transaksi/[id], progres dari
- * GET /api/riwayat/progres/[id].
+ * C40 DetailRiwayatView (UC10, KF27). Modal rincian satu entri riwayat
+ * (acuan: `mHist` pada KlimPooL-prototype-final). Transaksi diambil dari
+ * GET /api/riwayat/transaksi/[id], progres dari GET /api/riwayat/progres/[id].
+ *
+ * Tombol "See use of funds", "See progress", dan "Open all updates" pada
+ * prototipe belum dipasang karena halaman detail project belum ada.
  */
 export function DetailRiwayatView({ item, onTutup }: Props) {
   const [keadaan, setKeadaan] = useState<Keadaan>({ tahap: 'memuat' });
@@ -69,11 +73,11 @@ export function DetailRiwayatView({ item, onTutup }: Props) {
     return () => kendali.abort();
   }, [item.jenis, item.id]);
 
-  const judul =
-    item.jenis === 'transaksi' ? 'Donation details' : 'Progress update';
+  // Prototipe: judul progres = nama milestone, selain itu "Activity details".
+  const judul = item.jenis === 'progres' ? item.milestone : 'Activity details';
 
   return (
-    <Modal open onClose={onTutup} title={judul} subtitle={item.id}>
+    <Modal open onClose={onTutup} title={judul}>
       {keadaan.tahap === 'memuat' ? (
         <p className="muted" role="status">
           Loading details…
@@ -88,128 +92,101 @@ export function DetailRiwayatView({ item, onTutup }: Props) {
       ) : null}
 
       {keadaan.tahap === 'siap' ? (
-        <div className="grid gap-4">
-          {keadaan.detail.jenis === 'transaksi' ? (
-            <RincianTransaksi data={keadaan.detail.data} />
-          ) : (
-            <RincianProgres data={keadaan.detail.data} />
-          )}
-          <button
-            type="button"
-            onClick={onTutup}
-            className="btn btn-primary btn-block"
-          >
-            Close
-          </button>
-        </div>
+        keadaan.detail.jenis === 'transaksi' ? (
+          <RincianTransaksi data={keadaan.detail.data} />
+        ) : (
+          <RincianProgres data={keadaan.detail.data} />
+        )
       ) : null}
     </Modal>
   );
 }
 
 function RincianTransaksi({ data }: { data: DetailTransaksiRiwayat }) {
-  const berhasil = data.statusTransaksi === 'berhasil';
-  return (
-    <>
-      <div className="grid grid-cols-2 gap-3">
-        <KotakAngka label="Amount" nilai={rupiah(data.nominal)} />
-        <KotakAngka
-          label="Status"
-          nilai={LABEL_STATUS_TRANSAKSI[data.statusTransaksi]}
-          warna={berhasil ? 'text-[#2F7D32]' : 'text-[#B3261E]'}
-        />
-      </div>
-      <DaftarRincian
-        baris={[
-          ['Transaction ID', data.idTransaksi],
-          ['Time', waktuLokal(data.tanggal)],
-          ['Donor', data.namaDonatur],
-          [
-            data.jenisTujuan === 'campaign' ? 'Campaign' : 'Action',
-            data.namaTujuan,
-          ],
-        ]}
-      />
-    </>
-  );
-}
-
-function RincianProgres({ data }: { data: DetailProgresRiwayat }) {
-  const baris: [string, ReactNode][] = [
-    ['Action', data.namaProject],
-    ['Milestone', data.milestone],
-    ['Updated', waktuLokal(data.timestampPembaruan)],
+  const baris: [string, string, string?][] = [
+    ['Transaction ID', data.idTransaksi],
+    ['Type', 'Donation'],
+    ['Recipient', data.namaTujuan],
+    ['Amount', rupiah(data.nominal)],
+    ['Time', waktuLokal(data.tanggal)],
+    [
+      'Status',
+      LABEL_STATUS_TRANSAKSI[data.statusTransaksi],
+      data.statusTransaksi === 'berhasil' ? 'text-[#2F7D32]' : 'text-[#B3261E]',
+    ],
   ];
-  if (data.danaTerpakai !== null) {
-    baris.push(['Funds used', rupiah(data.danaTerpakai)]);
-  }
-  if (data.catatan) baris.push(['Notes', data.catatan]);
 
   return (
-    <>
-      <div className="grid grid-cols-2 gap-3">
-        <KotakAngka
-          label="Status"
-          nilai={LABEL_STATUS_PELAKSANAAN[data.statusPelaksanaan]}
-        />
-        <KotakAngka
-          label="Completion"
-          nilai={data.persentase !== null ? `${data.persentase}%` : '–'}
-        />
-      </div>
-      <DaftarRincian baris={baris} />
-      {data.dokumentasi.length > 0 ? (
-        <div className="grid gap-2">
-          <h3 className="text-base font-extrabold">Documentation</h3>
-          <ul className="grid gap-1.5">
-            {data.dokumentasi.map((url, i) => (
-              <li key={url}>
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-bold text-[#3F6B3E] underline underline-offset-2 hover:text-[#2D4F2D]"
-                >
-                  File {i + 1}
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </>
-  );
-}
-
-function KotakAngka({
-  label,
-  nilai,
-  warna = 'text-[#1F2420]',
-}: {
-  label: string;
-  nilai: string;
-  warna?: string;
-}) {
-  return (
-    <div className="grid gap-1 rounded-2xl bg-[#F7F6F2] p-4">
-      <span className="text-sm font-bold text-[#4A544B]">{label}</span>
-      <strong className={`text-[20px] font-extrabold ${warna}`}>{nilai}</strong>
-    </div>
-  );
-}
-
-function DaftarRincian({ baris }: { baris: [string, ReactNode][] }) {
-  return (
-    <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 rounded-2xl bg-[#F7F6F2] p-[18px]">
-      {baris.map(([k, v]) => (
+    <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 rounded-2xl bg-[#F7F6F2] p-[18px] text-left">
+      {baris.map(([k, v, warna]) => (
         <div key={k} className="contents">
           <dt className="font-bold text-[#4A544B]">{k}</dt>
-          <dd className="m-0 text-right font-extrabold [overflow-wrap:anywhere]">
+          <dd
+            className={`m-0 break-words text-right font-extrabold ${warna ?? ''}`}
+          >
             {v}
           </dd>
         </div>
       ))}
     </dl>
   );
+}
+
+function RincianProgres({ data }: { data: DetailProgresRiwayat }) {
+  const baris: [string, string][] = [
+    ['Action', data.namaProject],
+    ['Recorded', waktuLokal(data.timestampPembaruan)],
+    ['Status', LABEL_STATUS_PELAKSANAAN[data.statusPelaksanaan]],
+  ];
+  if (data.persentase !== null)
+    baris.push(['Completion', `${data.persentase}%`]);
+  if (data.danaTerpakai !== null) {
+    baris.push(['Funds spent', rupiah(data.danaTerpakai)]);
+  }
+
+  return (
+    <div className="grid gap-3.5">
+      <div className="grid gap-2 rounded-2xl bg-[#F7F6F2] px-[18px] py-4">
+        {baris.map(([k, v]) => (
+          <div key={k} className="flex justify-between gap-2.5 text-base">
+            <span>{k}</span>
+            <b className="text-right text-[17px] [overflow-wrap:anywhere]">
+              {v}
+            </b>
+          </div>
+        ))}
+      </div>
+
+      {data.catatan ? <p>{data.catatan}</p> : null}
+
+      {data.dokumentasi.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {data.dokumentasi.map((url) => (
+            <a
+              key={url}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-[10px] border-[1.5px] border-[#DCE0D6] bg-white px-2.5 py-[5px] text-sm font-bold hover:border-[#3F6B3E]"
+            >
+              <IkonDokumen />
+              {namaBerkas(url)}
+              <span className="sr-only"> (opens in a new tab)</span>
+            </a>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** Nama berkas dari alamat dokumentasi, mis. /api/dokumentasi/P1/foto.jpg -> foto.jpg. */
+function namaBerkas(url: string): string {
+  const bagian = url.split('?')[0]?.split('/').filter(Boolean) ?? [];
+  const nama = bagian[bagian.length - 1] ?? url;
+  try {
+    return decodeURIComponent(nama);
+  } catch {
+    return nama;
+  }
 }

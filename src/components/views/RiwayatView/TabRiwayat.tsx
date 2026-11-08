@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   kelompokkanPerBulan,
@@ -9,13 +10,18 @@ import {
 } from '@/shared/riwayat';
 import { rupiah, waktuLokal } from '../format';
 import { DetailRiwayatView } from './DetailRiwayatView';
-import { LABEL_STATUS_PELAKSANAAN, LABEL_STATUS_TRANSAKSI } from './label';
+import { IkonGrafik, IkonHati } from './ikon';
+import { LABEL_STATUS_TRANSAKSI } from './label';
 import { mintaRiwayat } from './mintaRiwayat';
 
 /**
  * Isi tab Activity history pada halaman Account (bagian C39 FormRiwayatView,
- * UC10, KF27). Mengambil riwayat sekali dari GET /api/riwayat, lalu menyaring
- * dan mengelompokkan per bulan di sisi klien (I-10.12, I-10.13).
+ * UC10, KF27). Acuan: `pageDash` dan `histRow` pada KlimPooL-prototype-final.
+ * Mengambil riwayat sekali dari GET /api/riwayat, lalu menyaring dan
+ * mengelompokkan per bulan di sisi klien (I-10.12, I-10.13).
+ *
+ * Filter Top-ups dan Volunteering pada prototipe belum ditampilkan karena
+ * API riwayat (#38) baru mencakup transaksi donasi dan progres.
  */
 
 const PILIHAN_FILTER: { nilai: FilterRiwayat; label: string }[] = [
@@ -23,21 +29,6 @@ const PILIHAN_FILTER: { nilai: FilterRiwayat; label: string }[] = [
   { nilai: 'transaksi', label: 'Donations' },
   { nilai: 'progres', label: 'Progress' },
 ];
-
-const PESAN_KOSONG: Record<FilterRiwayat, { judul: string; isi: string }> = {
-  semua: {
-    judul: 'No activity yet',
-    isi: 'Your donations and progress updates from actions you organize or volunteer for will appear here.',
-  },
-  transaksi: {
-    judul: 'No donations yet',
-    isi: 'Donations you make will appear here with their transaction ID and status.',
-  },
-  progres: {
-    judul: 'No progress updates yet',
-    isi: 'Updates from actions you organize or were accepted to volunteer for will appear here.',
-  },
-};
 
 type Keadaan =
   | { tahap: 'memuat' }
@@ -73,30 +64,30 @@ export function TabRiwayat() {
   }
 
   return (
-    <div className="grid gap-6">
-      <div
-        role="group"
-        aria-label="Filter activity"
-        className="flex w-fit max-w-full flex-wrap gap-1 rounded-full border-[1.5px] border-[#DCE0D6] bg-white p-1"
-      >
-        {PILIHAN_FILTER.map(({ nilai, label }) => {
-          const aktif = filter === nilai;
-          return (
-            <button
-              key={nilai}
-              type="button"
-              aria-pressed={aktif}
-              onClick={() => setFilter(nilai)}
-              className={`min-h-[44px] rounded-full px-4 text-base font-extrabold transition-colors ${
-                aktif
-                  ? 'bg-[#3F6B3E] text-white'
-                  : 'text-[#1F2420] hover:bg-[#E5ECDC]'
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
+    <div>
+      <div className="mb-[18px] flex flex-wrap">
+        <div
+          role="group"
+          aria-label="Filter history"
+          className="inline-flex max-w-full flex-wrap rounded-full border-[1.5px] border-[#DCE0D6] bg-white p-1"
+        >
+          {PILIHAN_FILTER.map(({ nilai, label }) => {
+            const aktif = filter === nilai;
+            return (
+              <button
+                key={nilai}
+                type="button"
+                aria-pressed={aktif}
+                onClick={() => setFilter(nilai)}
+                className={`min-h-[44px] rounded-full px-4 py-2 text-[15px] font-extrabold min-[721px]:min-h-0 ${
+                  aktif ? 'bg-[#3F6B3E] text-white' : 'text-[#4A544B]'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div aria-live="polite" aria-busy={keadaan.tahap === 'memuat'}>
@@ -124,8 +115,9 @@ export function TabRiwayat() {
 
         {keadaan.tahap === 'siap' ? (
           <DaftarRiwayat
-            riwayat={saringRiwayat(keadaan.riwayat, filter)}
+            semua={keadaan.riwayat}
             filter={filter}
+            onTampilkanSemua={() => setFilter('semua')}
             onPilih={setTerpilih}
           />
         ) : null}
@@ -139,36 +131,68 @@ export function TabRiwayat() {
 }
 
 function DaftarRiwayat({
-  riwayat,
+  semua,
   filter,
+  onTampilkanSemua,
   onPilih,
 }: {
-  riwayat: ItemRiwayat[];
+  semua: ItemRiwayat[];
   filter: FilterRiwayat;
+  onTampilkanSemua: () => void;
   onPilih: (item: ItemRiwayat) => void;
 }) {
-  // tampilkanPesanRiwayatKosong (UC10 Alt 1).
-  if (riwayat.length === 0) {
-    const pesan = PESAN_KOSONG[filter];
+  // tampilkanPesanRiwayatKosong (UC10 Alt 1): pengguna belum punya riwayat sama sekali.
+  if (semua.length === 0) {
     return (
-      <div className="grid justify-items-center gap-3 rounded-[20px] border-[1.5px] border-dashed border-[#C3CBB8] bg-white px-7 py-10 text-center">
+      <div className={KELAS_KOSONG}>
         <span
           aria-hidden="true"
           className="grid size-14 place-items-center rounded-2xl bg-[#E5ECDC] text-[#3F6B3E]"
         >
-          <IkonJam />
+          <IkonGrafik />
         </span>
-        <h3 className="text-[22px] font-extrabold">{pesan.judul}</h3>
-        <p className="max-w-[52ch] text-[#4A544B]">{pesan.isi}</p>
+        <h3 className="text-[22px] font-extrabold">Your history is empty</h3>
+        <p className="max-w-[48ch] text-[#4A544B]">
+          You have not donated, volunteered, or created an action yet.
+          Everything you do will be listed here, newest first.
+        </p>
+        <Link href="/explore" className="btn btn-primary">
+          Start exploring
+        </Link>
+      </div>
+    );
+  }
+
+  const riwayat = saringRiwayat(semua, filter);
+  if (riwayat.length === 0) {
+    return (
+      <div className={KELAS_KOSONG}>
+        <h3 className="text-[22px] font-extrabold">
+          No activity in this category yet
+        </h3>
+        <button
+          type="button"
+          onClick={onTampilkanSemua}
+          className="btn btn-ghost"
+        >
+          Show everything
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="grid gap-7">
+    <div className="grid gap-3">
       {kelompokkanPerBulan(riwayat).map((kelompok) => (
-        <section key={kelompok.kunci} aria-label={kelompok.label}>
-          <h3 className="mb-3 text-[15px] font-extrabold uppercase tracking-[0.08em] text-[#4A544B]">
+        <section
+          key={kelompok.kunci}
+          aria-labelledby={`riwayat-${kelompok.kunci}`}
+          className="grid gap-3"
+        >
+          <h3
+            id={`riwayat-${kelompok.kunci}`}
+            className="mb-0.5 mt-3 text-sm font-extrabold uppercase tracking-[0.06em] text-[#4A544B]"
+          >
             {kelompok.label}
           </h3>
           <ul className="grid gap-3">
@@ -184,7 +208,10 @@ function DaftarRiwayat({
   );
 }
 
-/** pilihRiwayat: satu entri yang dapat dipilih untuk membuka detail. */
+const KELAS_KOSONG =
+  'grid justify-items-center gap-3 rounded-[20px] border-[1.5px] border-dashed border-[#C3CBB8] bg-white px-7 py-10 text-center';
+
+/** pilihRiwayat: satu entri yang dapat dipilih untuk membuka detail (histRow). */
 function BarisRiwayat({
   item,
   onPilih,
@@ -205,17 +232,17 @@ function BarisRiwayat({
       type="button"
       onClick={() => onPilih(item)}
       aria-haspopup="dialog"
-      className="flex w-full items-center gap-4 rounded-[18px] border-[1.5px] border-[#DCE0D6] bg-white px-[18px] py-4 text-left transition-colors hover:border-[#3F6B3E]"
+      className="grid w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-4 rounded-2xl border-[1.5px] border-[#DCE0D6] bg-white px-[18px] py-4 text-left hover:border-[#3F6B3E] min-[721px]:grid-cols-[auto_minmax(0,1fr)_auto]"
     >
       <span
         aria-hidden="true"
-        className="grid size-11 shrink-0 place-items-center rounded-[14px] bg-[#E5ECDC] text-[#2D4F2D]"
+        className="grid size-[46px] place-items-center rounded-[14px] bg-[#E5ECDC] text-[#2D4F2D]"
       >
         {transaksi ? <IkonHati /> : <IkonGrafik />}
       </span>
 
-      <span className="grid min-w-0 flex-1 gap-0.5">
-        <span className="font-extrabold text-[#1F2420] [overflow-wrap:anywhere]">
+      <span className="grid min-w-0">
+        <span className="text-[17px] font-extrabold text-[#1F2420] [overflow-wrap:anywhere]">
           {judul}
         </span>
         <span className="text-[15px] text-[#4A544B] [overflow-wrap:anywhere]">
@@ -223,26 +250,20 @@ function BarisRiwayat({
         </span>
       </span>
 
-      {transaksi ? (
-        <span className="grid shrink-0 justify-items-end gap-0.5">
-          <span className="text-[17px] font-extrabold text-[#B3261E]">
+      <span className="col-start-2 text-left text-[17px] font-extrabold min-[721px]:col-start-auto min-[721px]:text-right">
+        {transaksi ? (
+          <span className="text-[#B3261E] tabular-nums">
             −{rupiah(item.nominal)}
+            <small className="block text-sm font-bold text-[#4A544B]">
+              {LABEL_STATUS_TRANSAKSI[item.status]}
+            </small>
           </span>
-          <span
-            className={`text-[15px] font-extrabold ${
-              item.status === 'berhasil' ? 'text-[#1F2420]' : 'text-[#B3261E]'
-            }`}
-          >
-            {LABEL_STATUS_TRANSAKSI[item.status]}
+        ) : item.persentase !== null ? (
+          <span className="inline-flex whitespace-nowrap rounded-full bg-[#E5ECDC] px-3 py-1 text-sm font-extrabold text-[#2D4F2D]">
+            {item.persentase}% complete
           </span>
-        </span>
-      ) : (
-        <span className="shrink-0 rounded-full bg-[#E5ECDC] px-3 py-1 text-sm font-extrabold text-[#2D4F2D]">
-          {item.persentase !== null
-            ? `${item.persentase}% complete`
-            : LABEL_STATUS_PELAKSANAAN[item.statusPelaksanaan]}
-        </span>
-      )}
+        ) : null}
+      </span>
     </button>
   );
 }
@@ -253,55 +274,9 @@ function KerangkaMemuat() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className="h-[78px] animate-pulse rounded-[18px] border-[1.5px] border-[#DCE0D6] bg-[#F7F6F2] motion-reduce:animate-none"
+          className="h-[80px] animate-pulse rounded-2xl border-[1.5px] border-[#DCE0D6] bg-[#F7F6F2] motion-reduce:animate-none"
         />
       ))}
     </div>
-  );
-}
-
-function IkonHati() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="size-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinejoin="round"
-    >
-      <path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z" />
-    </svg>
-  );
-}
-
-function IkonGrafik() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="size-5"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-    >
-      <path d="M4 20h16M7 16v-4M11 16V8M15 16v-6M19 16v-2" />
-    </svg>
-  );
-}
-
-function IkonJam() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      className="size-7"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-    >
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="M12 7v5l3.2 2" />
-    </svg>
   );
 }
