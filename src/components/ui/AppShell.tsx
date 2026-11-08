@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { Suspense, useState, type ReactNode } from 'react';
 import type { NavUser } from '@/shared/types';
 import { Footer } from './Footer';
 import { Modal } from './Modal';
@@ -28,16 +28,28 @@ function Shell({
 
   return (
     <>
-      <Navbar
-        user={user}
-        onLoginClick={() => setModal('login')}
-        onSignupClick={() => setModal('register')}
-        onTopupClick={() => setModal('topup')}
-        // TODO(#14): panggil logout sungguhan (akhiriSesi)
-        onLogoutClick={() =>
-          showToast('Logout belum tersambung (issue #14).', 'info')
+      <Suspense
+        fallback={
+          <div className="nav-shell" role="status">
+            <div className="wrap">
+              <div className="nav">
+                <span className="small muted">Loading navigation…</span>
+              </div>
+            </div>
+          </div>
         }
-      />
+      >
+        <Navbar
+          user={user}
+          onLoginClick={() => setModal('login')}
+          onSignupClick={() => setModal('register')}
+          onTopupClick={() => setModal('topup')}
+          // TODO(#14): panggil logout sungguhan (akhiriSesi)
+          onLogoutClick={() =>
+            showToast('Logout belum tersambung (issue #14).', 'info')
+          }
+        />
+      </Suspense>
       <main className="flex-1">{children}</main>
       <Footer />
 
