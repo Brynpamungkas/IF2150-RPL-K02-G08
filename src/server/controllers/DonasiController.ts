@@ -2,7 +2,13 @@ import { adalahJenisTujuan, type PermintaanDonasi } from '@/shared/donasi';
 import { GalatAplikasi } from '@/shared/galatDonasi';
 import { AutentikasiService } from '../services/AutentikasiService';
 import { DonasiService } from '../services/DonasiService';
-import { bacaJson, gagal, pesanDariGalat, sukses } from './respons';
+import {
+  bacaJson,
+  gagal,
+  pesanDariGalat,
+  sukses,
+  TANPA_CACHE,
+} from './respons';
 
 const PESAN_MAKS = 200;
 const ID_MAKS = 36; // VARCHAR(36) pada id_campaign / id_project
@@ -80,9 +86,11 @@ export const DonasiController = {
       const { idPengguna } = await AutentikasiService.wajibLogin();
       return sukses(
         await DonasiService.getBuktiTransaksi(idPengguna, idTransaksi),
+        200,
+        TANPA_CACHE,
       );
     } catch (e) {
-      return gagal(e);
+      return gagal(e, TANPA_CACHE);
     }
   },
 

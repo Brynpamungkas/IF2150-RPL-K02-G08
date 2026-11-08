@@ -342,3 +342,99 @@ describe('Donasi atomik (integrasi MySQL)', () => {
     );
   });
 });
+
+describe('Bukti transaksi (KF17, issue #28)', () => {
+  const jumlahBukti = (idTransaksi: string) =>
+    angka('SELECT COUNT(*) FROM bukti_transaksi WHERE id_transaksi = ?', [
+      idTransaksi,
+    ]);
+
+  it('dibuat otomatis setelah donasi dan memuat isi AC1', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    await aturSaldo(ID.donatur, 50_000);
+    const sebelum = Date.now();
+    const h = await DonasiService.prosesDonasi(
+      ID.donatur,
+      minta('project', ID.projectBuka, 20_000),
+    );
+
+    // Otomatis: baris bukti sudah ada tanpa memanggil getBuktiTransaksi.
+    assert.equal(await jumlahBukti(h.idTransaksi), 1);
+
+    const b = await DonasiService.getBuktiTransaksi(ID.donatur, h.idTransaksi);
+    assert.equal(b.idTransaksi, h.idTransaksi);
+    assert.equal(b.rincian.namaDonatur, 'Donatur Uji');
+    assert.equal(b.rincian.namaTujuan, 'Project Uji');
+    assert.equal(b.rincian.jenisTujuan, 'project');
+    assert.equal(b.rincian.nominal, 20_000);
+    const waktu = Date.parse(b.rincian.tanggal);
+    assert.ok(Number.isFinite(waktu), 'tanggal ISO valid');
+    assert.ok(Math.abs(waktu - sebelum) < 60_000, 'waktu sesuai donasi');
+  });
+
+  it('AC2: bukan pemilik dan id tidak ada mendapat galat yang sama', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    await aturSaldo(ID.donatur, 10_000);
+    const h = await DonasiService.prosesDonasi(
+      ID.donatur,
+      minta('project', ID.projectBuka, 10_000),
+    );
+    assert.equal(
+      await kodeGalat(
+        DonasiService.getBuktiTransaksi(ID.donaturLain, h.idTransaksi),
+      ),
+      'TIDAK_DITEMUKAN',
+    );
+    assert.equal(
+      await kodeGalat(
+        DonasiService.getBuktiTransaksi(ID.donatur, `tidak-ada-${akhiran}`),
+      ),
+      'TIDAK_DITEMUKAN',
+    );
+  });
+
+  it('bukti yang hilang dibuat ulang tanpa duplikat walau diminta bersamaan', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    await aturSaldo(ID.donatur, 10_000);
+    const h = await DonasiService.prosesDonasi(
+      ID.donatur,
+      minta('project', ID.projectBuka, 10_000),
+    );
+    await execute('DELETE FROM bukti_transaksi WHERE id_transaksi = ?', [
+      h.idTransaksi,
+    ]);
+
+    const [a, b] = await Promise.all([
+      DonasiService.getBuktiTransaksi(ID.donatur, h.idTransaksi),
+      DonasiService.getBuktiTransaksi(ID.donatur, h.idTransaksi),
+    ]);
+    assert.equal(a.rincian.nominal, 10_000);
+    assert.equal(b.rincian.nominal, 10_000);
+    assert.equal(await jumlahBukti(h.idTransaksi), 1);
+  });
+
+  it('rincian adalah snapshot: tidak berubah bila nama tujuan diubah', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    await aturSaldo(ID.donatur, 10_000);
+    const h = await DonasiService.prosesDonasi(
+      ID.donatur,
+      minta('project', ID.projectBuka, 10_000),
+    );
+    await execute('UPDATE project SET nama = ? WHERE id_project = ?', [
+      'Nama Baru',
+      ID.projectBuka,
+    ]);
+    try {
+      const b = await DonasiService.getBuktiTransaksi(
+        ID.donatur,
+        h.idTransaksi,
+      );
+      assert.equal(b.rincian.namaTujuan, 'Project Uji');
+    } finally {
+      await execute('UPDATE project SET nama = ? WHERE id_project = ?', [
+        'Project Uji',
+        ID.projectBuka,
+      ]);
+    }
+  });
+});

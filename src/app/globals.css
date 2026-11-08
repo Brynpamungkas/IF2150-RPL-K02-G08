@@ -777,3 +777,64 @@ footer .brand {
     display: none;
   }
 }
+
+/* ---------- Cetak bukti ---------- */
+.lembar-cetak {
+  display: none;
+}
+
+@media print {
+  /* Bila ada lembar bukti, cetak HANYA lembar itu (lihat LembarCetakBukti.tsx). */
+  body:has(> .lembar-cetak) > *:not(.lembar-cetak) {
+    display: none !important;
+  }
+  body:has(> .lembar-cetak) {
+    background: #fff;
+    overflow: visible !important;
+  }
+  .lembar-cetak {
+    display: block;
+    color: #000;
+    font-size: 12pt;
+    max-width: 16cm;
+    margin: 0 auto;
+  }
+  .lembar-cetak header {
+    border-bottom: 1pt solid #000;
+    padding-bottom: 8pt;
+  }
+  .lembar-cetak .lembar-merek {
+    font-family: var(--font-lora), Georgia, serif;
+    font-weight: 600;
+    font-size: 18pt;
+    margin: 0;
+  }
+  .lembar-cetak h1 {
+    font-size: 14pt;
+    font-weight: 700;
+    margin: 4pt 0 0;
+  }
+  .lembar-cetak dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6pt 16pt;
+    margin: 12pt 0;
+  }
+  .lembar-cetak dt {
+    font-weight: 700;
+  }
+  .lembar-cetak dd {
+    margin: 0;
+    text-align: right;
+    word-break: break-word;
+  }
+  .lembar-cetak .lembar-catatan {
+    font-size: 9pt;
+    color: #444;
+    border-top: 1pt solid #999;
+    padding-top: 6pt;
+  }
+}
+@page {
+  margin: 18mm;
+}
