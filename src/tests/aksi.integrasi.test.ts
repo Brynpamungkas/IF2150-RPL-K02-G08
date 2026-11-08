@@ -34,7 +34,7 @@ const data = {
   kriteriaRelawan: 'Siap berkegiatan',
   kuotaRelawan: 5,
   lokasiKumpul: 'Balai desa',
-  rincianDana: [{ label: 'Peralatan', nominal: 10000 }],
+  rincianDana: [{ uraian: 'Peralatan', nominal: 10000 }],
 };
 function request(id?: string, badan?: unknown, extra?: Record<string, string>) {
   return new Request('http://localhost/api/test', {

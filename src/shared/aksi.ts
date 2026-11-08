@@ -11,7 +11,7 @@ export const LABEL_STATUS_AKSI: Record<StatusAksi, string> = {
 };
 
 export interface RincianDana {
-  label: string;
+  uraian: string;
   nominal: number;
 }
 
