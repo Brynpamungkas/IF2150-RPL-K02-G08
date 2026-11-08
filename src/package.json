@@ -12,6 +12,8 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "test": "node --env-file-if-exists=.env --import tsx --test \"tests/**/*.test.ts\"",
+    "test:aksi": "node --env-file-if-exists=.env --import tsx --test tests/aksi.akses.test.ts tests/aksi.validasi.test.ts tests/aksi.integrasi.test.ts",
+    "test:aksi:browser": "node scripts/aksi.browser.mjs",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d"
