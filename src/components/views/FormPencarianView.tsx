@@ -13,7 +13,6 @@ import {
 import { IkonCari } from '@/components/ui/Ikon';
 
 interface FormPencarianViewProps {
-  /** isi kolom pencarian */
   teks: string;
   onTeks: (teks: string) => void;
   onCari: () => void;

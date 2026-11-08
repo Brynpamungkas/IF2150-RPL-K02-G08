@@ -11,6 +11,8 @@ import {
   letakPopup,
 } from '@/shared/peta';
 import {
+  adaKoordinat,
+  type ItemBerkoordinat,
   fotoAksi,
   hrefDetail,
   persenBatang,
@@ -28,14 +30,6 @@ interface FormPetaWilayahViewProps {
   onPilih: (id: string | null) => void;
 }
 
-interface ItemBerpin extends ItemKatalog {
-  latitude: number;
-  longitude: number;
-}
-
-const adaKoordinat = (i: ItemKatalog): i is ItemBerpin =>
-  i.latitude !== null && i.longitude !== null;
-
 export function FormPetaWilayahView({
   hasil,
   terpilihId,
@@ -43,7 +37,7 @@ export function FormPetaWilayahView({
   onPilih,
 }: FormPetaWilayahViewProps) {
   const pin = useMemo(
-    () => hasil.filter((i) => i.terbukaDonasi).filter(adaKoordinat),
+    () => hasil.filter(adaKoordinat),
     [hasil],
   );
   const posisi = useMemo(
@@ -138,7 +132,7 @@ function PopupPin({
   posisi,
   onTutup,
 }: {
-  item: ItemBerpin;
+  item: ItemBerkoordinat;
   posisi: [number, number];
   onTutup: () => void;
 }) {
