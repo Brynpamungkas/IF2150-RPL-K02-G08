@@ -193,6 +193,6 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 08-11-2026 | Bryan | Implementasi lokal UC02–UC04 dan komponen My Actions (#16–22, #45), commit per bagian; pengujian validasi/akses/database/browser; pemeriksaan PR #52–56 dengan bantuan alat yang dicatat pada deklarasi penggunaan AI | Belum dicatat | Implementasi lokal dan tes fitur tersedia; menunggu review/UAT manusia dan integrasi tim | UI login/detail/progres serta penyatuan slot Account belum terintegrasi di basis branch; build basis terhambat prerender halaman donasi |
 
-**Catatan/Evaluasi Milestone 9:** Hasil dan batas pengujian ada pada [Implementasi Aksi](M9/IMPLEMENTASI-AKSI.md). Durasi, persentase kontribusi, dan validasi manusia tidak diperkirakan oleh alat; perlu dikonfirmasi anggota terkait. Belum ada push/merge branch implementasi ini.
+**Catatan/Evaluasi Milestone 9:** Hasil dan batas pengujian ada pada [Implementasi Aksi](M9/IMPLEMENTASI-AKSI.md). Durasi, persentase kontribusi, dan validasi manusia tidak diperkirakan oleh alat; perlu dikonfirmasi anggota terkait. Delapan branch sudah dipush pada tahap awal, lalu riwayat ditata ulang dengan izin Bryan dan cadangan dipertahankan. Pengajuan PR serta request review mengikuti [Pembagian Branch Aksi](M9/BRANCH-AKSI.md); belum ada merge implementasi ini.
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``

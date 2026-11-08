@@ -1,7 +1,7 @@
 # Implementasi Aksi — UC02, UC03, UC04
 
-PIC: Bryan. Reviewer yang ditugaskan: Sahla. Branch lokal: `feat/aksi-pembuat`.
-Basis implementasi: `develop` commit `6c3b021`. Perubahan belum dipush/merge.
+PIC: Bryan. Reviewer yang ditugaskan: Sahla (`shlanailah`). Acuan versi lengkap: `docs/aksi-m9`; cadangan implementasi awal: `feat/aksi-pembuat`.
+Basis implementasi: `develop` commit `6c3b021`. Delapan branch fitur sudah dipush pada tahap awal; penataan ulang riwayat dan pengajuan PR dilakukan atas izin Bryan. Belum ada merge implementasi ini. Peta branch, jumlah commit, dan base PR ada di [Pembagian Branch Aksi](BRANCH-AKSI.md).
 
 ## Cakupan dan keterlacakan
 
