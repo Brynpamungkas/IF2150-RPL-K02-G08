@@ -53,9 +53,13 @@ export function wajibPeranAksi(
 /** Cookie bukan bukti persetujuan lintas situs. API non-browser tetap dapat memakai sesi. */
 export function periksaAsalAksi(request: Request): void {
   const asal = request.headers.get('origin');
+  const url = new URL(request.url);
+  // Next dapat menormalisasi hostname internal (localhost) berbeda dari Host browser.
+  // Host berasal dari request HTTP; jangan percaya X-Forwarded-Host dari klien.
+  const asalDiharapkan = `${url.protocol}//${request.headers.get('host') ?? url.host}`;
   if (
     request.headers.get('sec-fetch-site') === 'cross-site' ||
-    (asal !== null && asal !== new URL(request.url).origin)
+    (asal !== null && asal !== asalDiharapkan)
   ) {
     throw new GalatValidasi('Asal permintaan tidak diizinkan.', 403);
   }
