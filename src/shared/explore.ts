@@ -108,6 +108,14 @@ export function bacaFilterUrl(
 }
 
 /** query string untuk alamat halaman (hanya filter yang aktif). */
+export function selarasFilter(
+  sekarang: FilterExplore,
+  params: Record<string, string | string[] | undefined>,
+): FilterExplore | null {
+  const dariUrl = bacaFilterUrl(params);
+  return keQueryUrl(dariUrl) === keQueryUrl(sekarang) ? null : dariUrl;
+}
+
 export function keQueryUrl(filter: FilterExplore): string {
   const p = new URLSearchParams();
   if (filter.q.trim()) p.set('q', filter.q.trim());
@@ -138,6 +146,15 @@ export function keQueryApi(
 }
 
 /** true bila ada filter atau kata kunci yang aktif (menampilkan tombol Clear all filters). */
+export interface ItemBerkoordinat extends ItemKatalog {
+  latitude: number;
+  longitude: number;
+}
+
+
+export const adaKoordinat = (i: ItemKatalog): i is ItemBerkoordinat =>
+  i.latitude !== null && i.longitude !== null;
+
 export function adaFilter(filter: FilterExplore): boolean {
   return Boolean(
     filter.q.trim() ||
