@@ -6,7 +6,7 @@ import { Field } from '@/components/ui/Field';
 import { useSesi } from '@/components/ui/SesiContext';
 import { useToast } from '@/components/ui/Toast';
 import type { PenggunaDto } from '@/shared/dto';
-import { panggilApi } from './panggilApi';
+import { kirimJson } from './panggilApi';
 
 const PASSWORD_DEMO = 'klimpool123';
 const AKUN_DEMO = [
@@ -36,13 +36,13 @@ export function FormLoginView({
   async function masuk(emailMasuk: string, passwordMasuk: string) {
     setMengirim(true);
     setGalat(null);
-    const res = await panggilApi<PenggunaDto>('/api/auth/masuk', 'POST', {
+    const res = await kirimJson<PenggunaDto>('/api/auth/masuk', {
       email: emailMasuk,
       password: passwordMasuk,
     });
     setMengirim(false);
     if (!res.ok) {
-      setGalat({ pesan: res.galat.pesan, bidang: res.galat.bidang });
+      setGalat({ pesan: res.pesan, bidang: res.bidang });
       return;
     }
     setPengguna(res.data);

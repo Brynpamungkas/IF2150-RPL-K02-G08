@@ -6,7 +6,7 @@ import { Field } from '@/components/ui/Field';
 import { useSesi } from '@/components/ui/SesiContext';
 import { useToast } from '@/components/ui/Toast';
 import type { PenggunaDto } from '@/shared/dto';
-import { panggilApi } from './panggilApi';
+import { kirimJson } from './panggilApi';
 
 interface Galat {
   pesan: string;
@@ -39,18 +39,18 @@ export function FormPendaftaranView({
     setMengirim(true);
     setGalat(null);
 
-    const daftar = await panggilApi<PenggunaDto>(
-      '/api/auth/daftar',
-      'POST',
-      nilai,
-    );
+    const daftar = await kirimJson<PenggunaDto>('/api/auth/daftar', nilai);
     if (!daftar.ok) {
       setMengirim(false);
-      setGalat(daftar.galat);
+      setGalat({
+        kode: daftar.kode,
+        pesan: daftar.pesan,
+        bidang: daftar.bidang,
+      });
       return;
     }
 
-    const masuk = await panggilApi<PenggunaDto>('/api/auth/masuk', 'POST', {
+    const masuk = await kirimJson<PenggunaDto>('/api/auth/masuk', {
       email: nilai.email,
       password: nilai.password,
     });

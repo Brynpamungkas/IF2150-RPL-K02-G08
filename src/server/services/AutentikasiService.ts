@@ -48,6 +48,21 @@ export class AutentikasiService {
     this.dep = { ...bawaan(), ...dep };
   }
 
+  /**
+   * Kontrak yang dipakai alur donasi (DonasiController): id pengguna pemilik
+   * token sesi, atau galat BELUM_LOGIN bila token kosong, tidak dikenal,
+   * berakhir, kedaluwarsa, atau akun nonaktif.
+   */
+  static async wajibLogin(
+    tokenSesi: string | null,
+  ): Promise<{ idPengguna: string }> {
+    const pengguna = await new AutentikasiService().penggunaDariSesi(
+      tokenSesi ?? undefined,
+    );
+    if (!pengguna) throw new GalatAplikasi('BELUM_LOGIN');
+    return { idPengguna: pengguna.idPengguna };
+  }
+
   /** Daftar akun baru berperan volunteer. */
   async daftarAkun(masukan: MasukanDaftarDto): Promise<PenggunaUmum> {
     validasiKelengkapanInput(masukan.nama, masukan.email, masukan.password);

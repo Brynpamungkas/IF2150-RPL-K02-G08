@@ -46,25 +46,42 @@ export function getPool(): Pool {
   return globalForDb.klimpoolPool;
 }
 
-/** Menjalankan SELECT dan mengembalikan baris. */
+/**
+ * Menjalankan SELECT dan mengembalikan baris.
+ * Isi `conn` (dari withTransaction) agar query ikut transaksi yang sedang berjalan.
+ */
 export async function query<T extends RowDataPacket = RowDataPacket>(
   sql: string,
   params: unknown[] = [],
+  conn?: PoolConnection,
 ): Promise<T[]> {
-  const [rows] = await getPool().query<T[]>(sql, params);
+  const [rows] = await (conn ?? getPool()).query<T[]>(sql, params);
   return rows;
 }
 
-/** Menjalankan INSERT/UPDATE/DELETE dan mengembalikan ringkasan (affectedRows, dst.). */
+/**
+ * Menjalankan INSERT/UPDATE/DELETE dan mengembalikan ringkasan (affectedRows, dst.).
+ * Isi `conn` (dari withTransaction) agar query ikut transaksi yang sedang berjalan.
+ */
 export async function execute(
   sql: string,
   params: unknown[] = [],
+  conn?: PoolConnection,
 ): Promise<ResultSetHeader> {
-  const [result] = await getPool().execute<ResultSetHeader>(
+  const [result] = await (conn ?? getPool()).execute<ResultSetHeader>(
     sql,
     params as never[],
   );
   return result;
+}
+
+/** true bila galat berasal dari pelanggaran unique index (ER_DUP_ENTRY). */
+export function adalahKunciGanda(e: unknown): boolean {
+  return (
+    typeof e === 'object' &&
+    e !== null &&
+    (e as { code?: unknown }).code === 'ER_DUP_ENTRY'
+  );
 }
 
 /**

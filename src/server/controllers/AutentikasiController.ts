@@ -1,9 +1,8 @@
 import { cookies } from 'next/headers';
-import type { NextResponse } from 'next/server';
 import { NAMA_COOKIE_SESI, opsiCookieSesi } from '@/server/sesi';
 import { AutentikasiService } from '@/server/services/AutentikasiService';
-import type { PenggunaDto, ResponsApi } from '@/shared/dto';
-import { bacaJson, gagal, sukses, teks } from './respons';
+import type { PenggunaDto } from '@/shared/dto';
+import { bacaObjek, gagal, sukses, teks } from './respons';
 
 /** C16 AutentikasiController */
 export class AutentikasiController {
@@ -11,9 +10,9 @@ export class AutentikasiController {
 
   async daftarAkun(
     request: Request,
-  ): Promise<NextResponse<ResponsApi<PenggunaDto>>> {
+  ): Promise<Response> {
     try {
-      const b = await bacaJson(request);
+      const b = await bacaObjek(request);
       const pengguna = await this.service.daftarAkun({
         nama: teks(b.nama),
         email: teks(b.email),
@@ -27,9 +26,9 @@ export class AutentikasiController {
 
   async login(
     request: Request,
-  ): Promise<NextResponse<ResponsApi<PenggunaDto>>> {
+  ): Promise<Response> {
     try {
-      const b = await bacaJson(request);
+      const b = await bacaObjek(request);
       const { sesi, pengguna } = await this.service.login({
         email: teks(b.email),
         password: teks(b.password),
@@ -42,7 +41,7 @@ export class AutentikasiController {
     }
   }
 
-  async logout(): Promise<NextResponse<ResponsApi<null>>> {
+  async logout(): Promise<Response> {
     try {
       const jar = await cookies();
       await this.service.logout(jar.get(NAMA_COOKIE_SESI)?.value);
@@ -54,7 +53,7 @@ export class AutentikasiController {
   }
 
   /** Pengguna yang sedang login (null bila tamu), untuk menggambar navbar. */
-  async saya(): Promise<NextResponse<ResponsApi<PenggunaDto | null>>> {
+  async saya(): Promise<Response> {
     try {
       const jar = await cookies();
       const pengguna = await this.service.penggunaDariSesi(

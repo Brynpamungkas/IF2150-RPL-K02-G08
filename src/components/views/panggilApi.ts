@@ -1,27 +1,31 @@
-import type { ResponsApi } from '@/shared/dto';
+import type { ApiHasil } from '@/shared/dto';
+import { PESAN_GALAT } from '@/shared/galat';
 
-/** Satu-satunya jalan dari View ke server. Tidak pernah melempar galat. */
+/**
+ * Satu-satunya jalan View ke server (batas Client-Server).
+ * Kegagalan jaringan diubah menjadi galat GAGAL_KONEKSI agar View bisa menawarkan "Coba lagi".
+ */
 export async function panggilApi<T>(
   url: string,
-  metode: 'GET' | 'POST' = 'GET',
-  isi?: unknown,
-): Promise<ResponsApi<T>> {
+  init?: RequestInit,
+): Promise<ApiHasil<T>> {
   try {
-    const res = await fetch(url, {
-      method: metode,
-      headers:
-        isi === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: isi === undefined ? undefined : JSON.stringify(isi),
-      cache: 'no-store',
-    });
-    return (await res.json()) as ResponsApi<T>;
+    const res = await fetch(url, { credentials: 'same-origin', ...init });
+    return (await res.json()) as ApiHasil<T>;
   } catch {
     return {
       ok: false,
-      galat: {
-        kode: 'JARINGAN',
-        pesan: 'Cannot reach the server. Check your connection.',
-      },
+      kode: 'GAGAL_KONEKSI',
+      pesan: PESAN_GALAT.GAGAL_KONEKSI,
     };
   }
+}
+
+/** POST dengan body JSON lewat panggilApi (form login dan daftar). */
+export function kirimJson<T>(url: string, isi: unknown): Promise<ApiHasil<T>> {
+  return panggilApi<T>(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(isi),
+  });
 }

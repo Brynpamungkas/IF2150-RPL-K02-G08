@@ -27,7 +27,7 @@ function Shell({ children }: { children: ReactNode }) {
     : null;
 
   async function keluar() {
-    await panggilApi('/api/auth/keluar', 'POST');
+    await panggilApi('/api/auth/keluar', { method: 'POST' });
     setPengguna(null);
     showToast("You're logged out.");
     router.push('/');
