@@ -103,7 +103,8 @@ export function FormAksi({ jenis, aksi }: { jenis: JenisAksi; aksi?: Aksi }) {
   const [rincian, setRincian] = useState(
     () =>
       aksi?.rincianDana.map((r) => ({
-        label: r.label,
+        label:
+          'uraian' in r && typeof r.uraian === 'string' ? r.uraian : r.label,
         nominal: String(r.nominal),
       })) ?? [],
   );
