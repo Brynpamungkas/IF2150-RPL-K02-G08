@@ -20,6 +20,11 @@ assert.match(
   'DB_NAME wajib database khusus test.',
 );
 const port = process.env.AKSI_TEST_PORT || '3196';
+const serverMode = process.env.AKSI_TEST_SERVER_MODE || 'dev';
+assert.ok(
+  ['dev', 'production'].includes(serverMode),
+  'AKSI_TEST_SERVER_MODE harus dev atau production.',
+);
 const base = `http://127.0.0.1:${port}`;
 const stamp = randomUUID().slice(0, 8);
 const ids = ['owner', 'other', 'admin', 'volunteer'].map(
@@ -69,7 +74,7 @@ async function start() {
     process.execPath,
     [
       'node_modules/next/dist/bin/next',
-      'dev',
+      serverMode === 'production' ? 'start' : 'dev',
       '--hostname',
       '127.0.0.1',
       '--port',
@@ -154,7 +159,29 @@ async function run() {
       ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH }
       : {}),
   });
+  const opsi = await fetch(`${base}/api/katalog/opsi`);
+  assert.equal(
+    opsi.status,
+    200,
+    'Opsi katalog harus membaca DB pada runtime, bukan respons gagal saat build.',
+  );
+  assert.ok(Array.isArray((await opsi.json()).provinsi));
+  const katalog = await fetch(`${base}/api/katalog?halaman=1&batas=50`);
+  assert.equal(katalog.status, 200);
+  assert.ok(Array.isArray((await katalog.json()).data));
+  assert.equal(
+    (await fetch(`${base}/api/donasi/form?jenis=project&id=review`)).status,
+    401,
+    'API donasi tamu memberi 401 saat runtime, bukan 500 akibat prerender.',
+  );
   const guest = await pageFor();
+  await guest.goto(`${base}/donasi/project/review`);
+  await guest
+    .getByRole('heading', { name: 'Support this action', exact: true })
+    .waitFor();
+  await guest
+    .getByRole('button', { name: 'Donate now', exact: true })
+    .waitFor();
   await guest.goto(`${base}/start`);
   await guest.getByRole('alert').filter({ hasText: 'login' }).waitFor();
   assert.equal(await guest.locator('form').count(), 0);
@@ -219,6 +246,13 @@ async function run() {
     await outsider.getByText('Deskripsi aksi browser', { exact: true }).count(),
     0,
   );
+  const draftPanel = await openAccountActions(page);
+  const draftCard = draftPanel
+    .getByRole('article')
+    .filter({ hasText: `Campaign ${stamp}` });
+  await draftCard.getByText('Campaign · Draft', { exact: true }).waitFor();
+  await draftCard.getByRole('link', { name: 'Kelola', exact: true }).click();
+  assert.equal(await waitManage(page, 'campaign'), campaignId);
   await submitAction(page);
 
   const reviewer = await pageFor(admin);
@@ -266,6 +300,11 @@ async function run() {
     await outsider.getByText(`Campaign ${stamp}`, { exact: true }).count(),
     0,
     'Account pengguna lain tidak mendapat daftar pemilik.',
+  );
+  assert.equal(
+    (await outsider.content()).includes(campaignId),
+    false,
+    'Payload HTML/Flight Account pengguna lain tidak memuat ID aksi privat.',
   );
   const guestPanel = await openAccountActions(guest);
   await guestPanel
@@ -323,6 +362,17 @@ async function run() {
     .filter({ hasText: `Project revisi ${stamp}` })
     .getByRole('link', { name: 'Progres', exact: true })
     .waitFor();
+  const publishedPanel = await openAccountActions(page);
+  await publishedPanel
+    .getByRole('article')
+    .filter({ hasText: `Project revisi ${stamp}` })
+    .getByText('Project · Terpublikasi', { exact: true })
+    .waitFor();
+  await publishedPanel
+    .getByRole('article')
+    .filter({ hasText: `Campaign ${stamp}` })
+    .getByText('Campaign · Terpublikasi', { exact: true })
+    .waitFor();
   const [rows] = await db.execute(
     'SELECT id_project FROM project WHERE id_pembuat = ?',
     [owner],
@@ -376,6 +426,7 @@ async function run() {
   console.log(
     JSON.stringify({
       passed: true,
+      serverMode,
       scenarios: [
         'akses sesi/peran/pemilik',
         'validasi inline',
