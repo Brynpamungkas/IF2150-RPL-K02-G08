@@ -1,7 +1,7 @@
 # Implementasi Aksi — UC02, UC03, UC04
 
-PIC: Bryan. Reviewer yang ditugaskan: Sahla (`shlanailah`). Acuan versi lengkap: `docs/aksi-m9`; cadangan implementasi awal: `feat/aksi-pembuat`.
-Basis implementasi: `develop` commit `6c3b021`. Delapan branch fitur sudah dipush pada tahap awal; penataan ulang riwayat dan pengajuan PR dilakukan atas izin Bryan. Belum ada merge implementasi ini. Peta branch, jumlah commit, dan base PR ada di [Pembagian Branch Aksi](BRANCH-AKSI.md).
+PIC: Bryan. Reviewer yang ditugaskan: Sahla (`shlanailah`). Acuan lanjutan lengkap: `fix/runtime-suspense`; cadangan implementasi awal tetap `feat/aksi-pembuat`.
+Implementasi awal berbasis `6c3b021` sudah diajukan pada PR #66–73 dan berstatus approved/merged di GitHub. Namun sebagian hasil masih berada pada branch parent, bukan `develop`. Lanjutan ini berbasis `develop` `a562a6f`, membawa kembali stack yang sudah disetujui ke branch integrasi lokal, kemudian menyambungkan Account dan memperbaiki batas rendering. Branch lanjutan belum dipush/merge ke branch tim. Peta branch ada di [Pembagian Branch Aksi](BRANCH-AKSI.md).
 
 ## Cakupan dan keterlacakan
 
@@ -10,7 +10,7 @@ Basis implementasi: `develop` commit `6c3b021`. Delapan branch fitur sudah dipus
 | #16–17, KF05–KF07, UC02 | Campaign Draft, form lengkap, galat per kolom, notifikasi ID dan tautan detail privat | Validasi nominal/periode/teks, API database, browser create/retry/preview |
 | #18–19, KF08–KF10, UC03 | Project dua tahap; informasi pertama menghasilkan ID; Back mempertahankan isian; tahap lengkap menyimpan kebutuhan/jadwal/titik kumpul | API tahap awal/lengkap, browser Back tanpa ID ganda, kebutuhan dana nol |
 | #20–22, KF11–KF12, UC04 | Pengajuan pemilik, antrean admin, persetujuan, penolakan beralasan, revisi/pengajuan ulang | Peran/pemilik/sesi/asal request, transisi, dua keputusan bersamaan, browser |
-| #45 | Komponen `MyActions`, daftar milik sendiri, empat status, alasan penolakan, Kelola/Ajukan Ulang/Progres | Isolasi pemilik pada API; browser status, alasan, pengajuan ulang dan keberadaan tautan Progres |
+| #45 | `TabMyActions` pada slot Account: daftar dari sesi server, empat status, alasan, Kelola/Ajukan Ulang; rute mandiri tetap tersedia | Browser Account untuk pemilik/tamu/volunteer/admin/sesi kedaluwarsa, empat status, refresh tab, isolasi HTML/Flight; tautan Progres saja |
 
 Komponen dan kontrak:
 
@@ -28,7 +28,8 @@ Komponen dan kontrak:
 | `/start?type=campaign` | Pembuat Project; membuat campaign Draft |
 | `/start?type=project` | Pembuat Project; formulir project dua tahap |
 | `/manage/[jenis]/[id]` | Pemilik; preview privat, edit Draft/Ditolak, pengajuan |
-| `/my-actions` | Pembuat Project; daftar aksi milik sendiri sementara menunggu integrasi slot Account |
+| `/account` → My actions | Slot Account memakai sesi server; pemilik melihat daftar, tamu/sesi usang mendapat pesan login, peran lain mendapat penjelasan |
+| `/my-actions` | Daftar mandiri milik Pembuat Project, tetap kompatibel setelah slot Account dipasang |
 | `/admin` | Admin; hanya antrean Menunggu Verifikasi |
 | `/admin/pengajuan/[jenis]/[id]` | Admin; detail dan keputusan |
 
@@ -112,9 +113,19 @@ npx playwright install chromium
 npm run test:aksi:browser
 ```
 
-Skrip browser membaca DB_* dan `AKSI_TEST_DB=1`, menyalakan Next dev di `127.0.0.1:3196`, membuat sesi uji sah, menjalankan UI/API/database asli tanpa API mock, lalu membersihkan fixture dan menghentikan server Next. Opsi: `AKSI_TEST_PORT`, `AKSI_BROWSER_LOG`, `PLAYWRIGHT_MODULE` (modul yang sudah terpasang di luar repo), dan `PLAYWRIGHT_EXECUTABLE_PATH` (binary Chromium yang sudah tersedia).
+Skrip browser membaca DB_* dan `AKSI_TEST_DB=1`, menyalakan Next dev di `127.0.0.1:3196`, membuat sesi uji sah, menjalankan UI/API/database asli, lalu membersihkan fixture dan menghentikan server Next. Skenario kegagalan jaringan sengaja membatalkan satu request; respons sukses dan data tetap dari API/database asli. Opsi: `AKSI_TEST_PORT`, `AKSI_BROWSER_LOG`, `PLAYWRIGHT_MODULE`, dan `PLAYWRIGHT_EXECUTABLE_PATH`.
 
-### Hasil lokal, 8 November 2026
+Untuk menguji **build produksi**, bangun tanpa kredensial fixture lalu jalankan dengan koneksi database uji:
+
+```sh
+npm run build
+# DB_*, AKSI_TEST_DB=1, dan Playwright tetap harus tersedia seperti di atas.
+AKSI_TEST_SERVER_MODE=production npm run test:aksi:browser
+```
+
+Mode ini menjalankan `next start`, bukan `next dev`. Nilai `AKSI_TEST_SERVER_MODE` lain selain `dev` dan `production` ditolak. Skrip juga mengecek API katalog/opsi serta respons 401 donasi tamu pada runtime, agar kegagalan prerender tidak dianggap keberhasilan API.
+
+### Hasil awal, 8 November 2026 (historis, sebelum integrasi)
 
 - 15 tes fitur lulus: 6 validasi, 3 akses/asal request, 6 integrasi database; tidak ada skip pada run integrasi.
 - Browser Chromium lulus: validasi inline, retry jaringan tanpa kehilangan isian, privasi pemilik, campaign ditolak/diajukan ulang/publik, project dua tahap/Back/satu ID/publik, My Actions, keberadaan tautan Progres, form mobile 375px.
@@ -124,10 +135,23 @@ Skrip browser membaca DB_* dan `AKSI_TEST_DB=1`, menyalakan Next dev di `127.0.0
 - `npm run build` compile/typecheck berhasil tetapi gagal prerender halaman donasi: `usePathname`/`useParams` di luar Suspense. Kegagalan yang sama direproduksi pada basis `develop` `6c3b021`. Build keseluruhan belum hijau; browser diuji pada Next dev, bukan produksi.
 - `npm test` basis branch masih menggunakan glob yang tidak didukung Node 20. Gunakan `test:aksi` untuk fitur ini; perbaikan skrip tim pada PR #52/#53 sudah di-approve dan terlihat merged di GitHub pada pemeriksaan terakhir, tetapi belum disinkronkan ke branch lokal ini. Jangan melupakan file tes aksi ketika memperbarui daftar eksplisit `test:node` dari perubahan tersebut.
 
+### Hasil lanjutan, 9 November 2026
+
+- `npm test` berhasil menjalankan kedua runner: **85 tes Vitest** dan **15 tes unit node:test** lulus. Enam integrasi donasi dilewati tanpa koneksi DB; suite integrasi aksi diaktifkan pada perintah terpisah.
+- `test:node` sekarang menemukan seluruh `*.test.ts` secara rekursif dan tidak menyerahkan `*.spec.ts` ke node:test. Empat regression test memeriksa discovery, subfolder, pemisahan Vitest dan symlink.
+- `AKSI_TEST_DB=1 npm run test:aksi` dengan DB_* ke MariaDB terisolasi: **15/15 lulus tanpa skip**, termasuk enam tes integrasi API/database aksi.
+- `npm run build` **lulus**, termasuk compile, typecheck dan prerender. `Suspense` navbar dan loading boundary route donasi memperbaiki kegagalan sebelumnya, tanpa perubahan logika transaksi.
+- Build masih mencetak log percobaan prerender API (termasuk DB_NAME yang tidak diatur saat build) serta warning tracing penyimpanan dokumentasi. Ini bukan klaim build tanpa warning. Endpoint tetap dynamic dan respons runtime diverifikasi pada smoke test.
+- Browser Chromium dengan **`serverMode: production` / `next start` lulus**: empat status aksi pada Account, alasan penolakan/pengajuan ulang, tab tetap aktif setelah refresh, Back project dua tahap/satu ID, serta form mobile 375px.
+- Akun pembuat lain tidak melihat daftar pemilik; ID aksi privat juga tidak ditemukan pada payload HTML/Flight Account akun lain. Tamu, volunteer, admin, dan sesi kedaluwarsa diuji terpisah.
+- API katalog dan opsi memberikan 200 ketika runtime mendapat DB_* yang benar; donasi tanpa sesi memberikan 401; halaman donasi dinamis berhasil dimuat. Tidak menguji transaksi uang melalui smoke test ini.
+- Lint tidak memiliki error; satu warning `<img>` dari peta Explore basis masih ada. Typecheck mandiri juga lulus.
+- Pengujian memakai **MariaDB terisolasi dan sesi fixture sah**, bukan login UI tim atau validasi MySQL 8 produksi. Review/UAT manusia atas lanjutan ini masih diperlukan.
+
 ## Integrasi tim yang masih diperlukan
 
 1. **Login #57:** adapter fitur bersifat kompatibel dengan cookie/schema sesi sekarang, tetapi harus disatukan dengan guard auth resmi setelah tersedia. Jangan mengganti dengan cookie ID pengguna sementara. Navbar/login basis branch masih placeholder; browser test menanam sesi fixture, bukan mengklaim UI login selesai.
-2. **Account #58:** `MyActions` disediakan sebagai isi slot `aksi` tanpa mengganti halaman Account Sahla. #58 sudah masuk `origin/develop` setelah branch ini dibuat, tetapi belum ditarik ke branch lokal ini. Setelah sinkronisasi yang disetujui, pasang `aksi={<MyActions aksi={await AksiService.milikSaya(pengguna)} />}` pada `FormRiwayatView` dari komponen server yang terlindungi sesi. Route `/my-actions` bisa dipakai untuk memeriksa fitur sekarang.
+2. **Account #58 / #45:** slot `aksi` sudah terhubung melalui `TabMyActions` di balik `Suspense`, menggunakan sesi asli di server. Header dan dompet Account masih preview milik integrasi auth/wallet; peringatan tampil agar identitas/saldo dummy tidak disangka data sesi. Modul riwayat/relawan tetap disediakan bagi pemiliknya. Ini bukan penyelesaian auth/wallet tim.
 3. **Detail #55:** hubungkan kontrol pemilik ke `TombolPengajuan` atau tautan `/manage/[jenis]/[id]` pada slot `AksiPemilik`. Jangan membuka Draft pada detail publik. JSON rincian memakai `uraian` sesuai seed dan pembaca detail.
 4. **Progres #37/#60:** My Actions mengarah ke `/progress/[idProject]` untuk project terpublikasi. Tujuan UI ini milik modul Nathan dan belum tersedia pada basis branch; pengujian hanya memeriksa tautannya, bukan keberhasilan halaman progres.
-5. Reviewer manusia perlu memeriksa perubahan, menjalankan UAT dengan login tim, dan mengonfirmasi kesesuaian antarmuka terhadap prototipe. Belum ada klaim review manusia selesai, acceptance semua modul terpenuhi, atau rilis siap.
+5. PR awal #66–73 sudah berstatus approved/merged. **Perubahan lanjutan lokal** tetap memerlukan review baru, UAT dengan login tim, serta konfirmasi antarmuka/prototipe. Issue #45 belum layak ditutup karena tujuan Progres dan integrasi auth tim belum lengkap; build yang lulus tidak berarti seluruh acceptance atau rilis siap.
