@@ -1,5 +1,3 @@
-
-
 export const LEBAR_PETA = 960;
 export const TINGGI_PETA = 350;
 
@@ -215,7 +213,6 @@ export interface TitikPeta {
   latitude: number;
   longitude: number;
 }
-
 
 export function aturPin(titik: TitikPeta[]): Record<string, [number, number]> {
   const posisi: Record<string, [number, number]> = {};
