@@ -209,6 +209,7 @@ export const PATH_PULAU = PULAU.map(
 ).join('');
 
 export interface TitikPeta {
+  tipe: TipeTitik;
   id: string;
   latitude: number;
   longitude: number;
@@ -230,7 +231,7 @@ export function aturPin(titik: TitikPeta[]): Record<string, [number, number]> {
       k++;
     }
     terpasang.push([x, y]);
-    posisi[t.id] = [Number(x.toFixed(1)), Number(y.toFixed(1))];
+    posisi[kunciTitik(t)] = [Number(x.toFixed(1)), Number(y.toFixed(1))];
   }
   return posisi;
 }
@@ -247,3 +248,26 @@ export function letakPopup(
   const atas = (y / TINGGI_PETA) * 100;
   return { kiri, atas, dibawah: atas < 55 };
 }
+
+export type TipeTitik = 'project' | 'campaign';
+
+/** satu titik pada peta sebaran (hasil GET /api/peta). */
+export interface TitikSebaran extends TitikPeta {
+  judul: string;
+  kota: string;
+  provinsi: string;
+  kategori: string | null;
+  targetDana: number;
+  danaTerkumpul: number;
+}
+
+export const JENIS_SEBARAN = ['semua', 'project', 'campaign'] as const;
+export type JenisSebaran = (typeof JENIS_SEBARAN)[number];
+
+/**
+ * identitas satu titik di peta. project dan campaign berasal dari tabel berbeda,
+ * jadi id yang sama pada keduanya tetap valid; id saja tidak cukup untuk
+ * memilih, menyorot, atau mencari posisi sebuah marker.
+ */
+export const kunciTitik = (t: Pick<TitikPeta, 'tipe' | 'id'>): string =>
+  `${t.tipe}-${t.id}`;
