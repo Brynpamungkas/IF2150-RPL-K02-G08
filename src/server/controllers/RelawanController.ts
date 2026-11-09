@@ -4,6 +4,7 @@ import { bacaJson, jalankan } from '@/server/http';
 import {
   daftarPendaftar,
   daftarRelawan,
+  pendaftaranSaya,
   putuskanPendaftaran,
 } from '@/server/services/relawanService';
 
@@ -64,4 +65,12 @@ export function putuskan(
       pendaftaran: keDto(pendaftaran),
     });
   }, 'Gagal menyimpan keputusan pendaftaran');
+}
+
+/** GET /api/relawan/saya: pendaftaran milik pengguna yang sedang masuk (KF22). */
+export function lihatPendaftaranSaya(): Promise<Response> {
+  return jalankan(async () => {
+    const idPengguna = await getIdPenggunaSaatIni();
+    return Response.json({ pendaftaran: await pendaftaranSaya(idPengguna) });
+  }, 'Gagal mengambil pendaftaran relawan');
 }

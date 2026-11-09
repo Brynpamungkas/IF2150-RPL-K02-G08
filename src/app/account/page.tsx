@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { GateLogin } from '@/components/ui/GateLogin';
 import { DompetKartu } from '@/components/views/DonasiView/DompetKartu';
+import { DetailStatusPendaftaranView } from '@/components/views/RelawanView/DetailStatusPendaftaranView';
 import { FormRiwayatView } from '@/components/views/RiwayatView/FormRiwayatView';
 
 export const metadata: Metadata = { title: 'My activity | KlimPooL' };
@@ -48,7 +49,7 @@ export default function HalamanAccount() {
         <div className="mx-auto max-w-[1240px] px-5">
           {/* Isi tab dipasang dari sini, mis.
               <FormRiwayatView riwayat={<TabRiwayat />} relawan={...} aksi={...} /> */}
-          <FormRiwayatView />
+          <FormRiwayatView relawan={<DetailStatusPendaftaranView />} />
         </div>
       </section>
     </main>

@@ -17,6 +17,7 @@ import {
   formatDataDiri,
   formatJadwal,
   formatKeahlian,
+  lokasiKumpulUntuk,
   validasiFormPendaftaran,
 } from '@/shared/relawan';
 import {
@@ -173,5 +174,21 @@ describe('berkas dokumentasi (KF24)', () => {
       { nama: 'rahasia.exe', tipe: 'application/x-msdownload', ukuran: 10 },
     ]);
     assert.ok(pesan?.includes('rahasia.exe'));
+  });
+});
+
+describe('lokasiKumpulUntuk (KF22)', () => {
+  it('hanya membuka titik kumpul untuk pendaftaran yang diterima', () => {
+    assert.equal(
+      lokasiKumpulUntuk('accepted', ' Pos Mangrove '),
+      'Pos Mangrove',
+    );
+    assert.equal(lokasiKumpulUntuk('pending', 'Pos Mangrove'), null);
+    assert.equal(lokasiKumpulUntuk('rejected', 'Pos Mangrove'), null);
+  });
+
+  it('menganggap titik kumpul kosong sebagai belum diisi', () => {
+    assert.equal(lokasiKumpulUntuk('accepted', '   '), null);
+    assert.equal(lokasiKumpulUntuk('accepted', null), null);
   });
 });

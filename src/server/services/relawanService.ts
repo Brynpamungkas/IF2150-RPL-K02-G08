@@ -6,6 +6,7 @@ import {
   adaPendaftaran,
   ambilPendaftaran,
   cariProject,
+  daftarPendaftaranSaya,
   daftarPendaftarProject,
   hitungDiterima,
   kunciProject,
@@ -19,8 +20,11 @@ import {
   formatDataDiri,
   formatJadwal,
   formatKeahlian,
+  bacaJadwal,
   isKeputusan,
+  lokasiKumpulUntuk,
   validasiFormPendaftaran,
+  type PendaftaranSayaDto,
 } from '@/shared/relawan';
 
 /**
@@ -213,4 +217,31 @@ export async function putuskanPendaftaran(
     }
     return diperbarui;
   });
+}
+
+/**
+ * Daftar pendaftaran milik pengguna yang sedang masuk, lengkap dengan status
+ * dan, hanya untuk yang diterima, titik kumpul kegiatan (KF22).
+ */
+export async function pendaftaranSaya(
+  idPengguna: string | null,
+): Promise<PendaftaranSayaDto[]> {
+  const idVolunteer = wajibMasuk(idPengguna);
+  const daftar = await daftarPendaftaranSaya(idVolunteer);
+  return daftar.map((p) => ({
+    idPendaftaran: p.idPendaftaran,
+    idProject: p.idProject,
+    namaProject: p.namaProject,
+    kota: p.kota,
+    provinsi: p.provinsi,
+    jadwalMulai: p.jadwalMulai,
+    jadwalSelesai: p.jadwalSelesai,
+    jadwal: bacaJadwal(p.ketersediaanJadwal),
+    status: p.status,
+    tanggalDaftar: p.tanggalDaftar.toISOString(),
+    tanggalKeputusan: p.tanggalKeputusan
+      ? p.tanggalKeputusan.toISOString()
+      : null,
+    lokasiKumpul: lokasiKumpulUntuk(p.status, p.lokasiKumpul),
+  }));
 }
