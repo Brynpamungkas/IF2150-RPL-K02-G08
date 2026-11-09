@@ -113,7 +113,9 @@ dijalankan tanpa akun layanan awan. Perbedaan ini dicatat pada laporan B.1.
 
 Pendaftaran relawan dan pengelolaannya (UC07, UC08) ditangani `RelawanController`
 (C34) di `server/controllers/`, dengan aturan bisnis di `server/services/relawanService.ts`.
-Sesi sementara dibaca dari cookie `klimpool_dev_user` sampai issue #14 selesai.
+Pengguna dibaca dari sesi login (cookie `klimpool_sesi`) lewat `getIdPenggunaSaatIni()`.
+Untuk pengujian, login lewat modal dengan akun seed, misalnya `sari@klimpool.id`
+(pembuat project), `andi@klimpool.id` (volunteer), atau `admin@klimpool.id`.
 
 | Metode dan alamat | Fungsi | Akses |
 | --- | --- | --- |

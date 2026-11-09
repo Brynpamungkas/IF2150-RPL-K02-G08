@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useContext, useState, type ReactNode } from 'react';
 import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
+import { SesiContext, useWajibLogin } from '../../ui/SesiContext';
 import { useToast } from '../../ui/Toast';
 import { DetailBuktiTransaksiView } from './DetailBuktiTransaksiView';
 import { FormDonasiView } from './FormDonasiView';
@@ -15,7 +16,10 @@ interface PropsAlurDonasi {
   className?: string;
   /** Setelah donasi berhasil, mis. untuk memperbarui saldo navbar dan dana terkumpul. */
   onSelesai?: (hasil: HasilDonasi) => void;
-  /** TODO(#14): sambungkan ke modal login (I-02). */
+  /**
+   * Bawaan: buka modal login (I-02), lalu buka lagi formulir setelah login
+   * berhasil. Isi hanya bila halaman butuh perilaku lain.
+   */
   onPerluLogin?: () => void;
   /** Sambungkan saat modal top up (I-07) tersedia. */
   onTopup?: () => void;
@@ -58,11 +62,25 @@ export function AlurDonasi({
   const [formTerbuka, setFormTerbuka] = useState(false);
   const [hasil, setHasil] = useState<HasilDonasi | null>(null);
   const { showToast } = useToast();
+  const sesi = useContext(SesiContext);
+  const wajibLogin = useWajibLogin();
+  const PESAN_LOGIN = 'Log in to donate. Your donation form opens right after.';
 
   // tekanDonasi (C30): menerima pilihan tujuan donasi dan meminta formulir.
+  // Tamu diminta login dulu, lalu formulir terbuka otomatis (#15).
   function tekanDonasi() {
-    setFormTerbuka(true);
+    wajibLogin(PESAN_LOGIN, () => setFormTerbuka(true));
   }
+
+  // Server menjawab BELUM_LOGIN (mis. sesi kedaluwarsa): login, lalu lanjutkan.
+  const perluLogin =
+    onPerluLogin ??
+    (sesi
+      ? () => {
+          setFormTerbuka(false);
+          sesi.bukaAuth('masuk', PESAN_LOGIN, () => setFormTerbuka(true));
+        }
+      : undefined);
 
   function selesaiDonasi(h: HasilDonasi, nominal: number) {
     setFormTerbuka(false);
@@ -92,7 +110,7 @@ export function AlurDonasi({
           idTujuan={idTujuan}
           onTutup={() => setFormTerbuka(false)}
           onBerhasil={selesaiDonasi}
-          onPerluLogin={onPerluLogin}
+          onPerluLogin={perluLogin}
           onTopup={onTopup}
         />
       ) : null}

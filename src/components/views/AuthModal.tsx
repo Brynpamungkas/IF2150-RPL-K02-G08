@@ -10,7 +10,10 @@ interface AuthModalProps {
   tab: TabAuth | null;
   alasan?: string;
   onGantiTab: (tab: TabAuth) => void;
+  /** Modal ditutup tanpa login. */
   onTutup: () => void;
+  /** Login/daftar berhasil; menjalankan aksi lanjutan bila ada. */
+  onBerhasil: () => void;
 }
 
 /** Modal Log in / Sign up dengan dua tab. */
@@ -19,6 +22,7 @@ export function AuthModal({
   alasan,
   onGantiTab,
   onTutup,
+  onBerhasil,
 }: AuthModalProps) {
   const [emailAwal, setEmailAwal] = useState('');
   const daftar = tab === 'daftar';
@@ -51,14 +55,14 @@ export function AuthModal({
       </div>
       {daftar ? (
         <FormPendaftaranView
-          onSelesai={onTutup}
+          onSelesai={onBerhasil}
           onMasukDenganEmail={(email) => {
             setEmailAwal(email);
             onGantiTab('masuk');
           }}
         />
       ) : (
-        <FormLoginView emailAwal={emailAwal} onSelesai={onTutup} />
+        <FormLoginView emailAwal={emailAwal} onSelesai={onBerhasil} />
       )}
     </Modal>
   );

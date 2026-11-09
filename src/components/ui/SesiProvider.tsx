@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -23,6 +24,8 @@ export function SesiProvider({ children }: { children: ReactNode }) {
   const [auth, setAuth] = useState<{ tab: TabAuth; alasan?: string } | null>(
     null,
   );
+  /** Aksi yang menunggu login berhasil (lihat NilaiSesi.bukaAuth). */
+  const lanjutan = useRef<(() => void) | null>(null);
 
   const muatUlang = useCallback(async () => {
     const res = await panggilApi<PenggunaDto | null>('/api/auth/saya');
@@ -42,7 +45,10 @@ export function SesiProvider({ children }: { children: ReactNode }) {
   const nilai = useMemo<NilaiSesi>(
     () => ({
       pengguna,
-      bukaAuth: (tab = 'masuk', alasan) => setAuth({ tab, alasan }),
+      bukaAuth: (tab = 'masuk', alasan, aksi) => {
+        lanjutan.current = aksi ?? null;
+        setAuth({ tab, alasan });
+      },
       setPengguna,
       muatUlang,
     }),
@@ -55,8 +61,17 @@ export function SesiProvider({ children }: { children: ReactNode }) {
       <AuthModal
         tab={auth?.tab ?? null}
         alasan={auth?.alasan}
-        onGantiTab={(tab) => setAuth({ tab })}
-        onTutup={() => setAuth(null)}
+        onGantiTab={(tab) => setAuth((a) => ({ tab, alasan: a?.alasan }))}
+        onTutup={() => {
+          lanjutan.current = null;
+          setAuth(null);
+        }}
+        onBerhasil={() => {
+          const aksi = lanjutan.current;
+          lanjutan.current = null;
+          setAuth(null);
+          aksi?.();
+        }}
       />
     </SesiContext.Provider>
   );
