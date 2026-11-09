@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
-import { panggilApi } from '@/components/views/panggilApi';
+import { panggilApi } from '@/components/views/DonasiView/panggilApi';
 import type { NavUser } from '@/shared/types';
 import { Footer } from './Footer';
 import { Modal } from './Modal';

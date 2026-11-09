@@ -1,4 +1,4 @@
-import type { Peran } from '@/shared/dto';
+import type { Peran } from '@/shared/autentikasi';
 
 /** C00 PenggunaUmum */
 export interface PenggunaUmum {

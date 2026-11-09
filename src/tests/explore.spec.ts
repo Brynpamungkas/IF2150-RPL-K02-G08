@@ -152,10 +152,10 @@ describe('peta', () => {
   });
   it('pin yang menumpuk digeser', () => {
     const pos = aturPin([
-      { id: 'a', latitude: -7, longitude: 110 },
-      { id: 'b', latitude: -7, longitude: 110 },
+      { tipe: 'project', id: 'a', latitude: -7, longitude: 110 },
+      { tipe: 'project', id: 'b', latitude: -7, longitude: 110 },
     ]);
-    const [a, b] = [pos.a, pos.b];
+    const [a, b] = [pos['project-a'], pos['project-b']];
     expect(Math.hypot(a[0] - b[0], a[1] - b[1])).toBeGreaterThanOrEqual(20);
   });
   it('letakPopup di bawah pin bila pin di bagian atas', () => {

@@ -1,7 +1,7 @@
 import type { ItemKatalog } from '@/shared/katalog';
-import { labelStatus, labelTipe } from '@/shared/explore';
+import { labelStatus, labelTipe, type ItemStatus } from '@/shared/explore';
 
-/** chip tipe: action project (sage) atau fundraising campaign. */
+/** chip tipe: Action project (sage) atau Fundraising campaign (krem keemasan). */
 export function ChipTipe({ tipe }: { tipe: ItemKatalog['tipe'] }) {
   return tipe === 'project' ? (
     <span className="chip soft">{labelTipe(tipe)}</span>
@@ -15,8 +15,8 @@ export function ChipTipe({ tipe }: { tipe: ItemKatalog['tipe'] }) {
   );
 }
 
-/** chip status: completed, donations closed, volunteer spots full, atau status pelaksanaan. */
-export function ChipStatus({ item }: { item: ItemKatalog }) {
+/** chip status: Completed, Donations closed, Volunteer spots full, atau status pelaksanaan. */
+export function ChipStatus({ item }: { item: ItemStatus }) {
   const { kelas, teks } = labelStatus(item);
   return <span className={`chip ${kelas}`.trim()}>{teks}</span>;
 }

@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { cookies } from 'next/headers';
 import {
   formatEmailValid,
   normalisasiEmail,
@@ -10,8 +11,13 @@ import type { PenggunaUmum } from '@/models/PenggunaUmum';
 import { buatSesi, cekStatusLogin, type SesiLogin } from '@/models/SesiLogin';
 import { cocokPassword, hashPassword } from '@/server/password';
 import { UserRepository } from '@/server/repositories/UserRepository';
-import type { MasukanDaftarDto, MasukanLoginDto, Peran } from '@/shared/dto';
-import { GalatAplikasi } from '@/shared/galat';
+import { NAMA_COOKIE_SESI } from '@/server/sesi';
+import type {
+  MasukanDaftarDto,
+  MasukanLoginDto,
+  Peran,
+} from '@/shared/autentikasi';
+import { GalatAplikasi } from '@/shared/galatDonasi';
 
 /** Bagian repository yang dipakai service; memudahkan pengujian tanpa database. */
 export type UserRepo = Pick<
@@ -29,6 +35,10 @@ export interface Ketergantungan {
   sekarang: () => Date;
   hash: (password: string) => Promise<string>;
   cocok: (password: string, hash: string | null) => Promise<boolean>;
+}
+
+export interface PenggunaLogin {
+  idPengguna: string;
 }
 
 const bawaan = (): Ketergantungan => ({
@@ -50,14 +60,13 @@ export class AutentikasiService {
 
   /**
    * Kontrak yang dipakai alur donasi (DonasiController): id pengguna pemilik
-   * token sesi, atau galat BELUM_LOGIN bila token kosong, tidak dikenal,
+   * cookie sesi, atau galat BELUM_LOGIN bila cookie kosong, tidak dikenal,
    * berakhir, kedaluwarsa, atau akun nonaktif.
    */
-  static async wajibLogin(
-    tokenSesi: string | null,
-  ): Promise<{ idPengguna: string }> {
+  static async wajibLogin(): Promise<PenggunaLogin> {
+    const jar = await cookies();
     const pengguna = await new AutentikasiService().penggunaDariSesi(
-      tokenSesi ?? undefined,
+      jar.get(NAMA_COOKIE_SESI)?.value,
     );
     if (!pengguna) throw new GalatAplikasi('BELUM_LOGIN');
     return { idPengguna: pengguna.idPengguna };

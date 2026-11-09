@@ -8,8 +8,8 @@ import {
   type ReactNode,
 } from 'react';
 import { AuthModal } from '@/components/views/AuthModal';
-import { panggilApi } from '@/components/views/panggilApi';
-import type { PenggunaDto } from '@/shared/dto';
+import { panggilApi } from '@/components/views/DonasiView/panggilApi';
+import type { PenggunaDto } from '@/shared/autentikasi';
 import { SesiContext, type NilaiSesi, type TabAuth } from './SesiContext';
 
 /**

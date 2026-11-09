@@ -1,16 +1,14 @@
 import { cookies } from 'next/headers';
 import { NAMA_COOKIE_SESI, opsiCookieSesi } from '@/server/sesi';
 import { AutentikasiService } from '@/server/services/AutentikasiService';
-import type { PenggunaDto } from '@/shared/dto';
+import type { PenggunaDto } from '@/shared/autentikasi';
 import { bacaObjek, gagal, sukses, teks } from './respons';
 
 /** C16 AutentikasiController */
 export class AutentikasiController {
   constructor(private readonly service = new AutentikasiService()) {}
 
-  async daftarAkun(
-    request: Request,
-  ): Promise<Response> {
+  async daftarAkun(request: Request): Promise<Response> {
     try {
       const b = await bacaObjek(request);
       const pengguna = await this.service.daftarAkun({
@@ -24,9 +22,7 @@ export class AutentikasiController {
     }
   }
 
-  async login(
-    request: Request,
-  ): Promise<Response> {
+  async login(request: Request): Promise<Response> {
     try {
       const b = await bacaObjek(request);
       const { sesi, pengguna } = await this.service.login({

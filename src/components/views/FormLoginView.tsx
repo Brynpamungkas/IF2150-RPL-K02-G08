@@ -5,8 +5,8 @@ import { useState, type FormEvent } from 'react';
 import { Field } from '@/components/ui/Field';
 import { useSesi } from '@/components/ui/SesiContext';
 import { useToast } from '@/components/ui/Toast';
-import type { PenggunaDto } from '@/shared/dto';
-import { kirimJson } from './panggilApi';
+import type { PenggunaDto } from '@/shared/autentikasi';
+import { kirimJson } from './DonasiView/panggilApi';
 
 const PASSWORD_DEMO = 'klimpool123';
 const AKUN_DEMO = [

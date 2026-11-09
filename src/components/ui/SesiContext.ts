@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext } from 'react';
-import type { PenggunaDto } from '@/shared/dto';
+import type { PenggunaDto } from '@/shared/autentikasi';
 
 export type TabAuth = 'masuk' | 'daftar';
 

@@ -1,6 +1,6 @@
 import type { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { query, withTransaction } from '@/server/db';
-import { GalatAplikasi } from '@/shared/galat';
+import { GalatAplikasi } from '@/shared/galatDonasi';
 import type { Akun } from '@/models/Akun';
 import type { PenggunaUmum } from '@/models/PenggunaUmum';
 import type { SesiLogin } from '@/models/SesiLogin';

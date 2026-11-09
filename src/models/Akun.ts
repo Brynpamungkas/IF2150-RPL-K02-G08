@@ -1,4 +1,4 @@
-import { GalatAplikasi } from '@/shared/galat';
+import { GalatAplikasi } from '@/shared/galatDonasi';
 
 /** C12 Akun */
 export interface Akun {

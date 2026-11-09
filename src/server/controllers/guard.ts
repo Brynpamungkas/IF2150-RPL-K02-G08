@@ -2,8 +2,8 @@ import { cookies } from 'next/headers';
 import type { PenggunaUmum } from '@/models/PenggunaUmum';
 import { NAMA_COOKIE_SESI } from '@/server/sesi';
 import { AutentikasiService } from '@/server/services/AutentikasiService';
-import type { Peran } from '@/shared/dto';
-import { GalatAplikasi } from '@/shared/galat';
+import type { Peran } from '@/shared/autentikasi';
+import { GalatAplikasi } from '@/shared/galatDonasi';
 
 const service = new AutentikasiService();
 

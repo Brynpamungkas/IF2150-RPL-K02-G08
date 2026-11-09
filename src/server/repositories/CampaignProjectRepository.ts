@@ -4,7 +4,7 @@
  * dan hitungPersentaseCapaian (Algo-135, KF26).
  */
 import type { PoolConnection, RowDataPacket } from 'mysql2/promise';
-import type { JenisTujuan } from '@/shared/dto';
+import type { JenisTujuan } from '@/shared/donasi';
 import { execute, query } from '../db';
 
 /** Nilai ENUM status di skema untuk tujuan yang sudah lolos verifikasi ("Diterima" di DPPL). */

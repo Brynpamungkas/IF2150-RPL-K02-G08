@@ -1,5 +1,5 @@
-import type { ApiHasil } from '@/shared/dto';
-import { PESAN_GALAT } from '@/shared/galat';
+import type { ApiHasil } from '@/shared/donasi';
+import { PESAN_GALAT } from '@/shared/galatDonasi';
 
 /**
  * Satu-satunya jalan View ke server (batas Client-Server).
