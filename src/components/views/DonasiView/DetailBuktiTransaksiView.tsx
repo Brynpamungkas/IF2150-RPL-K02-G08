@@ -6,16 +6,19 @@ import type {
   BuktiDTO,
   HasilDonasi,
   StatusTransaksi,
-} from '@/shared/dto';
+} from '@/shared/donasi';
 import { Modal } from '../../ui/Modal';
-import { rupiah, waktuLokal } from '../format';
-import { panggilApi } from '../panggilApi';
+import { rupiah, waktuLokal } from './format';
+import { persenTampil } from './logikaDonasi';
+import { panggilApi } from './panggilApi';
 
 interface Props {
   idTransaksi: string;
   /** Ringkasan dari respons donasi; hanya ada bila struk dibuka tepat setelah berdonasi. */
   ringkasan?: HasilDonasi;
   onTutup: () => void;
+  /** Bila ada, tampil tombol "View history" (halaman My activity, KF27). */
+  onLihatRiwayat?: () => void;
 }
 
 const LABEL_STATUS: Record<StatusTransaksi, string> = {
@@ -23,11 +26,12 @@ const LABEL_STATUS: Record<StatusTransaksi, string> = {
   gagal: 'Failed',
 };
 
-/** C31 - DetailBuktiTransaksiView (Boundary). Struk donasi (prototipe: receipt). */
+/** C31 - DetailBuktiTransaksiView (Boundary). Struk donasi (prototipe: mDonate, cabang receipt). */
 export function DetailBuktiTransaksiView({
   idTransaksi,
   ringkasan,
   onTutup,
+  onLihatRiwayat,
 }: Props) {
   const [bukti, setBukti] = useState<BuktiDTO | null>(null);
   const [galat, setGalat] = useState<ApiGagal | null>(null);
@@ -63,16 +67,17 @@ export function DetailBuktiTransaksiView({
       baris.push(['Remaining balance', rupiah(ringkasan.saldoSesudah)]);
       baris.push([
         'Target reached',
-        `${ringkasan.persentasePencapaian}% (${rupiah(ringkasan.danaTerkumpul)})`,
+        `${persenTampil(ringkasan.persentasePencapaian)}% (${rupiah(ringkasan.danaTerkumpul)})`,
       ]);
     }
 
     return (
-      <div className="grid justify-items-center gap-3.5 text-center">
-        <span className="grid size-[72px] place-items-center rounded-full bg-[#E3F1E1] text-[#2F7D32]">
+      <div className="receipt">
+        <span className="tick">
           <svg
             viewBox="0 0 24 24"
-            className="size-9"
+            width="36"
+            height="36"
             fill="none"
             stroke="currentColor"
             strokeWidth="3"
@@ -84,21 +89,21 @@ export function DetailBuktiTransaksiView({
           </svg>
         </span>
 
-        <p className="text-[19px] text-[#4A544B]">
-          Thank you. <b className="text-[#1F2420]">{rupiah(r.nominal)}</b> has
-          gone to <b className="text-[#1F2420]">{r.namaTujuan}</b>.
+        <p className="text-[19px] text-[var(--ink-2)]">
+          Thank you. <b className="text-[var(--ink)]">{rupiah(r.nominal)}</b>{' '}
+          has gone to <b className="text-[var(--ink)]">{r.namaTujuan}</b>.
         </p>
 
-        <dl className="grid w-full grid-cols-[auto_1fr] gap-x-4 gap-y-2.5 rounded-2xl bg-[#F7F6F2] p-[18px] text-left">
+        <dl>
           {baris.map(([k, v]) => (
             <div key={k} className="contents">
-              <dt className="font-bold text-[#4A544B]">{k}</dt>
+              <dt>{k}</dt>
               <dd
-                className={`m-0 break-words text-right font-extrabold ${
+                style={
                   k === 'Status' && r.statusTransaksi === 'berhasil'
-                    ? 'text-[#2F7D32]'
-                    : ''
-                }`}
+                    ? { color: 'var(--ok)' }
+                    : undefined
+                }
               >
                 {v}
               </dd>
@@ -106,13 +111,20 @@ export function DetailBuktiTransaksiView({
           ))}
         </dl>
 
-        <button
-          type="button"
-          onClick={onTutup}
-          className="btn btn-primary btn-block"
-        >
-          Done
-        </button>
+        <div className="form-actions justify-center">
+          <button type="button" className="btn btn-primary" onClick={onTutup}>
+            Done
+          </button>
+          {onLihatRiwayat ? (
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={onLihatRiwayat}
+            >
+              View history
+            </button>
+          ) : null}
+        </div>
       </div>
     );
   }
@@ -121,10 +133,19 @@ export function DetailBuktiTransaksiView({
     <Modal open onClose={onTutup} title="Donation successful">
       {!bukti && !galat ? <p className="muted">Loading receipt…</p> : null}
       {galat ? (
-        <div className="notice bad" role="alert">
-          <strong>Receipt not available</strong>
-          <span>{galat.pesan}</span>
-        </div>
+        <>
+          <div className="notice bad" role="alert">
+            <strong>Receipt not available</strong>
+            <span>{galat.pesan}</span>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary btn-block"
+            onClick={onTutup}
+          >
+            Done
+          </button>
+        </>
       ) : null}
       {bukti ? tampilkanBukti(bukti) : null}
     </Modal>
