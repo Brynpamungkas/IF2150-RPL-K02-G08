@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/Toast';
+import { FormProgresProjectView } from '@/components/views/ProgresView/FormProgresProjectView';
 import { FormVolunteerManagementView } from '@/components/views/RelawanView/FormVolunteerManagementView';
 import type { DetailAksi } from '@/shared/detail';
 import type { PendaftaranRelawanDto } from '@/shared/relawan';
@@ -20,6 +21,7 @@ export function AksiPemilik({ detail }: { detail: DetailAksi }) {
     null,
   );
   const [kelolaTerbuka, setKelolaTerbuka] = useState(false);
+  const [progresTerbuka, setProgresTerbuka] = useState(false);
   const adalahProject = detail.tipe === 'project';
 
   useEffect(() => {
@@ -52,11 +54,32 @@ export function AksiPemilik({ detail }: { detail: DetailAksi }) {
     <>
       <button
         type="button"
+        className="btn btn-primary btn-block"
+        onClick={() => setProgresTerbuka(true)}
+      >
+        Post a progress update
+      </button>
+      <button
+        type="button"
         className="btn btn-light btn-block"
         onClick={() => setKelolaTerbuka(true)}
       >
         Manage volunteers{menunggu > 0 ? ` (${menunggu} pending)` : ''}
       </button>
+      {progresTerbuka && (
+        <FormProgresProjectView
+          idProject={detail.id}
+          judul={detail.judul}
+          statusAwal={detail.statusPelaksanaan}
+          onTutup={() => setProgresTerbuka(false)}
+          onBerhasil={() => {
+            setProgresTerbuka(false);
+            showToast('Progress update posted.', 'ok');
+            // timeline dan status project dibaca ulang dari peladen
+            router.refresh();
+          }}
+        />
+      )}
       {kelolaTerbuka && (
         <FormVolunteerManagementView
           idProject={detail.id}
