@@ -18,6 +18,7 @@ import {
   muatHalamanBerikut,
   type Termuat,
 } from '@/shared/explorePaging';
+import { kunciTitik } from '@/shared/peta';
 import { AksiMuatLagi } from './AksiMuatLagi';
 import { KartuHasil } from '@/components/ui/KartuHasil';
 import { IkonCari } from '@/components/ui/Ikon';
@@ -55,8 +56,8 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
   const [memuatLagi, setMemuatLagi] = useState(false);
   const [percobaan, setPercobaan] = useState(0);
   const [opsi, setOpsi] = useState<OpsiKatalog>({ kategori: [], provinsi: [] });
-  const [terpilihId, setTerpilihId] = useState<string | null>(null);
-  const [sorotId, setSorotId] = useState<string | null>(null);
+  const [terpilihKunci, setTerpilihKunci] = useState<string | null>(null);
+  const [sorotKunci, setSorotKunci] = useState<string | null>(null);
   const [kunciAwal] = useState(() => keQueryApi(awal).toString());
 
   const kunci = keQueryApi(filter).toString();
@@ -70,7 +71,7 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
     if (baru) {
       setFilter(baru);
       setTeks(baru.q);
-      setTerpilihId(null);
+      setTerpilihKunci(null);
     }
   }
 
@@ -79,8 +80,7 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
     fetch('/api/katalog/opsi', { signal: ac.signal })
       .then((r) => (r.ok ? (r.json() as Promise<OpsiKatalog>) : null))
       .then((hasil) => hasil && setOpsi(hasil))
-      .catch(() => {
-      });
+      .catch(() => {});
     return () => ac.abort();
   }, []);
 
@@ -123,13 +123,13 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
 
   const ubahFilter = useCallback((ubah: Partial<FilterExplore>) => {
     setFilter((f) => ({ ...f, ...ubah }));
-    setTerpilihId(null);
+    setTerpilihKunci(null);
   }, []);
 
   const hapusFilter = () => {
     setTeks('');
     setFilter(FILTER_KOSONG);
-    setTerpilihId(null);
+    setTerpilihKunci(null);
   };
 
   const muatLagi = async () => {
@@ -227,21 +227,24 @@ export function ExploreView({ awal }: { awal: FilterExplore }) {
               <div className="explore" aria-busy={sedangMemuat}>
                 <FormPetaWilayahView
                   hasil={daftar}
-                  terpilihId={terpilihId}
-                  sorotId={sorotId}
-                  onPilih={setTerpilihId}
+                  terpilihKunci={terpilihKunci}
+                  sorotKunci={sorotKunci}
+                  onPilih={setTerpilihKunci}
                 />
 
-                <div className="list-col" onMouseLeave={() => setSorotId(null)}>
+                <div
+                  className="list-col"
+                  onMouseLeave={() => setSorotKunci(null)}
+                >
                   {termuat === null ? null : daftar.length > 0 ? (
                     <>
                       {daftar.map((item) => (
                         <KartuHasil
-                          key={`${item.tipe}-${item.id}`}
+                          key={kunciTitik(item)}
                           item={item}
-                          terpilih={terpilihId === item.id}
+                          terpilih={terpilihKunci === kunciTitik(item)}
                           animasi={animasi}
-                          onHover={setSorotId}
+                          onHover={setSorotKunci}
                         />
                       ))}
                       {daftar.length < total && (

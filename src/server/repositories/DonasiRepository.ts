@@ -11,7 +11,7 @@ import type {
   RincianBukti,
   RingkasanTransaksi,
   StatusTransaksi,
-} from '@/shared/dto';
+} from '@/shared/donasi';
 import { execute, query } from '../db';
 
 interface BarisDonatur extends RowDataPacket {
