@@ -30,8 +30,13 @@ interface Props {
   onBerhasil: (hasil: HasilDonasi, nominal: number) => void;
   /** Bila ada, galat BELUM_LOGIN menampilkan tombol "Log in". TODO(#14). */
   onPerluLogin?: () => void;
-  /** Bila ada, notice saldo kurang menampilkan "Top up now" (I-07). */
-  onTopup?: () => void;
+  /**
+   * Bila ada, notice saldo kurang menampilkan "Top up now" (I-07).
+   * Menerima nominal yang dipilih (agar bisa dipertahankan) dan kekurangannya.
+   */
+  onTopup?: (nominal: number, kekurangan: number) => void;
+  /** Nominal yang sudah terisi saat formulir dibuka, mis. setelah kembali dari top up. */
+  nominalAwal?: number;
 }
 
 /** Galat yang ditampilkan sebagai layar "Donation not processed" dengan tombol Try again. */
@@ -76,6 +81,7 @@ export function FormDonasiView({
   onBerhasil,
   onPerluLogin,
   onTopup,
+  nominalAwal,
 }: Props) {
   const idDasar = useId();
   const idNominal = `${idDasar}-damt`;
@@ -84,7 +90,9 @@ export function FormDonasiView({
 
   const [info, setInfo] = useState<FormDonasiInfo | null>(null);
   const [galatMuat, setGalatMuat] = useState<ApiGagal | null>(null);
-  const [nominal, setNominal] = useState('');
+  const [nominal, setNominal] = useState(() =>
+    nominalAwal ? bersihkanMasukan(String(nominalAwal)) : '',
+  );
   const [pesan, setPesan] = useState('');
   const [galatNominal, setGalatNominal] = useState<string | null>(null);
   const [galat, setGalat] = useState<ApiGagal | null>(null);
@@ -328,7 +336,12 @@ export function FormDonasiView({
               kept.
             </span>
             {onTopup ? (
-              <button type="button" className="link-arrow" onClick={onTopup}>
+              <button
+                type="button"
+                className="link-arrow"
+                onClick={() => onTopup(nominalAngka, selisih)}
+                disabled={mengirim}
+              >
                 Top up now <IkonPanah />
               </button>
             ) : null}

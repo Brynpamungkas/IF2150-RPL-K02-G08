@@ -1,8 +1,11 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
+import { saranNominalTopup } from '@/shared/topup';
 import { useToast } from '../../ui/Toast';
+import { FormTopupView } from '../TopupView/FormTopupView';
 import { DetailBuktiTransaksiView } from './DetailBuktiTransaksiView';
 import { FormDonasiView } from './FormDonasiView';
 import { rupiah } from './format';
@@ -17,8 +20,6 @@ interface PropsAlurDonasi {
   onSelesai?: (hasil: HasilDonasi) => void;
   /** TODO(#14): sambungkan ke modal login (I-02). */
   onPerluLogin?: () => void;
-  /** Sambungkan saat modal top up (I-07) tersedia. */
-  onTopup?: () => void;
   /** Sambungkan saat halaman My activity (KF27) tersedia. */
   onLihatRiwayat?: () => void;
 }
@@ -52,15 +53,34 @@ export function AlurDonasi({
   className = 'btn btn-primary btn-block',
   onSelesai,
   onPerluLogin,
-  onTopup,
   onLihatRiwayat,
 }: PropsAlurDonasi) {
   const [formTerbuka, setFormTerbuka] = useState(false);
   const [hasil, setHasil] = useState<HasilDonasi | null>(null);
+  /** Top up dari notice saldo kurang: nominal donasi yang dipertahankan dan saran top up. */
+  const [topup, setTopup] = useState<{
+    nominalDonasi: number;
+    nominalTopup: number;
+  } | null>(null);
+  const [nominalLanjut, setNominalLanjut] = useState<number | undefined>();
   const { showToast } = useToast();
+  const router = useRouter();
 
   // tekanDonasi (C30): menerima pilihan tujuan donasi dan meminta formulir.
   function tekanDonasi() {
+    setNominalLanjut(undefined);
+    setFormTerbuka(true);
+  }
+
+  // Modal donasi ditutup sementara; nominal yang dipilih disimpan untuk "Continue donating".
+  function bukaTopup(nominalDonasi: number, kekurangan: number) {
+    setFormTerbuka(false);
+    setTopup({ nominalDonasi, nominalTopup: saranNominalTopup(kekurangan) });
+  }
+
+  function lanjutDonasi() {
+    setNominalLanjut(topup?.nominalDonasi);
+    setTopup(null);
     setFormTerbuka(true);
   }
 
@@ -93,7 +113,17 @@ export function AlurDonasi({
           onTutup={() => setFormTerbuka(false)}
           onBerhasil={selesaiDonasi}
           onPerluLogin={onPerluLogin}
-          onTopup={onTopup}
+          onTopup={bukaTopup}
+          nominalAwal={nominalLanjut}
+        />
+      ) : null}
+
+      {topup ? (
+        <FormTopupView
+          nominalAwal={topup.nominalTopup}
+          onTutup={() => setTopup(null)}
+          onBerhasil={() => router.refresh()}
+          onLanjutDonasi={lanjutDonasi}
         />
       ) : null}
 
