@@ -778,63 +778,389 @@ footer .brand {
   }
 }
 
-/* ---------- Cetak bukti ---------- */
-.lembar-cetak {
+/* ---------- Halaman Explore (UC05) ---------- */
+.arrow {
+  width: 18px;
+  height: 18px;
+  flex: none;
+}
+.lead {
+  font-size: 19px;
+  color: var(--ink-2);
+  max-width: 62ch;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.map-box {
+  position: relative;
+  background: #dce8e4;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  border: 1px solid var(--line);
+}
+.map-box svg.map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.map-box .island {
+  fill: #f3f1e7;
+  stroke: #c8cfbe;
+  stroke-width: 1.2;
+}
+.map-box .grid line {
+  stroke: #c9dad5;
+  stroke-width: 1;
+}
+.pin {
+  cursor: pointer;
+}
+.pin circle.dot {
+  stroke: #fff;
+  stroke-width: 3;
+  transition: r 0.2s;
+}
+.pin:hover circle.dot,
+.pin.on circle.dot {
+  r: 13;
+}
+.pin circle.halo {
+  fill: currentColor;
+  opacity: 0.18;
+}
+.pin text {
+  font: 800 13px var(--f-body);
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: #f3f1e7;
+  stroke-width: 4px;
+}
+.map-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+.map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.map-legend i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.map-pop {
+  position: absolute;
+  width: 300px;
+  max-width: calc(100% - 24px);
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+  z-index: 5;
+}
+.map-pop img {
+  border-radius: 12px;
+  height: 120px;
+  width: 100%;
+  object-fit: cover;
+}
+.map-pop .x {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 0;
+  background: #fff;
+  font-size: 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.map-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.bar {
+  height: 10px;
+  background: #e8ece3;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar i {
+  display: block;
+  height: 100%;
+  background: var(--forest);
+  border-radius: 999px;
+  transition: width 1.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.bar.big {
+  height: 14px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 4px 12px;
+  background: #fff;
+  color: var(--ink);
+  white-space: nowrap;
+  line-height: 1.5;
+}
+.chip.soft {
+  background: var(--sage);
+  color: var(--forest-d);
+}
+.chip.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.chip.warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.chip.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.chip.info {
+  background: var(--info-bg);
+  color: var(--info);
+}
+.chip.dark {
+  background: var(--forest-d);
+  color: #fff;
+}
+.chip::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
   display: none;
 }
-
-@media print {
-  /* Bila ada lembar bukti, cetak HANYA lembar itu (lihat LembarCetakBukti.tsx). */
-  body:has(> .lembar-cetak) > *:not(.lembar-cetak) {
-    display: none !important;
+.chip.ok::before,
+.chip.warn::before,
+.chip.bad::before,
+.chip.info::before {
+  display: inline-block;
+}
+.crumbs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+.filters {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+.search {
+  display: flex;
+  gap: 10px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 6px 6px 20px;
+  align-items: center;
+  max-width: 760px;
+}
+.search:focus-within {
+  border-color: var(--forest);
+}
+.search input {
+  border: 0;
+  outline: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 17px;
+  padding: 10px 0;
+  background: transparent;
+}
+.f-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.seg {
+  display: inline-flex;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 4px;
+}
+.seg button {
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.seg button.on {
+  background: var(--forest);
+  color: #fff;
+}
+.sel {
+  appearance: none;
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231F2420' stroke-width='2'/%3E%3C/svg%3E")
+    no-repeat right 16px center;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 42px 10px 18px;
+  font-weight: 700;
+  font-size: 15px;
+  min-height: 46px;
+}
+.result-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.result-line h2 {
+  font-family: var(--f-body);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+.explore {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.explore .map-col {
+  position: static;
+}
+.list-col {
+  display: grid;
+  gap: 12px;
+}
+.row-card {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 0;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  text-align: left;
+  padding: 0;
+  width: 100%;
+}
+.row-card:hover,
+.row-card.on {
+  border-color: var(--forest);
+}
+.row-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 120px;
+}
+.row-card .body {
+  padding: 14px 18px;
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+  font-size: 14px;
+}
+.row-card .small {
+  font-size: 14px;
+}
+.row-card .chip {
+  font-size: 13px;
+}
+.row-card h3 {
+  font-size: 16px;
+}
+.empty {
+  background: #fff;
+  border: 1.5px dashed #c3cbb8;
+  border-radius: 20px;
+  padding: 40px 28px;
+  text-align: center;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+.empty h3 {
+  font-size: 22px;
+}
+.empty p {
+  color: var(--ink-2);
+  max-width: 48ch;
+}
+.crumbs a {
+  color: var(--forest);
+  font-weight: 800;
+  font-size: 15px;
+  text-decoration: none;
+}
+.row-card {
+  color: var(--ink);
+  font-weight: 400;
+  text-decoration: none;
+  cursor: pointer;
+}
+.map-pop .btn {
+  text-decoration: none;
+  color: #fff;
+}
+.explore[aria-busy='true'] .list-col {
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+@media (max-width: 720px) {
+  .row-card {
+    grid-template-columns: minmax(0, 1fr);
   }
-  body:has(> .lembar-cetak) {
-    background: #fff;
-    overflow: visible !important;
+  .row-card img {
+    min-height: 0;
+    aspect-ratio: 16/9;
+    height: auto;
   }
-  .lembar-cetak {
-    display: block;
-    color: #000;
-    font-size: 12pt;
-    max-width: 16cm;
-    margin: 0 auto;
-  }
-  .lembar-cetak header {
-    border-bottom: 1pt solid #000;
-    padding-bottom: 8pt;
-  }
-  .lembar-cetak .lembar-merek {
-    font-family: var(--font-lora), Georgia, serif;
-    font-weight: 600;
-    font-size: 18pt;
-    margin: 0;
-  }
-  .lembar-cetak h1 {
-    font-size: 14pt;
-    font-weight: 700;
-    margin: 4pt 0 0;
-  }
-  .lembar-cetak dl {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 6pt 16pt;
-    margin: 12pt 0;
-  }
-  .lembar-cetak dt {
-    font-weight: 700;
-  }
-  .lembar-cetak dd {
-    margin: 0;
-    text-align: right;
-    word-break: break-word;
-  }
-  .lembar-cetak .lembar-catatan {
-    font-size: 9pt;
-    color: #444;
-    border-top: 1pt solid #999;
-    padding-top: 6pt;
+  .page-top {
+    padding-block: 116px 32px;
   }
 }
-@page {
-  margin: 18mm;
+
+/* Perbaikan layar kecil: di prototipe, kontrol filter melebar melewati layar 390px
+   sehingga halaman bisa digeser ke samping. Hanya berlaku di layar sempit. */
+@media (max-width: 480px) {
+  .filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .seg {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+  .seg button {
+    white-space: nowrap;
+  }
 }

@@ -1,7 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-
-/** Logo KlimPooL: lencana + wordmark. Gambar: public/klimpool-badge.png (dari prototipe). */
 export function Logo() {
   return (
     <Link href="/" className="brand" aria-label="KlimPooL home">
