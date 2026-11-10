@@ -1,70 +1,108 @@
-# KlimPooL
+# <img src="public/klimpool-badge.png" width="60" height="60" alt="KlimPooL logo"> KlimPooL
 
-Platform donasi dan relawan untuk proyek iklim.
-Tugas Besar IF2150 Rekayasa Perangkat Lunak, Kelas 02 Kelompok 08.
+> A climate-action platform where people can **donate** to and **volunteer** for local climate projects, all in one place.
 
-## Teknologi
+IF2150 Software Engineering · Class 02 · Group 08 (BS3N)
 
-- Next.js 16.4.4, React 19.3.0, TypeScript
-- Tailwind CSS
-- Node.js >= 20 (lihat `.nvmrc`)
-- MySQL 8 (InnoDB), lihat bagian Menyiapkan Database di bawah
+---
 
-## Prasyarat dan Instalasi
+## 📑 Table of Contents
 
-1. Pasang Node.js versi 20 atau lebih baru.
-2. Dari root repo, masuk ke folder aplikasi dan pasang dependensi:
+1. [About](#about)
+2. [Features](#features)
+3. [Tech Stack](#tech-stack)
+4. [Prerequisites and Installation](#installation)
+5. [Configuration](#configuration)
+6. [Database Setup](#database-setup)
+7. [Running the App](#running-the-app)
+8. [Running the Tests](#running-the-tests)
+9. [Demo Accounts](#demo-accounts)
+10. [Project Structure](#project-structure)
+11. [Database Tables](#database-tables)
+
+---
+
+<a id="about"></a>
+
+## ℹ️ About
+KlimPooL connects people who want to help with climate action and the people who run it on the ground.
+
+- **Project creators** publish fundraising **campaigns** and field **projects** (mangrove planting, clean water, waste banks, and so on).
+- **Admins** review each submission before it goes public.
+- **Users** explore published actions on a list and a map, **donate** from an in-app balance, and **sign up as volunteers**.
+- Project creators post **progress updates** with photos and documents, so donors can see how their money is used.
+
+The app is a Next.js web application with a layered architecture (View → Controller → Service → Repository → MySQL), following the design in our DPPL document.
+
+---
+
+<a id="features"></a>
+
+## 🚀 Features
+| Use case | Feature | Status |
+| --- | --- | --- |
+| UC01 | Register, log in, log out, session cookie, role-based access | ✅ Available |
+| UC02 | Create a fundraising campaign (save draft, submit for review) | ✅ API · 🚧 Form UI *(to be completed)* |
+| UC03 | Create a climate-action project | ✅ API · 🚧 Form UI *(to be completed)* |
+| UC04 | Admin verification (approve / reject with a reason) | ✅ API · 🚧 Admin UI *(to be completed)* |
+| UC05 | Search and filter on the Explore page, map of actions, detail page with tabs | ✅ Available |
+| UC06 | Atomic donation with an idempotency key, printable receipt | ✅ Available |
+| UC07 | Volunteer sign-up | ✅ API · 🚧 Form UI *(to be completed)* |
+| UC08 | Accept or reject volunteers | ✅ API · 🚧 UI *(to be completed)* |
+| UC09 | Progress updates with photo and PDF uploads | ✅ API · 🚧 UI *(to be completed)* |
+| UC10 | Donation and progress history | ✅ Available |
+| – | Home page, account page with wallet | ✅ Available |
+| – | Simulated balance top-up | 🚧 *(to be completed)* |
+| – | "My actions" tab (status, rejection reason, resubmit) | 🚧 *(to be completed)* |
+
+**Main pages:** `/` (home) · `/explore` · `/project/[id]` · `/campaign/[id]` · `/account` · `/history`
+
+---
+
+<a id="tech-stack"></a>
+
+## 🛠️ Tech Stack
+| Layer | Technology | Version |
+| --- | --- | --- |
+| Runtime | Node.js | 20 or newer (see `.nvmrc`) |
+| Framework | Next.js (App Router) + React | 16.4.4 + 19.3.0 |
+| Language | TypeScript | 5 |
+| Styling | Tailwind CSS | 4 |
+| Database | MySQL (InnoDB, utf8mb4) via `mysql2` | 8.4 |
+| Password hashing | `bcryptjs` (cost 12) | 3 |
+| Testing | Vitest + Node test runner (`node:test` with `tsx`) | Vitest 3 |
+| Code quality | ESLint + Prettier | 9 + 3 |
+| Local database (optional) | Docker Compose | – |
+
+All dependencies are listed in `package.json` and pinned in `package-lock.json`.
+
+---
+
+<a id="installation"></a>
+
+## ⚙️ Prerequisites and Installation
+**You need:**
+
+- [Node.js 20+](https://nodejs.org/) (npm comes with it)
+- **One** of these for the database:
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (recommended), or
+  - [XAMPP](https://www.apachefriends.org/) with its MySQL module
+
+**Install the dependencies** from the repository root:
 
 ```bash
 cd src
-npm install
+npm ci
 ```
 
-## Menjalankan Aplikasi
+> 💡 `npm ci` installs the exact versions in `package-lock.json`. Use it instead of `npm install` so everyone gets the same dependencies.
 
-```bash
-npm run dev
-```
+---
 
-Buka http://localhost:3000.
+<a id="configuration"></a>
 
-Perintah lain:
-
-| Perintah | Fungsi |
-| --- | --- |
-| `npm run lint` | Cek kode dengan ESLint |
-| `npm run format` | Rapikan kode dengan Prettier |
-| `npm run build` | Build untuk produksi |
-
-## Struktur Folder
-
-## Struktur Folder
-
-```
-src/
-  app/              entry point Next.js: layout, page; app/api/ = batas HTTP client-server
-  components/
-    ui/             komponen umum (Modal, Toast, Navbar, Footer)
-    views/          kelas boundary (FormLoginView, dst.)
-  db/               migration SQL (schema + seed)
-  models/           entitas
-  scripts/          skrip bantu
-  server/           kode server-only
-    controllers/
-    services/
-    repositories/
-    db.ts           koneksi MySQL (connection pool)
-  shared/           hanya yang aman dibaca browser: tipe, konstanta, validasi murni
-  tests/            pengujian
-```
-
-## Konfigurasi, Akun Uji, Modul, dan Skema Database
-
-## Konfigurasi, Akun Uji, Modul, dan Skema Database
-
-### Konfigurasi `.env`
-
-Semua konfigurasi koneksi database dibaca dari file `.env` di folder `src/`. File ini **tidak boleh di-commit** (sudah masuk `.gitignore`). Salin dari contoh lalu sesuaikan:
+## 🔐 Configuration
+The app reads its settings from `src/.env`. This file holds passwords, so it is **never committed** (it is already in `.gitignore`). Copy the example and edit it:
 
 ```powershell
 # Windows PowerShell
@@ -76,208 +114,212 @@ Copy-Item .env.example .env
 cp .env.example .env
 ```
 
-| Variabel | Fungsi | Contoh |
+| Variable | Purpose | Example |
 | --- | --- | --- |
-| `DB_HOST` | Alamat server MySQL | `localhost` |
-| `DB_PORT` | Port MySQL (lihat opsi di bawah) | `3307` (Docker) atau `3306` (XAMPP) |
-| `DB_NAME` | Nama database | `klimpool` |
-| `DB_USER` | User database | `klimpool` (Docker) atau `root` (XAMPP) |
-| `DB_PASSWORD` | Password user database | sesuaikan |
-| `DB_ROOT_PASSWORD` | Password root, hanya dipakai Docker | sesuaikan |
-| `DB_CONNECTION_LIMIT` | Jumlah maksimum koneksi di pool | `10` |
-| `DOKUMENTASI_DRIVER` | Jenis penyimpanan berkas dokumentasi progres | `lokal` |
-| `DOKUMENTASI_DIR` | Folder penyimpanan berkas dokumentasi | `./uploads` |
+| `DB_HOST` | MySQL host | `localhost` |
+| `DB_PORT` | MySQL port | `3307` (Docker) or `3306` (XAMPP) |
+| `DB_NAME` | Database name | `klimpool` |
+| `DB_USER` | Database user | `klimpool` |
+| `DB_PASSWORD` | Password for `DB_USER` (**required**, cannot be empty) | your own password |
+| `DB_ROOT_PASSWORD` | MySQL root password, used by Docker only | your own password |
+| `DB_CONNECTION_LIMIT` | Maximum connections in the pool | `10` |
+| `DOKUMENTASI_DRIVER` | Where progress files are stored (only `lokal` for now) | `lokal` |
+| `DOKUMENTASI_DIR` | Folder for uploaded progress files | `./uploads` |
 
-Koneksi dikelola oleh `server/db.ts` (connection pool `mysql2`). Repository memakai fungsi `query`, `execute`, dan `withTransaction` dari file tersebut.
+---
 
-### Berkas Dokumentasi Progres
+<a id="database-setup"></a>
 
-Berkas dokumentasi yang diunggah Pembuat Project disimpan di sistem berkas lokal,
-bukan di layanan penyimpanan objek seperti yang ditulis DPPL, agar aplikasi dapat
-dijalankan tanpa akun layanan awan. Perbedaan ini dicatat pada laporan B.1.
+## 🗄️ Database Setup
+Both options use the same SQL files in `db/migrations/`:
 
-- Lokasi default `src/uploads/progres/<id_project>/<uuid>.<ekstensi>`. Folder
-  `uploads/` sudah masuk `.gitignore`, jadi berkas unggahan tidak ikut ter-commit.
-- Format yang diterima: JPG, PNG, WebP, dan PDF. Ukuran maksimal 50 MB per berkas
-  sesuai Tabel 4.2 DPPL.
-- Tipe MIME dari peramban diperiksa ulang di peladen terhadap beberapa byte
-  pertama berkas, sehingga berkas yang diganti namanya tetap ditolak.
-- Berkas disajikan lewat `GET /api/dokumentasi/<id_project>/<nama>`. Dokumentasi
-  project yang sudah terpublikasi terbuka untuk umum; project yang masih draft,
-  menunggu verifikasi, atau ditolak hanya dapat dilihat pembuatnya dan Admin Sistem.
-- Mengganti ke penyimpanan objek nanti cukup menambah satu implementasi
-  `PenyimpananDokumentasi` di `server/storage/dokumentasiStorage.ts` dan satu
-  cabang pada `getPenyimpananDokumentasi()`.
+1. `001_schema.sql` creates all 11 tables.
+2. `002_seed.sql` fills them with demo data taken from our prototype. All of it is fictional.
 
-### API Progres Project
+### 🐳 Option A: Docker (port 3307)
 
-Pembaruan progres (UC09) ditangani `ProgresController` (C38) di `server/controllers/`,
-aturannya di `server/services/progresService.ts`.
-
-| Metode dan alamat | Fungsi | Akses |
-| --- | --- | --- |
-| `POST /api/projects/<id>/progres` | Menyimpan satu pembaruan progres (`multipart/form-data`) | Pembuat project atau Admin |
-| `GET /api/projects/<id>/progres` | Riwayat progres, terbaru lebih dulu | Umum bila project terpublikasi; selain itu pembuat dan Admin |
-
-Isian `POST`: `milestone` dan `statusPelaksanaan` (`persiapan`, `berjalan`, `ditunda`, `selesai`) wajib;
-`catatan`, `persentase` (0-100), `danaTerpakai`, dan `dokumentasi` (maksimal 5 berkas, aturan format
-dan ukuran sama dengan bagian Berkas Dokumentasi Progres) opsional. Setiap pembaruan menjadi
-baris baru di `progres_project`, lalu milestone, status, dan waktu terbarunya disalin ke tabel
-`project` dalam satu transaksi. Bila penulisan gagal, berkas yang sudah tersimpan dihapus lagi.
-
-### API Relawan
-
-Pendaftaran relawan dan pengelolaannya (UC07, UC08) ditangani `RelawanController`
-(C34) di `server/controllers/`, dengan aturan bisnis di `server/services/relawanService.ts`.
-Sesi sementara dibaca dari cookie `klimpool_dev_user` sampai issue #14 selesai.
-
-| Metode dan alamat | Fungsi | Akses |
-| --- | --- | --- |
-| `POST /api/projects/<id>/relawan` | Mendaftar sebagai relawan, status awal `pending` | Pengguna yang sudah masuk |
-| `GET /api/projects/<id>/relawan` | Daftar pendaftar (kosong bila belum ada) | Pembuat project |
-| `PATCH /api/projects/<id>/relawan/<idPendaftaran>` | Terima atau tolak, badan `{"keputusan":"accepted"}` atau `"rejected"` | Pembuat project |
-
-Badan `POST`: `{ "dataDiri": { "nama", "telepon", "kota" }, "keahlian": [], "pengalaman": "", "jadwal": [] }`.
-Semua kolom wajib diisi; kesalahan per kolom dikembalikan pada `galat` dengan status 400.
-Pendaftaran ditolak (409) bila pendaftaran project ditutup, pengguna sudah pernah
-mendaftar, atau kuota relawan yang berstatus `accepted` sudah penuh. Pendaftaran ganda
-juga dijaga `UNIQUE KEY (id_volunteer, id_project)` di basis data.
-
-### Menyiapkan Database
-
-Pilih salah satu opsi. Keduanya memakai file migration yang sama di `db/migrations/`:
-
-1. `001_schema.sql`: membuat semua tabel (MySQL 8, InnoDB, utf8mb4).
-2. `002_seed.sql`: mengisi data contoh dari prototipe (semua fiktif). Jalankan **setelah** `001_schema.sql`.
-
-#### Opsi A: Docker (port 3307)
-
-Prasyarat: Docker Desktop terpasang dan berjalan. Dari folder `src/`:
+Make sure Docker Desktop is running, then from `src/`:
 
 ```bash
-cp .env.example .env      # PowerShell: Copy-Item .env.example .env
-npm run db:up             # sama dengan: docker compose up -d
+npm run db:up
 ```
 
-- Migration dijalankan otomatis, berurutan, hanya saat volume masih kosong.
-- Port host default **3307** supaya tidak bentrok dengan MySQL/XAMPP lokal di 3306.
-- Matikan database: `npm run db:down`.
-- Ulang dari nol (hapus data lalu seed ulang): `npm run db:reset`.
+- The migrations run automatically, in order, the first time the database volume is created.
+- Port **3307** is used so it does not clash with a local MySQL or XAMPP on 3306.
+- Stop the database: `npm run db:down`
+- Start over with fresh demo data: `npm run db:reset`
 
-#### Opsi B: XAMPP (port 3306)
+### 🧡 Option B: XAMPP (port 3306)
 
-Prasyarat: XAMPP terpasang, modul **MySQL** sudah di-start di XAMPP Control Panel.
+Start **MySQL** in the XAMPP Control Panel. In `.env`, set `DB_PORT=3306`, keep `DB_USER=klimpool`, and choose a password for `DB_PASSWORD`.
 
-Isi `.env` seperti ini (password root XAMPP default-nya kosong):
-
-```
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=klimpool
-DB_USER=root
-DB_PASSWORD=
-DB_ROOT_PASSWORD=
-DB_CONNECTION_LIMIT=10
-```
-
-Lalu dari folder `src/` (PowerShell), sesuaikan path XAMPP jika berbeda:
+Then run these from `src/` in PowerShell, one line at a time (replace the path if XAMPP is installed elsewhere, and use the same password as in `.env`):
 
 ```powershell
 $mysql = "C:\xampp\mysql\bin\mysql.exe"
 & $mysql -u root -e "CREATE DATABASE klimpool CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+& $mysql -u root -e "CREATE USER 'klimpool'@'localhost' IDENTIFIED BY 'your_password'; GRANT ALL PRIVILEGES ON klimpool.* TO 'klimpool'@'localhost';"
 cmd /c "$mysql -u root klimpool < db\migrations\001_schema.sql"
 cmd /c "$mysql -u root klimpool < db\migrations\002_seed.sql"
 ```
 
-Alternatif lewat phpMyAdmin (`http://localhost/phpmyadmin`): buat database `klimpool`, lalu tab **Import** untuk `001_schema.sql` dan setelah itu `002_seed.sql`.
+> ⚠️ The app refuses to start with an empty `DB_PASSWORD`, so do not connect as XAMPP's default `root` user (it has no password). Create the `klimpool` user above instead.
 
-Untuk mengulang dari nol: `& $mysql -u root -e "DROP DATABASE klimpool;"` lalu ulangi perintah di atas.
+> ℹ️ XAMPP ships MariaDB, while the app is built for MySQL 8.4. If you get an SQL error during import, use the Docker option.
 
-#### Memeriksa Hasilnya
+Prefer a GUI? Open phpMyAdmin (`http://localhost/phpmyadmin`), create the `klimpool` database and user, then use the **Import** tab for `001_schema.sql` followed by `002_seed.sql`.
+
+To start over, run `& $mysql -u root -e "DROP DATABASE klimpool;"`, then run the `CREATE DATABASE` line and the two `cmd /c` import lines again.
+
+### ✅ Check the result
 
 ```powershell
 & $mysql -u root klimpool -e "SHOW TABLES; SELECT id_pengguna, nama, peran FROM pengguna;"
 ```
 
-Hasil yang benar: 11 tabel dan 10 pengguna. Untuk Docker, ganti dengan klien MySQL milikmu dan port 3307, atau jalankan `docker exec -it klimpool-db mysql -uroot -p klimpool`.
+You should see **11 tables** and **10 users**. With Docker, run `docker exec -it klimpool-db mysql -uroot -p klimpool` and enter `DB_ROOT_PASSWORD`.
 
-Setelah database siap, jalankan aplikasi dengan `npm run dev`.
+---
 
-### Akun Uji
+<a id="running-the-app"></a>
 
-Semua akun demo memakai password **`klimpool123`** (disimpan sebagai hash bcrypt cost 12). Data hanya untuk pengembangan dan sepenuhnya fiktif.
+## ▶️ Running the App
+From `src/`, with the database running:
 
-| Peran | Nama | Email |
-| --- | --- | --- |
-| Admin | Review Team | `admin@klimpool.id` |
-| Pembuat project | Sari Wulandari | `sari@klimpool.id` |
-| Pembuat project | Dimas Pratama | `dimas@klimpool.id` |
-| Pembuat project | Rina Hapsari | `rina@klimpool.id` |
-| Volunteer / donatur | Andi Rahman | `andi@klimpool.id` |
-| Volunteer / donatur | Nadia Putri | `nadia@klimpool.id` |
-| Volunteer / donatur | Fajar Nugroho | `fajar@klimpool.id` |
-| Volunteer / donatur | Lestari Ayu | `lestari@klimpool.id` |
-| Volunteer / donatur | Bima Saputra | `bima@klimpool.id` |
-| Volunteer / donatur | Sekar Ningrum | `sekar@klimpool.id` |
+```bash
+npm run dev
+```
 
-### Modul dan Pembagian Anggota
+Open **http://localhost:3000** 🎉
 
-| Modul | PIC | Reviewer |
-| --- | --- | --- |
-| Kerangka aplikasi, database, autentikasi (login, sesi, `requireLogin()` dan `requireRole()`), komponen bersama (navbar, footer, modal, toast), beranda | Naya | Ney |
-| Explore (pencarian, filter, peta) dan halaman detail | Ney | - |
-
-Anggota lain: lengkapi baris modul masing-masing di tabel ini.
-
-### Skema Database
-
-Ada 11 tabel, semuanya InnoDB. Acuan: DPPL Tabel 4.1 dan 4.2, query Q-001 sampai Q-137, serta Tabel B.1 laporan M9.
-
-| Tabel | Fungsi |
+| Command | What it does |
 | --- | --- |
-| `pengguna` | Data profil pengguna dan perannya (`volunteer`, `pembuat_project`, `admin`) |
-| `akun` | Kredensial login: email (unik) dan hash password |
-| `sesi_login` | Sesi login aktif beserta waktu kedaluwarsa |
-| `donatur` | Saldo donasi tiap pengguna non-admin (`saldo >= 0`) |
-| `campaign` | Campaign penggalangan dana beserta status verifikasi |
-| `project` | Project lapangan beserta kuota relawan dan status pelaksanaan |
-| `transaksi_donasi` | Riwayat donasi (`nominal > 0`, `idempotency_key` unik agar donasi tidak terproses ganda) |
-| `bukti_transaksi` | Bukti/rincian untuk setiap transaksi donasi (satu per transaksi) |
-| `pendaftaran_relawan` | Pendaftaran relawan ke project (unik per pasangan `id_volunteer` dan `id_project`) |
-| `progres_project` | Catatan progres, milestone, dan dana terpakai tiap project |
-| `topup_saldo` | Riwayat top up saldo donatur (`nominal > 0`) |
+| `npm run dev` | Start the development server |
+| `npm run build` | Build for production |
+| `npm start` | Run the production build |
+| `npm run lint` | Check the code with ESLint |
+| `npm run format` | Format the code with Prettier |
 
-Catatan: `dana_terkumpul` pada data seed memakai angka prototipe (statis), sehingga tidak sama dengan jumlah di `transaksi_donasi`. Donasi baru akan menambahkannya.
+---
 
-## Aturan Git
+<a id="running-the-tests"></a>
 
-### Branch
+## 🧪 Running the Tests
+```bash
+npm test
+```
 
-- `main`: dijaga agar tetap bisa disinkronkan asisten. Rilis `v9.0` dibuat dari sini.
-- `develop`: branch integrasi, dibuat dari `main`.
-- `feat/*`: fitur baru.
-- `fix/*`: perbaikan bug.
-- `refactor/*`: perbaikan kode tanpa menambah fitur.
+This runs two test suites:
 
-### Alur Kerja
+| Command | Runner | Files | Needs a database? |
+| --- | --- | --- | --- |
+| `npm run test:vitest` | Vitest | `tests/*.spec.ts` (catalog, Explore, detail page, map) | No, they use fake repositories |
+| `npm run test:node` | Node test runner | the files listed in `package.json` (donation, authentication) | Only the integration tests. Without a database they are **skipped**, not failed |
 
-1. Buat branch dari `develop`.
-2. Kerjakan fitur.
-3. `git pull` dari `develop` untuk menarik perubahan terbaru dan menghindari merge conflict.
-4. Buat Pull Request ke `develop` (cantumkan `Closes #<nomor issue>`).
-5. Code review oleh minimal 1 anggota lain.
-6. Merge setelah di-approve.
+To run the integration tests too, start the database first (`npm run db:up`) and make sure `.env` is filled in.
 
-### Format Commit
+📊 Test results are reported in section B.2 of the M9 report (`docs/M9/K02_G08_Implementasi.md`).
 
-`<tipe>(<scope>): <deskripsi>`, contoh `feat(auth): add email validation`.
+🚧 *Tests for the other modules (campaign/project, volunteer, progress) will be added to `npm test` (to be completed).*
 
-| Tipe | Kegunaan |
-| --- | --- |
-| `feat` | Menambahkan fitur baru |
-| `fix` | Memperbaiki bug |
-| `docs` | Mengubah dokumentasi |
-| `style` | Perubahan format, tanpa mengubah logika |
-| `refactor` | Perubahan kode tanpa menambah fitur atau memperbaiki bug |
-| `test` | Menambah atau memperbaiki pengujian |
-| `chore` | Tugas rutin (build, dependensi, konfigurasi) |
+---
+
+<a id="demo-accounts"></a>
+
+## 👤 Demo Accounts
+Every demo account uses the password **`klimpool123`**. Passwords are stored as bcrypt hashes, and all data is fictional.
+
+| Role | Name | Email |
+| --- | --- | --- |
+| 🛡️ Admin | Review Team | `admin@klimpool.id` |
+| 🌱 Project creator | Sari Wulandari | `sari@klimpool.id` |
+| 🌱 Project creator | Dimas Pratama | `dimas@klimpool.id` |
+| 🌱 Project creator | Rina Hapsari | `rina@klimpool.id` |
+| 🙋 Volunteer / donor | Andi Rahman | `andi@klimpool.id` |
+| 🙋 Volunteer / donor | Nadia Putri | `nadia@klimpool.id` |
+| 🙋 Volunteer / donor | Fajar Nugroho | `fajar@klimpool.id` |
+| 🙋 Volunteer / donor | Lestari Ayu | `lestari@klimpool.id` |
+| 🙋 Volunteer / donor | Bima Saputra | `bima@klimpool.id` |
+| 🙋 Volunteer / donor | Sekar Ningrum | `sekar@klimpool.id` |
+
+💡 Try logging in as **Andi** to donate, or as **Sari** to see a project creator's view.
+
+---
+
+<a id="project-structure"></a>
+
+## 📂 Project Structure
+```
+src/
+├── app/                 # Next.js routes: pages and API route handlers
+│   ├── api/             #   REST endpoints (auth, katalog, peta, donasi, projects, ...)
+│   ├── explore/         #   Explore page (search, filters, map)
+│   ├── project/[id]/    #   Project detail page
+│   ├── campaign/[id]/   #   Campaign detail page
+│   ├── donasi/          #   Donation and receipt pages
+│   ├── account/         #   Account and wallet page
+│   └── history/         #   Donation and progress history
+├── components/
+│   ├── ui/              # Shared UI: navbar, footer, modal, toast, map, cards
+│   ├── views/           # Boundary classes from the DPPL (FormLoginView, ExploreView, ...)
+│   └── detail/          # Detail page parts: tabs, side panel, action buttons
+├── server/              # Server-only code
+│   ├── controllers/     #   Controller layer (one per use case group)
+│   ├── services/        #   Business rules
+│   ├── repositories/    #   SQL queries (parameterized)
+│   ├── auth/            #   Session and access helpers
+│   ├── storage/         #   Local file storage for progress documents
+│   └── db.ts            #   MySQL connection pool
+├── models/              # Entity classes (Akun, Donatur, TransaksiDonasi, ...)
+├── shared/              # Types, constants, and pure helpers safe for the browser
+├── db/migrations/       # 001_schema.sql and 002_seed.sql
+├── tests/               # Unit and integration tests
+├── public/              # Images and static files
+├── docker-compose.yml   # Local MySQL 8.4
+└── .env.example         # Configuration template (no secrets)
+```
+
+🚧 *Folders for the pages that are not merged yet (campaign/project forms, admin verification, volunteer and progress UI) will be added here (to be completed).*
+
+---
+
+<a id="database-tables"></a>
+
+## 🗃️ Database Tables
+There are 11 InnoDB tables. The full definitions, including keys and constraints, are in [`db/migrations/001_schema.sql`](db/migrations/001_schema.sql).
+
+### 👥 Users and sessions
+
+| Table | Primary key | Main columns | Description |
+| --- | --- | --- | --- |
+| `pengguna` | `id_pengguna` | `nama`, `peran`, `telepon`, `kota`, `tanggal_bergabung` | User profile and role (`volunteer`, `pembuat_project`, `admin`) |
+| `akun` | `id_akun` | `id_pengguna`, `email` (unique), `password_hash`, `status_akun`, `tanggal_dibuat` | Login credentials |
+| `sesi_login` | `id_sesi` | `id_pengguna`, `waktu_mulai`, `waktu_kedaluwarsa`, `status_sesi` | Login sessions (24 hours) |
+| `donatur` | `id_donatur` | `saldo` | Donation balance of each non-admin user (never negative) |
+
+### 🌍 Climate actions
+
+| Table | Primary key | Main columns | Description |
+| --- | --- | --- | --- |
+| `campaign` | `id_campaign` | `id_pembuat`, `judul`, `deskripsi`, `kategori`, `target_nominal`, `periode_mulai`, `periode_selesai`, `provinsi`, `kota`, `latitude`, `longitude`, `kebutuhan`, `rincian_penggunaan_dana`, `status`, `alasan_penolakan`, `dana_terkumpul`, `tanggal_dibuat`, `tanggal_pengajuan`, `tanggal_verifikasi` | Fundraising campaigns and their review status |
+| `project` | `id_project` | `id_pembuat`, `nama`, `deskripsi`, `tujuan`, `kategori`, `provinsi`, `kota`, `latitude`, `longitude`, `kebutuhan_dana`, `kebutuhan_logistik`, `kriteria_volunteer`, `rincian_penggunaan_dana`, `kuota_relawan`, `status_pendaftaran_project`, `jadwal_mulai`, `jadwal_selesai`, `lokasi_kumpul`, `status`, `alasan_penolakan`, `dana_terkumpul`, `milestone`, `status_pelaksanaan`, `timestamp_pembaruan`, `tanggal_dibuat`, `tanggal_pengajuan`, `tanggal_verifikasi` | Field projects, volunteer quota, schedule, and progress |
+| `progres_project` | `id_progres` | `id_project`, `id_pengguna`, `milestone`, `status_pelaksanaan`, `catatan`, `persentase`, `dana_terpakai`, `dokumentasi_url`, `timestamp_pembaruan` | Progress updates with documentation |
+| `pendaftaran_relawan` | `id_pendaftaran` | `id_volunteer`, `id_project`, `data_diri`, `keahlian`, `pengalaman`, `ketersediaan_jadwal`, `status_pendaftaran`, `tanggal_daftar`, `tanggal_keputusan` | Volunteer sign-ups (one per user per project) |
+
+### 💸 Money
+
+| Table | Primary key | Main columns | Description |
+| --- | --- | --- | --- |
+| `transaksi_donasi` | `id_transaksi` | `id_donatur`, `id_tujuan`, `jenis_tujuan`, `idempotency_key` (unique), `nominal`, `tanggal`, `status_transaksi` | Donations; the unique key prevents double charges |
+| `bukti_transaksi` | `id_bukti` | `id_transaksi` (unique), `rincian` | One receipt per donation |
+| `topup_saldo` | `id_topup` | `id_donatur`, `nominal`, `metode`, `waktu` | Simulated balance top-ups |
+
+> 📝 `dana_terkumpul` in the seed data uses the prototype's numbers, so it does not equal the sum of `transaksi_donasi`. New donations are added on top of it.
+
+---
+
+## 📚 Documents
+
+All project documents are in the [`docs/`](../docs) folder at the repository root.
+
+<p align="center">Made with 💚 by BS3N </p>

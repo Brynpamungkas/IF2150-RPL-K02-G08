@@ -1,24 +1,16 @@
-import { cookies } from 'next/headers';
+import { penggunaSaatIni } from '@/server/controllers/guard';
 
 /**
- * Pengganti sementara untuk pembacaan sesi login.
+ * Id pengguna yang sedang login, atau null bila tamu (issue #14).
  *
- * TODO(#14): ganti dengan pembacaan sesi yang sebenarnya begitu
- * "Implement login, sesi, dan pembatasan akses (API)" selesai. Seluruh
- * pemanggil cukup memakai `getIdPenggunaSaatIni()`, sehingga penggantian
- * terbatas pada berkas ini saja.
+ * Dibaca dari cookie sesi `klimpool_sesi` yang dibuat saat login, lewat
+ * `penggunaSaatIni()` di guard.ts, sehingga sesi berakhir, kedaluwarsa, atau
+ * akun nonaktif dianggap belum login. Cookie dev `klimpool_dev_user` tidak
+ * lagi diterima; untuk pengujian, login dengan akun seed (lihat README).
  *
- * Selama pengembangan, id pengguna dibaca dari cookie `klimpool_dev_user`.
- * Contoh pengujian dengan akun dari seed (`docs/M8` dan `db/migrations/002_seed.sql`):
- *
- *   document.cookie = 'klimpool_dev_user=u2';  // Sari, pembuat project "mgv"
- *   document.cookie = 'klimpool_dev_user=u1';  // Andi, volunteer
- *   document.cookie = 'klimpool_dev_user=u3';  // Review Team, admin
- *
- * Tanpa cookie tersebut, pengguna dianggap belum login.
+ * Nama berkas dipertahankan agar pemanggil lama (relawan, dokumentasi, halaman
+ * detail, progres) tidak perlu diubah.
  */
 export async function getIdPenggunaSaatIni(): Promise<string | null> {
-  const jar = await cookies();
-  const nilai = jar.get('klimpool_dev_user')?.value?.trim();
-  return nilai ? nilai : null;
+  return (await penggunaSaatIni())?.idPengguna ?? null;
 }

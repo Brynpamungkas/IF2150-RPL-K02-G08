@@ -2,7 +2,7 @@
  * Kontrak data antara View (client) dan API (server) untuk alur donasi atomik (UC06).
  * Modul ini aman di-import oleh kedua sisi.
  */
-import type { KodeGalat } from './galat';
+import type { KodeGalat } from './galatDonasi';
 
 export type JenisTujuan = 'campaign' | 'project';
 /** Sama dengan ENUM transaksi_donasi.status_transaksi. */
@@ -27,7 +27,13 @@ export function nominalValid(nominal: unknown): nominal is number {
 
 /* ---------- Bentuk respons API ---------- */
 export type ApiSukses<T> = { ok: true; data: T };
-export type ApiGagal = { ok: false; kode: KodeGalat; pesan: string };
+export type ApiGagal = {
+  ok: false;
+  kode: KodeGalat;
+  pesan: string;
+  /** Nama kolom form yang salah, bila ada. */
+  bidang?: string;
+};
 export type ApiHasil<T> = ApiSukses<T> | ApiGagal;
 
 /* ---------- Donasi ---------- */

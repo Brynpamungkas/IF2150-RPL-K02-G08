@@ -1,30 +1,35 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { GateLogin } from '@/components/ui/GateLogin';
 import { DompetKartu } from '@/components/views/DonasiView/DompetKartu';
 import { FormRiwayatView } from '@/components/views/RiwayatView/FormRiwayatView';
 import { TabRiwayat } from '@/components/views/RiwayatView/TabRiwayat';
+import { penggunaSaatIni } from '@/server/controllers/guard';
 
 export const metadata: Metadata = { title: 'My activity | KlimPooL' };
 
-// ===================== DATA SEMENTARA (UI saja) =====================
-// Belum ada akses data. Ganti blok ini setelah backend siap:
-//  - SUDAH_LOGIN dan nama dari sesi login (AutentikasiService). Di Next 16
-//    dengan cacheComponents, pembacaan sesi harus berada di balik <Suspense>.
-//  - saldoDonasi dan saldoGalang dari DonasiService.
-const SUDAH_LOGIN: boolean = true;
-const PENGGUNA_DUMMY = {
-  nama: 'Andi Rahman',
-  saldoDonasi: 750_000,
-  saldoGalang: 0,
-};
-// ====================================================================
+// ===================== DATA SEMENTARA =====================
+// saldoGalang belum punya sumber data; ganti setelah DonasiService siap.
+const SALDO_GALANG_SEMENTARA = 0;
+// ==========================================================
 
 export default function HalamanAccount() {
-  if (!SUDAH_LOGIN) {
+  // Sesi dibaca dari cookie, jadi harus di balik <Suspense> (cacheComponents).
+  return (
+    <Suspense fallback={null}>
+      <IsiAccount />
+    </Suspense>
+  );
+}
+
+/** KF04: tanpa sesi valid, halaman ini hanya menampilkan penghalang login. */
+async function IsiAccount() {
+  const pengguna = await penggunaSaatIni();
+  if (!pengguna) {
     return <GateLogin pesan="Log in to see your activity" />;
   }
 
-  const namaDepan = PENGGUNA_DUMMY.nama.split(' ')[0];
+  const namaDepan = pengguna.nama.split(' ')[0];
 
   return (
     <main>
@@ -39,8 +44,8 @@ export default function HalamanAccount() {
             place.
           </p>
           <DompetKartu
-            saldoDonasi={PENGGUNA_DUMMY.saldoDonasi}
-            saldoGalang={PENGGUNA_DUMMY.saldoGalang}
+            saldoDonasi={pengguna.saldo ?? 0}
+            saldoGalang={SALDO_GALANG_SEMENTARA}
           />
         </div>
       </section>

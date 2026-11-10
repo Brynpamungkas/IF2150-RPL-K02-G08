@@ -1,4 +1,4 @@
-import { rupiah } from '../format';
+import { rupiah } from './format';
 
 interface DompetKartuProps {
   /** Saldo donasi donatur yang sedang login (C04 Donatur). */

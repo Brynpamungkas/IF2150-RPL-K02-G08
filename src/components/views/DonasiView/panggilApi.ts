@@ -1,5 +1,5 @@
-import type { ApiHasil } from '@/shared/dto';
-import { PESAN_GALAT } from '@/shared/galat';
+import type { ApiHasil } from '@/shared/donasi';
+import { PESAN_GALAT } from '@/shared/galatDonasi';
 
 /**
  * Satu-satunya jalan View ke server (batas Client-Server).
@@ -19,4 +19,13 @@ export async function panggilApi<T>(
       pesan: PESAN_GALAT.GAGAL_KONEKSI,
     };
   }
+}
+
+/** POST dengan body JSON lewat panggilApi (form login dan daftar). */
+export function kirimJson<T>(url: string, isi: unknown): Promise<ApiHasil<T>> {
+  return panggilApi<T>(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(isi),
+  });
 }

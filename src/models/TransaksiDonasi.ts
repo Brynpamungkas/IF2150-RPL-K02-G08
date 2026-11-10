@@ -3,7 +3,7 @@ import {
   nominalValid,
   type JenisTujuan,
   type StatusTransaksi,
-} from '@/shared/dto';
+} from '@/shared/donasi';
 
 export interface PropsTransaksi {
   idTransaksi: string;

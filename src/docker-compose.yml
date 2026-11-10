@@ -16,7 +16,7 @@ services:
       TZ: UTC
     # Port host default 3307 supaya tidak bentrok dengan MySQL/XAMPP lokal di 3306.
     ports:
-      - "${DB_PORT:-3307}:3306"
+      - '${DB_PORT:-3307}:3306'
     command: >
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
@@ -24,7 +24,11 @@ services:
       - klimpool-db-data:/var/lib/mysql
       - ./db/migrations:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      test:
+        [
+          'CMD-SHELL',
+          'mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent',
+        ]
       interval: 5s
       timeout: 5s
       retries: 20

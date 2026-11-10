@@ -3,7 +3,7 @@ import {
   adalahJenisTujuan,
   type BuktiDTO,
   type RincianBukti,
-} from '@/shared/dto';
+} from '@/shared/donasi';
 
 /**
  * C07 - BuktiTransaksi (entity). Struk yang dibentuk setelah donasi berhasil.

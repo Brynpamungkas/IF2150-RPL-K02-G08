@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 import { BuktiTransaksi } from '@/models/BuktiTransaksi';
 import { Donatur } from '@/models/Donatur';
 import { TransaksiDonasi } from '@/models/TransaksiDonasi';
-import { NOMINAL_MAKS } from '@/shared/dto';
+import { NOMINAL_MAKS } from '@/shared/donasi';
 
 describe('TransaksiDonasi.validasiNominal (Algo-105)', () => {
   it('menerima nominal > 0 sampai batas maksimum, maksimal 2 desimal', () => {

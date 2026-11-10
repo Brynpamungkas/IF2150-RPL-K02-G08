@@ -1,13 +1,13 @@
-import { adalahJenisTujuan, type PermintaanDonasi } from '@/shared/dto';
-import { GalatAplikasi } from '@/shared/galat';
+import { adalahJenisTujuan, type PermintaanDonasi } from '@/shared/donasi';
+import { GalatAplikasi } from '@/shared/galatDonasi';
 import { AutentikasiService } from '../services/AutentikasiService';
 import { DonasiService } from '../services/DonasiService';
 import {
-  ambilTokenSesi,
   bacaJson,
   gagal,
   pesanDariGalat,
   sukses,
+  TANPA_CACHE,
 } from './respons';
 
 const PESAN_MAKS = 200;
@@ -53,9 +53,7 @@ export const DonasiController = {
   /** GET /api/donasi/form?jenis=&id= (Algo-120). */
   async bukaFormDonasi(req: Request): Promise<Response> {
     try {
-      const { idPengguna } = await AutentikasiService.wajibLogin(
-        ambilTokenSesi(req),
-      );
+      const { idPengguna } = await AutentikasiService.wajibLogin();
       const q = new URL(req.url).searchParams;
       const jenis = q.get('jenis');
       const id = q.get('id');
@@ -71,9 +69,7 @@ export const DonasiController = {
   /** POST /api/donasi (Algo-121). 201 berisi id transaksi dan ringkasan untuk struk. */
   async konfirmasiDonasi(req: Request): Promise<Response> {
     try {
-      const { idPengguna } = await AutentikasiService.wajibLogin(
-        ambilTokenSesi(req),
-      );
+      const { idPengguna } = await AutentikasiService.wajibLogin();
       const minta = parsePermintaanDonasi(await bacaJson(req));
       return sukses(await DonasiService.prosesDonasi(idPengguna, minta), 201);
     } catch (e) {
@@ -87,14 +83,14 @@ export const DonasiController = {
     idTransaksi: string,
   ): Promise<Response> {
     try {
-      const { idPengguna } = await AutentikasiService.wajibLogin(
-        ambilTokenSesi(req),
-      );
+      const { idPengguna } = await AutentikasiService.wajibLogin();
       return sukses(
         await DonasiService.getBuktiTransaksi(idPengguna, idTransaksi),
+        200,
+        TANPA_CACHE,
       );
     } catch (e) {
-      return gagal(e);
+      return gagal(e, TANPA_CACHE);
     }
   },
 
