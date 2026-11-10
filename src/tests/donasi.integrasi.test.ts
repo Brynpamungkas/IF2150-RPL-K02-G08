@@ -438,3 +438,62 @@ describe('Bukti transaksi (KF17, issue #28)', () => {
     }
   });
 });
+
+describe('Performa pembacaan bukti (issue #42)', () => {
+  /** Menghitung query yang dikirim ke MySQL lewat pool selama `kerja` berjalan. */
+  async function hitungQuery(kerja: () => Promise<unknown>): Promise<number> {
+    const pool = getPool() as unknown as Record<
+      'query' | 'execute',
+      (...a: unknown[]) => unknown
+    >;
+    const asli = { query: pool.query, execute: pool.execute };
+    let jumlah = 0;
+    pool.query = (...a) => (jumlah++, asli.query.apply(pool, a));
+    pool.execute = (...a) => (jumlah++, asli.execute.apply(pool, a));
+    try {
+      await kerja();
+    } finally {
+      pool.query = asli.query;
+      pool.execute = asli.execute;
+    }
+    return jumlah;
+  }
+
+  it('bukti yang sudah ada dibaca dengan satu query', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    await aturSaldo(ID.donatur, 10_000);
+    const h = await DonasiService.prosesDonasi(
+      ID.donatur,
+      minta('project', ID.projectBuka, 10_000),
+    );
+
+    const jumlah = await hitungQuery(() =>
+      DonasiService.getBuktiTransaksi(ID.donatur, h.idTransaksi),
+    );
+    assert.equal(jumlah, 1);
+  });
+
+  it('rincian format lama (data seed) dibentuk ulang dengan dua query', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    await aturSaldo(ID.donatur, 10_000);
+    const h = await DonasiService.prosesDonasi(
+      ID.donatur,
+      minta('project', ID.projectBuka, 10_000),
+    );
+    await execute(
+      'UPDATE bukti_transaksi SET rincian = ? WHERE id_transaksi = ?',
+      ['Donasi untuk Project Uji', h.idTransaksi],
+    );
+
+    let bukti: Awaited<
+      ReturnType<typeof DonasiService.getBuktiTransaksi>
+    > | null = null;
+    const jumlah = await hitungQuery(async () => {
+      bukti = await DonasiService.getBuktiTransaksi(ID.donatur, h.idTransaksi);
+    });
+    assert.equal(jumlah, 2);
+    assert.equal(bukti!.rincian.nominal, 10_000);
+    assert.equal(bukti!.rincian.namaTujuan, 'Project Uji');
+    assert.equal(bukti!.rincian.pesan, null);
+  });
+});
