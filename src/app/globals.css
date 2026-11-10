@@ -778,6 +778,7 @@ footer .brand {
   }
 }
 
+/* ---------- Form, tab login, dan halaman gerbang (dari prototipe) ---------- */
 /* ---------- Halaman Explore (UC05) ---------- */
 .arrow {
   width: 18px;
@@ -789,6 +790,79 @@ footer .brand {
   color: var(--ink-2);
   max-width: 62ch;
 }
+.form {
+  display: grid;
+  gap: 22px;
+}
+.field .hint {
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.err-summary {
+  background: var(--bad-bg);
+  color: #6e1712;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: grid;
+  gap: 6px;
+}
+.err-summary strong {
+  font-size: 17px;
+}
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--cream);
+  border-radius: 999px;
+  padding: 5px;
+}
+.auth-tabs button {
+  border: 0;
+  background: none;
+  border-radius: 999px;
+  padding: 11px;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--ink-2);
+}
+.auth-tabs button.on {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.demo-acc {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+.demo-acc .btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.gate {
+  max-width: 640px;
+  margin: 0 auto;
+  padding-block: 170px 120px;
+  text-align: center;
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+.gate .ic {
+  width: 72px;
+  height: 72px;
+  border-radius: 22px;
+  background: var(--bad-bg);
+  color: var(--bad);
+  display: grid;
+  place-items: center;
+}
+.gate h1 {
+  font-size: 44px;
+}
+
 .num {
   font-variant-numeric: tabular-nums;
 }

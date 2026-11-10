@@ -27,7 +27,13 @@ export function nominalValid(nominal: unknown): nominal is number {
 
 /* ---------- Bentuk respons API ---------- */
 export type ApiSukses<T> = { ok: true; data: T };
-export type ApiGagal = { ok: false; kode: KodeGalat; pesan: string };
+export type ApiGagal = {
+  ok: false;
+  kode: KodeGalat;
+  pesan: string;
+  /** Nama kolom form yang salah, bila ada. */
+  bidang?: string;
+};
 export type ApiHasil<T> = ApiSukses<T> | ApiGagal;
 
 /* ---------- Donasi ---------- */
