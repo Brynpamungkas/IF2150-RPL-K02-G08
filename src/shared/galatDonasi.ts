@@ -9,7 +9,6 @@ export type KodeGalat =
   | 'VALIDASI'
   | 'EMAIL_TERPAKAI'
   | 'KREDENSIAL_SALAH'
-  | 'AKUN_NONAKTIF'
   | 'DILARANG'
   | 'BUKAN_DONATUR'
   | 'PERMINTAAN_TIDAK_VALID'
@@ -29,7 +28,6 @@ export const PESAN_GALAT: Record<KodeGalat, string> = {
   EMAIL_TERPAKAI: 'This email is already registered.',
   KREDENSIAL_SALAH:
     "The email or password doesn't match. Check them and try again.",
-  AKUN_NONAKTIF: 'This account is not active.',
   DILARANG: 'You do not have access to this page.',
   BUKAN_DONATUR: 'This account does not have a donation balance.',
   PERMINTAAN_TIDAK_VALID: 'The data sent is incomplete or invalid.',
@@ -54,7 +52,6 @@ export const STATUS_HTTP: Record<KodeGalat, number> = {
   VALIDASI: 400,
   EMAIL_TERPAKAI: 409,
   KREDENSIAL_SALAH: 401,
-  AKUN_NONAKTIF: 403,
   DILARANG: 403,
   BUKAN_DONATUR: 403,
   PERMINTAAN_TIDAK_VALID: 400,

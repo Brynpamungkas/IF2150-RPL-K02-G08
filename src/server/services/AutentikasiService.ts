@@ -107,8 +107,10 @@ export class AutentikasiService {
   }
 
   /**
-   * Verifikasi kredensial lalu buat sesi. Pesan galat sama untuk "email tidak
-   * ada" dan "password salah" agar tidak membocorkan email yang terdaftar.
+   * Verifikasi kredensial lalu buat sesi (Algo-003). Email tidak terdaftar,
+   * akun nonaktif, dan password salah memberi galat yang sama agar tidak
+   * membocorkan email mana yang terdaftar. Password selalu dibandingkan
+   * (dengan hash tiruan bila email tidak ada) supaya waktu tanggap seragam.
    */
   async login(
     masukan: MasukanLoginDto,
@@ -129,11 +131,8 @@ export class AutentikasiService {
       masukan.password,
       ditemukan?.akun.passwordHash ?? null,
     );
-    if (!ditemukan || !cocok) {
+    if (!ditemukan || ditemukan.akun.statusAkun !== 'aktif' || !cocok) {
       throw new GalatAplikasi('KREDENSIAL_SALAH', PESAN_LOGIN_SALAH);
-    }
-    if (ditemukan.akun.statusAkun !== 'aktif') {
-      throw new GalatAplikasi('AKUN_NONAKTIF', 'This account is not active.');
     }
 
     const sesi = buatSesi(ditemukan.pengguna.idPengguna, this.dep.sekarang());
@@ -141,14 +140,24 @@ export class AutentikasiService {
     return { sesi, pengguna: ditemukan.pengguna };
   }
 
-  /** Pengguna pemilik sesi, atau null bila sesi tidak ada, berakhir, kedaluwarsa, atau akun nonaktif. */
+  /**
+   * cekStatusLogin (Algo-005): pengguna pemilik sesi, atau null bila sesi tidak
+   * ada, berakhir, kedaluwarsa, atau akun nonaktif. Sesi aktif yang sudah
+   * kedaluwarsa ditandai berakhir (Q-006) agar tidak diperiksa ulang.
+   */
   async penggunaDariSesi(
     idSesi: string | undefined,
   ): Promise<PenggunaUmum | null> {
     if (!idSesi) return null;
     const ditemukan = await this.dep.repo.cariSesi(idSesi);
     if (!ditemukan) return null;
-    if (!cekStatusLogin(ditemukan.sesi, this.dep.sekarang())) return null;
+    const { sesi } = ditemukan;
+    if (!cekStatusLogin(sesi, this.dep.sekarang())) {
+      if (sesi.statusSesi === 'aktif') {
+        await this.dep.repo.akhiriSesi(sesi.idSesi);
+      }
+      return null;
+    }
     if (ditemukan.statusAkun !== 'aktif') return null;
     return ditemukan.pengguna;
   }

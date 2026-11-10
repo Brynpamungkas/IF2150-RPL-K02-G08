@@ -29,7 +29,7 @@ function createPool(): Pool {
     port: Number(process.env.DB_PORT ?? 3307),
     database: requireEnv('DB_NAME'),
     user: requireEnv('DB_USER'),
-    password: process.env.DB_PASSWORD ?? '',
+    password: requireEnv('DB_PASSWORD'),
     waitForConnections: true,
     connectionLimit: Number(process.env.DB_CONNECTION_LIMIT ?? 10),
     queueLimit: 0,

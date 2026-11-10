@@ -9,6 +9,7 @@ import type { Akun } from '@/models/Akun';
 import type { PenggunaUmum } from '@/models/PenggunaUmum';
 import type { SesiLogin } from '@/models/SesiLogin';
 import { AutentikasiController } from '@/server/controllers/AutentikasiController';
+import { gagal, TANPA_CACHE } from '@/server/controllers/respons';
 import { cocokPassword, hashPassword } from '@/server/password';
 import {
   AutentikasiService,
@@ -262,16 +263,31 @@ describe('Login, sesi, dan akses (issue #14, KF04)', () => {
     assert.deepEqual(dibandingkan, [null]);
   });
 
-  it('akun nonaktif tidak bisa login', async () => {
-    const { service, akun } = await siapLogin();
-    akun.get('budi@mail.com')!.akun.statusAkun = 'nonaktif';
-    const g = await galatDari(
-      service.login({
-        email: DATA_DAFTAR.email,
-        password: DATA_DAFTAR.password,
-      }),
+  it('akun nonaktif ditolak dengan galat yang sama seperti kredensial salah (Algo-003)', async () => {
+    const { service, akun, panggilan } = await siapLogin();
+    const salahPassword = await galatDari(
+      service.login({ email: DATA_DAFTAR.email, password: 'salah12345' }),
     );
-    assert.equal(g.kode, 'AKUN_NONAKTIF');
+    akun.get('budi@mail.com')!.akun.statusAkun = 'nonaktif';
+    const nonaktif = await galatDari(service.login(DATA_DAFTAR));
+    assert.deepEqual(
+      [nonaktif.kode, nonaktif.message, nonaktif.bidang],
+      [salahPassword.kode, salahPassword.message, salahPassword.bidang],
+    );
+    assert.ok(!panggilan.includes('simpanSesi'), 'tidak ada sesi dibuat');
+  });
+
+  it('akun nonaktif tetap membandingkan password (waktu respons seragam)', async () => {
+    let dibandingkan = 0;
+    const { service, akun } = await siapLogin({
+      cocok: async (p, h) => {
+        dibandingkan++;
+        return h === `hash:${p}`;
+      },
+    });
+    akun.get('budi@mail.com')!.akun.statusAkun = 'nonaktif';
+    await galatDari(service.login(DATA_DAFTAR));
+    assert.equal(dibandingkan, 1);
   });
 
   it('kolom login kosong ditolak per kolom sebelum menyentuh database', async () => {
@@ -299,13 +315,22 @@ describe('Login, sesi, dan akses (issue #14, KF04)', () => {
     assert.equal(await service.penggunaDariSesi('id-palsu'), null);
   });
 
-  it('sesi kedaluwarsa tidak lagi dikenali', async () => {
+  it('sesi kedaluwarsa tidak dikenali dan ditandai berakhir (Algo-005, Q-006)', async () => {
     const ctx = await siapLogin();
     const { sesi } = await ctx.service.login(DATA_DAFTAR);
     ctx.majukanWaktu(DURASI_SESI_MS - 1);
     assert.notEqual(await ctx.service.penggunaDariSesi(sesi.idSesi), null);
+    assert.equal(ctx.sesi.get(sesi.idSesi)?.statusSesi, 'aktif');
+
     ctx.majukanWaktu(1);
     assert.equal(await ctx.service.penggunaDariSesi(sesi.idSesi), null);
+    assert.equal(ctx.sesi.get(sesi.idSesi)?.statusSesi, 'berakhir');
+
+    // Sudah berakhir: pemeriksaan berikutnya tidak menulis ulang ke basis data.
+    const hitung = () => ctx.panggilan.filter((p) => p === 'akhiriSesi').length;
+    const sebelum = hitung();
+    assert.equal(await ctx.service.penggunaDariSesi(sesi.idSesi), null);
+    assert.equal(hitung(), sebelum);
   });
 
   it('logout mengakhiri sesi dan aman dipanggil ulang atau tanpa sesi', async () => {
@@ -336,5 +361,40 @@ describe('Login, sesi, dan akses (issue #14, KF04)', () => {
       Promise.resolve().then(() => service.pastikanPeran(pengguna, ['admin'])),
     );
     assert.equal(g.kode, 'DILARANG');
+  });
+});
+
+describe('Respons galat (respons.ts)', () => {
+  it('header tambahan (Cache-Control) tetap dikirim pada galat aplikasi dan galat tak terduga', () => {
+    const dikenal = gagal(new GalatAplikasi('BELUM_LOGIN'), TANPA_CACHE);
+    assert.equal(dikenal.status, 401);
+    assert.equal(dikenal.headers.get('Cache-Control'), 'private, no-store');
+
+    const asli = console.error;
+    console.error = () => {};
+    try {
+      const takTerduga = gagal(new Error('x'), TANPA_CACHE);
+      assert.equal(takTerduga.status, 500);
+      assert.equal(
+        takTerduga.headers.get('Cache-Control'),
+        'private, no-store',
+      );
+    } finally {
+      console.error = asli;
+    }
+  });
+
+  it('galat dengan kolom membawa `bidang`; tanpa kolom tidak ada `bidang`', async () => {
+    const denganKolom = await gagal(
+      new GalatAplikasi('VALIDASI', 'Enter your email.', 'email'),
+    ).json();
+    assert.deepEqual(denganKolom, {
+      ok: false,
+      kode: 'VALIDASI',
+      pesan: 'Enter your email.',
+      bidang: 'email',
+    });
+    const tanpaKolom = await gagal(new GalatAplikasi('BELUM_LOGIN')).json();
+    assert.ok(!('bidang' in tanpaKolom));
   });
 });

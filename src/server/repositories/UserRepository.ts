@@ -180,7 +180,7 @@ export class UserRepository {
     };
   }
 
-  /** Q-006: tandai sesi berakhir (logout). Tidak ada baris = sudah tidak berlaku, bukan galat. */
+  /** Q-006: tandai sesi berakhir (logout atau kedaluwarsa). Tidak ada baris = sudah tidak berlaku, bukan galat. */
   async akhiriSesi(idSesi: string): Promise<void> {
     await withTransaction(async (conn) => {
       await conn.execute<ResultSetHeader>(

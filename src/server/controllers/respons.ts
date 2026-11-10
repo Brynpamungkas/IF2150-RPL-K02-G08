@@ -32,7 +32,7 @@ export function gagal(e: unknown, headers?: HeadersInit): Response {
         pesan: e.message,
         ...(e.bidang ? { bidang: e.bidang } : {}),
       } satisfies ApiGagal,
-      { status: STATUS_HTTP[e.kode] },
+      { status: STATUS_HTTP[e.kode], headers },
     );
   }
   console.error('[klimpool] galat tak terduga:', e);
