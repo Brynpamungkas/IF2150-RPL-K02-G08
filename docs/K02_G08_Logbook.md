@@ -191,20 +191,29 @@
 
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
 | :--- | :--- | :--- | :--- | :--- | :--- | 
+| 3-11-2026 | Neysa | Setup dokumen Milestone 9 | 0,5 | Done | - |
+| 6-11-2026 | Neysa | Menyiapkan kerangka pengujian Vitest | 1 | Done | - |
+| 6-11-2026 | Neysa | Mengerjakan issue [FEAT] Implement pencarian dan penyaringan katalog (API) #23 | 4 | Done | - |
+| 6-11-2026 | Neysa | Mengerjakan issue [FEAT] Implement UI halaman Explore #24 | 4,5 | Done | - |
 | 7-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi proses donasi secara atomic (API) #26 | 5 | Done | - |
 | 7-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi UI modal donasi dan idempotency key #27 | 5 | Done | - |
 | 7-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi kerangka halaman Akun dan dompet
  #44 | 5 | Done | - |
+| 7-11-2026 | Neysa | Mengerjakan issue [FEAT] Implement halaman detail project dan campaign (tab) #25 | 4 | Done | - |
+| 7-11-2026 | Neysa | Mengerjakan issue [FEAT] Implement peta sebaran project dan campaign #29 | 3 | Done | - |
 | 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi bukti transaksi donasi #28 | 5 | Done | - |
 | 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi riwayat transaksi dan progres (API)
  #38 | 5 | Done | - |
 | 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi UI riwayat di halaman Akun
  #39 | 5 | Done | - |
+| 8-11-2026 | Neysa | Fix merapikan package.json dan lockfile, memisahkan tes Vitest dan node:test | 0,5 | Done | Konflik package-lock.json antarbranch |
+| 8-11-2026 | Neysa | Revisi issue #23 dan #24 dari hasil review (campaign belum mulai, sinkron filter URL, peta untuk hasil closed, galat Show more) | 1 | Done | - |
+| 8-11-2026 | Neysa | Fix eksekusi tes agar jalan di Node 20 dan terbaca Vitest | 0,5 | Done | Pola glob tes tidak terbaca di Node 20 |
 | 10-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi fitur top-up saldo (di luar use case)
  #30 | 5 | Done | - |
 
 
-**Catatan/Evaluasi Milestone 8:**
+**Catatan/Evaluasi Milestone 9:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
