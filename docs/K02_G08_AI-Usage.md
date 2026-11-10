@@ -90,6 +90,8 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 ### Milestone 9
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
+| Claude Code | Debugging bagian katalog dan Explore yang dikomentari reviewer (campaign yang belum mulai masih terbuka donasi, filter tidak ikut berubah saat pindah dari footer, error "Show more") | "Reviewer bilang campaign yang belum mulai masih kebaca terbuka donasi di katalog, tolong cari penyebabnya di repository katalog dan tunjukkan bagian yang perlu diubah" | Penyebab yang ditunjukkan dicek dulu ke kode dan aturan Algo-131/132 di DPPL. Perbaikan ditulis dan disesuaikan sendiri, lalu ditambah tes untuk kasus yang dilaporkan dan dipastikan `npm test` lulus sebelum PR diperbarui |
+| Claude | Melengkapi tabel traceability (B.5) dan perubahan dari DPPL (B.1) untuk modul katalog, Explore, detail, dan peta | "Ini daftar kelas C01, C05, C18, C21, C27, C28, C29 di DPPL dan file yang aku buat, bantu rapikan jadi tabel traceability dan catat bagian yang beda dari rancangan" | Pemetaan kelas ke file dan daftar perbedaan dicocokkan lagi dengan kode di `develop` dan DPPL. Bagian yang tidak sesuai atau terlalu panjang diubah dan dipersingkat sendiri |
 
 ---
 
