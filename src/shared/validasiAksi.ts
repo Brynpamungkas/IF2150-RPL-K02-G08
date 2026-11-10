@@ -1,5 +1,5 @@
 import type { DataAksi, JenisAksi, RincianDana } from './aksi';
-import { nominalValid } from './dto';
+import { nominalValid } from './donasi';
 import { GalatValidasi } from './galat';
 
 /** Tanggal kalender Indonesia, bukan tanggal UTC yang berganti pukul 07.00 WIB. */

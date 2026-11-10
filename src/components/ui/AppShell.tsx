@@ -2,11 +2,14 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
+import { panggilApi } from '@/components/views/DonasiView/panggilApi';
 import type { NavUser } from '@/shared/types';
 import { FormTopupView } from '../views/TopupView/FormTopupView';
 import { Footer } from './Footer';
 import { Modal } from './Modal';
 import { Navbar } from './Navbar';
+import { useSesi } from './SesiContext';
+import { SesiProvider } from './SesiProvider';
 import { ToastProvider, useToast } from './Toast';
 
 type ModalAktif = 'login' | 'register' | 'topup' | null;
@@ -26,18 +29,37 @@ function Shell({
 
   const judul =
     modal === 'register' ? 'Create an account' : 'Log in to KlimPooL';
+function Shell({ children }: { children: ReactNode }) {
+  const { pengguna, bukaAuth, setPengguna } = useSesi();
+  const { showToast } = useToast();
+  const router = useRouter();
+  const [topup, setTopup] = useState(false);
+
+  const user: NavUser | null = pengguna
+    ? {
+        nama: pengguna.nama,
+        email: pengguna.email,
+        peran: pengguna.peran,
+        saldo: pengguna.saldo ?? 0,
+      }
+    : null;
+
+  async function keluar() {
+    await panggilApi('/api/auth/keluar', { method: 'POST' });
+    setPengguna(null);
+    showToast("You're logged out.");
+    router.push('/');
+    router.refresh();
+  }
 
   return (
     <>
       <Navbar
         user={user}
-        onLoginClick={() => setModal('login')}
-        onSignupClick={() => setModal('register')}
-        onTopupClick={() => setModal('topup')}
-        // TODO(#14): panggil logout sungguhan (akhiriSesi)
-        onLogoutClick={() =>
-          showToast('Logout belum tersambung (issue #14).', 'info')
-        }
+        onLoginClick={() => bukaAuth('masuk')}
+        onSignupClick={() => bukaAuth('daftar')}
+        onTopupClick={() => setTopup(true)}
+        onLogoutClick={keluar}
       />
       <main className="flex-1">{children}</main>
       <Footer />
@@ -72,25 +94,24 @@ function Shell({
         <p className="muted">
           Form login dan pendaftaran dikerjakan di issue #14.
         </p>
+      <Modal
+        open={topup}
+        onClose={() => setTopup(false)}
+        title="Top up balance"
+      >
+        <p className="muted">Form top up belum dikerjakan.</p>
       </Modal>
     </>
   );
 }
 
-/**
- * Kerangka bersama semua halaman: navbar, footer, modal, dan toast.
- * Dipasang sekali di app/layout.tsx.
- */
-export function AppShell({
-  user,
-  children,
-}: {
-  user: NavUser | null;
-  children: ReactNode;
-}) {
+/** Kerangka bersama semua halaman: navbar, footer, modal, toast, dan sesi login. */
+export function AppShell({ children }: { children: ReactNode }) {
   return (
     <ToastProvider>
-      <Shell user={user}>{children}</Shell>
+      <SesiProvider>
+        <Shell>{children}</Shell>
+      </SesiProvider>
     </ToastProvider>
   );
 }

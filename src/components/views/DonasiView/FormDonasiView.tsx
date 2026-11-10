@@ -28,7 +28,7 @@ interface Props {
   onTutup: () => void;
   /** Dipanggil setelah donasi berhasil, dengan ringkasan untuk struk dan nominalnya. */
   onBerhasil: (hasil: HasilDonasi, nominal: number) => void;
-  /** Bila ada, galat BELUM_LOGIN menampilkan tombol "Log in". TODO(#14). */
+  /** Bila ada, galat BELUM_LOGIN menampilkan tombol "Log in" (diisi AlurDonasi). */
   onPerluLogin?: () => void;
   /**
    * Bila ada, notice saldo kurang menampilkan "Top up now" (I-07).
