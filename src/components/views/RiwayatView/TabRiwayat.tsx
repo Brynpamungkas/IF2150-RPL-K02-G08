@@ -8,7 +8,7 @@ import {
   type FilterRiwayat,
   type ItemRiwayat,
 } from '@/shared/riwayat';
-import { rupiah, waktuLokal } from '../format';
+import { rupiah, waktuLokal } from '../DonasiView/format';
 import { DetailRiwayatView } from './DetailRiwayatView';
 import { IkonGrafik, IkonHati } from './ikon';
 import { LABEL_STATUS_TRANSAKSI } from './label';

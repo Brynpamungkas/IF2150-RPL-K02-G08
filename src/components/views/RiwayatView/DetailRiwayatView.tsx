@@ -7,7 +7,7 @@ import type {
   ItemRiwayat,
 } from '@/shared/riwayat';
 import { Modal } from '../../ui/Modal';
-import { rupiah, waktuLokal } from '../format';
+import { rupiah, waktuLokal } from '../DonasiView/format';
 import { IkonDokumen } from './ikon';
 import { LABEL_STATUS_PELAKSANAAN, LABEL_STATUS_TRANSAKSI } from './label';
 import { mintaRiwayat } from './mintaRiwayat';

@@ -2,7 +2,7 @@
  * Kontrak data riwayat transaksi dan progres (UC10, KF27, issue #38).
  * Modul ini aman di-import oleh client dan server.
  */
-import type { JenisTujuan, RincianBukti, StatusTransaksi } from './dto';
+import type { JenisTujuan, RincianBukti, StatusTransaksi } from './donasi';
 import type { PembaruanProgresDto, StatusPelaksanaan } from './progres';
 
 export const JENIS_RIWAYAT = ['transaksi', 'progres'] as const;

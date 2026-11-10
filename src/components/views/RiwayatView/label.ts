@@ -1,4 +1,4 @@
-import type { StatusTransaksi } from '@/shared/dto';
+import type { StatusTransaksi } from '@/shared/donasi';
 import type { StatusPelaksanaan } from '@/shared/progres';
 
 export const LABEL_STATUS_TRANSAKSI: Record<StatusTransaksi, string> = {
