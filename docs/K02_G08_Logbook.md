@@ -29,6 +29,7 @@
 * [Milestone 6](#milestone-6)
 * [Milestone 7](#milestone-7)
 * [Milestone 8](#milestone-8)
+* [Milestone 9](#milestone-9)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -185,5 +186,26 @@
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
+### Milestone 9
+**Periode:** 28 Oktober 2026 - 11 November 2026
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 7-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi proses donasi secara atomic (API) #26 | 5 | Done | - |
+| 7-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi UI modal donasi dan idempotency key #27 | 5 | Done | - |
+| 7-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi kerangka halaman Akun dan dompet
+ #44 | 5 | Done | - |
+| 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi bukti transaksi donasi #28 | 5 | Done | - |
+| 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi riwayat transaksi dan progres (API)
+ #38 | 5 | Done | - |
+| 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi UI riwayat di halaman Akun
+ #39 | 5 | Done | - |
+| 10-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi fitur top-up saldo (di luar use case)
+ #30 | 5 | Done | - |
+
+
+**Catatan/Evaluasi Milestone 8:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+---
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``

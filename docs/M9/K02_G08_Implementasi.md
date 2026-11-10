@@ -8,8 +8,10 @@ IMPLEMENTASI PERANGKAT LUNAK
 <br>
 
 ## KlimPooL
-### *[Logo Perangkat Lunak]*
- 
+<p align="left">
+  <img src="./assets/logo.png" width="100%">
+</p>
+
 ### Untuk: Made Branenda Jordhy
  
 Dipersiapkan oleh:
@@ -34,7 +36,7 @@ Dipersiapkan oleh:
 ---
 
 **Deadline:** Rabu, 11 November 2026, 21.50 WIB
-**Asistensi akbar:** *[Hari, DD Bulan YYYY, HH.MM WIB, lokasi/link]*
+**Asistensi akbar:** Senin, 2 November 2026, 19.00 WIB, MS Teams 2026 IF2150 RPL. 
 
 ---
 
@@ -245,6 +247,7 @@ Tabel B.4. Kontribusi Anggota
 | NIM | Nama | Modul / Fitur yang Dikerjakan | Persentase Kontribusi |
 | :--- | :--- | :--- | :--- |
 | *[NIM 1]* | *[Nama]* | *[Modul/fitur]* | *[%]* |
+| *13525134* | Sahla Nailah Salsabilla | donasi; API atomic, modal + idempotency key, bukti transaksi (#26, #27, #28), halaman Akun dan dompet beserta top-up saldo (#44, #30), riwayat transaksi dan progres (API dan UI; #38, #39), serta pengukuran dan optimasi performa (#42) | *20%* |
 | *13525140* | Nayla Putri Ghaisani | Kerangka proyek (#8), basis data dan *connection pool* (#9), komponen UI bersama (#11), UC01 registrasi, login, sesi, dan hak akses (#13–#15), beranda (#40) | *20%* |
 | *...* | *...* | *...* | *...* |
 
