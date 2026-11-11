@@ -13,6 +13,7 @@ export type KodeGalat =
   | 'BUKAN_DONATUR'
   | 'PERMINTAAN_TIDAK_VALID'
   | 'NOMINAL_TIDAK_VALID'
+  | 'NOMINAL_TOPUP_TIDAK_VALID'
   | 'SALDO_KURANG'
   | 'TUJUAN_TIDAK_DITEMUKAN'
   | 'TUJUAN_DITUTUP'
@@ -33,6 +34,8 @@ export const PESAN_GALAT: Record<KodeGalat, string> = {
   PERMINTAAN_TIDAK_VALID: 'The data sent is incomplete or invalid.',
   NOMINAL_TIDAK_VALID:
     'The donation amount must be more than Rp0 and no more than Rp1,000,000,000.',
+  NOMINAL_TOPUP_TIDAK_VALID:
+    'The top-up amount must be a whole number from Rp10,000 to Rp10,000,000.',
   SALDO_KURANG: 'Insufficient balance for this donation.',
   TUJUAN_TIDAK_DITEMUKAN: 'The campaign or project could not be found.',
   TUJUAN_DITUTUP:
@@ -56,6 +59,7 @@ export const STATUS_HTTP: Record<KodeGalat, number> = {
   BUKAN_DONATUR: 403,
   PERMINTAAN_TIDAK_VALID: 400,
   NOMINAL_TIDAK_VALID: 422,
+  NOMINAL_TOPUP_TIDAK_VALID: 422,
   SALDO_KURANG: 422,
   TUJUAN_TIDAK_DITEMUKAN: 404,
   TUJUAN_DITUTUP: 409,
