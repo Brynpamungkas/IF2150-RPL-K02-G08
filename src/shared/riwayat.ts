@@ -2,7 +2,7 @@
  * Kontrak data riwayat transaksi dan progres (UC10, KF27, issue #38).
  * Modul ini aman di-import oleh client dan server.
  */
-import type { JenisTujuan, RincianBukti, StatusTransaksi } from './dto';
+import type { JenisTujuan, RincianBukti, StatusTransaksi } from './donasi';
 import type { PembaruanProgresDto, StatusPelaksanaan } from './progres';
 
 export const JENIS_RIWAYAT = ['transaksi', 'progres'] as const;
@@ -34,6 +34,8 @@ export type ItemRiwayatProgres = {
   namaProject: string;
   milestone: string;
   statusPelaksanaan: StatusPelaksanaan;
+  /** Persentase penyelesaian (0-100); null bila tidak diisi pembuat project. */
+  persentase: number | null;
 };
 
 export type ItemRiwayat = ItemRiwayatTransaksi | ItemRiwayatProgres;
@@ -58,6 +60,59 @@ export function bacaFilterRiwayat(nilai: string | null): FilterRiwayat | null {
   return (JENIS_RIWAYAT as readonly string[]).includes(bersih)
     ? (bersih as JenisRiwayat)
     : null;
+}
+
+/** Menyaring daftar riwayat menurut jenis tanpa meminta ulang ke server. */
+export function saringRiwayat(
+  daftar: readonly ItemRiwayat[],
+  filter: FilterRiwayat,
+): ItemRiwayat[] {
+  return filter === 'semua'
+    ? [...daftar]
+    : daftar.filter((item) => item.jenis === filter);
+}
+
+export type KelompokBulan = {
+  /** Mis. "2026-10"; stabil untuk `key` React. */
+  kunci: string;
+  /** Mis. "Oct 2026" (I-10.13). */
+  label: string;
+  item: ItemRiwayat[];
+};
+
+const ZONA_WAKTU = 'Asia/Jakarta';
+
+/**
+ * Mengelompokkan riwayat per bulan menurut waktu WIB (I-10.13).
+ * Urutan kelompok dan urutan item di dalamnya mengikuti urutan masukan.
+ */
+export function kelompokkanPerBulan(
+  daftar: readonly ItemRiwayat[],
+): KelompokBulan[] {
+  const bagian = new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: '2-digit',
+    timeZone: ZONA_WAKTU,
+  });
+  const label = new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    timeZone: ZONA_WAKTU,
+  });
+
+  const hasil: KelompokBulan[] = [];
+  for (const item of daftar) {
+    const waktu = new Date(item.waktu);
+    const p = bagian.formatToParts(waktu);
+    const kunci = `${p.find((x) => x.type === 'year')?.value}-${p.find((x) => x.type === 'month')?.value}`;
+    const terakhir = hasil[hasil.length - 1];
+    if (terakhir?.kunci === kunci) {
+      terakhir.item.push(item);
+    } else {
+      hasil.push({ kunci, label: label.format(waktu), item: [item] });
+    }
+  }
+  return hasil;
 }
 
 /**
