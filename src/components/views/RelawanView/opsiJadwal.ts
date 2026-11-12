@@ -15,7 +15,9 @@ const BULAN = [
 ];
 
 /** Paling banyak hari yang ditawarkan, agar pilihan tetap terbaca. */
-const MAKS_HARI = 14;
+export const MAKS_HARI = 14;
+
+const SEHARI = 86_400_000;
 
 function bacaTanggal(nilai: string | null): Date | null {
   const cocok = nilai?.match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -26,28 +28,51 @@ function bacaTanggal(nilai: string | null): Date | null {
   );
 }
 
+function awalHari(waktu: Date): Date {
+  return new Date(
+    Date.UTC(waktu.getUTCFullYear(), waktu.getUTCMonth(), waktu.getUTCDate()),
+  );
+}
+
+export interface OpsiJadwal {
+  /** Satu butir per hari yang masih bisa dipilih. */
+  hari: string[];
+  /** True bila periode kegiatan lebih panjang dari `MAKS_HARI` hari. */
+  terpotong: boolean;
+}
+
 /**
  * Pilihan jadwal untuk formulir pendaftaran: satu butir per hari dalam
- * periode kegiatan, misalnya "Sat, 8 Nov 2026". Tidak memakai ";" atau ","
+ * periode kegiatan, misalnya "Sat 8 Nov 2026". Tidak memakai ";" atau ","
  * karena keduanya pemisah di basis data (lihat shared/relawan.ts).
+ *
+ * Hari yang sudah lewat tidak ditawarkan: hitungan dimulai dari yang lebih
+ * akhir antara tanggal mulai dan `hariIni` (keduanya dalam UTC). Bila tanggal
+ * kosong, tidak terbaca, atau selesai lebih awal dari mulai, hasilnya kosong.
  */
 export function opsiJadwal(
   mulai: string | null,
   selesai: string | null,
-): string[] {
-  const awal = bacaTanggal(mulai);
-  if (!awal) return [];
-  const akhir = bacaTanggal(selesai) ?? awal;
+  hariIni: Date = new Date(),
+): OpsiJadwal {
+  const awalKegiatan = bacaTanggal(mulai);
+  if (!awalKegiatan) return { hari: [], terpotong: false };
+  const akhir = bacaTanggal(selesai) ?? awalKegiatan;
+  if (akhir < awalKegiatan) return { hari: [], terpotong: false };
 
-  const hasil: string[] = [];
-  for (
-    let hari = awal;
-    hari <= akhir && hasil.length < MAKS_HARI;
-    hari = new Date(hari.getTime() + 86_400_000)
-  ) {
-    hasil.push(
-      `${HARI[hari.getUTCDay()]} ${hari.getUTCDate()} ${BULAN[hari.getUTCMonth()]} ${hari.getUTCFullYear()}`,
+  const sekarang = awalHari(hariIni);
+  const awal = awalKegiatan > sekarang ? awalKegiatan : sekarang;
+
+  const hari: string[] = [];
+  let terpotong = false;
+  for (let tgl = awal; tgl <= akhir; tgl = new Date(tgl.getTime() + SEHARI)) {
+    if (hari.length >= MAKS_HARI) {
+      terpotong = true;
+      break;
+    }
+    hari.push(
+      `${HARI[tgl.getUTCDay()]} ${tgl.getUTCDate()} ${BULAN[tgl.getUTCMonth()]} ${tgl.getUTCFullYear()}`,
     );
   }
-  return hasil;
+  return { hari, terpotong };
 }

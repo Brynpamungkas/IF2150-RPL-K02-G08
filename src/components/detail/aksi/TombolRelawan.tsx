@@ -3,11 +3,9 @@
 import { useState } from 'react';
 import { FormPendaftaranRelawanView } from '@/components/views/RelawanView/FormPendaftaranRelawanView';
 import { IkonTangan } from '@/components/ui/Ikon';
-import { useToast } from '@/components/ui/Toast';
 import type { DetailAksi } from '@/shared/detail';
 
 export function TombolRelawan({ detail }: { detail: DetailAksi }) {
-  const { showToast } = useToast();
   const [formTerbuka, setFormTerbuka] = useState(false);
   const [terkirim, setTerkirim] = useState(false);
 
@@ -42,7 +40,6 @@ export function TombolRelawan({ detail }: { detail: DetailAksi }) {
             onBerhasil={() => {
               setFormTerbuka(false);
               setTerkirim(true);
-              showToast('Application sent. Waiting for the organizer.', 'ok');
             }}
           />
         )}

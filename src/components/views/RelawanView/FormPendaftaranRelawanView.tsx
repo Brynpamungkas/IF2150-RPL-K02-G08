@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import {
   BATAS_FORM,
   bersihkanForm,
@@ -10,7 +10,10 @@ import {
   type PendaftaranRelawanDto,
 } from '@/shared/relawan';
 import { Modal } from '../../ui/Modal';
-import { opsiJadwal } from './opsiJadwal';
+import { MAKS_HARI, opsiJadwal } from './opsiJadwal';
+
+/** Batas tunggu peladen; lewat dari ini pengiriman dibatalkan. */
+const BATAS_WAKTU_MS = 15_000;
 
 interface Props {
   idProject: string;
@@ -77,9 +80,19 @@ export function FormPendaftaranRelawanView({
   const [galatUmum, setGalatUmum] = useState<string | null>(null);
   const [perluLogin, setPerluLogin] = useState(false);
   const [mengirim, setMengirim] = useState(false);
+  // Kolom yang harus difokuskan setelah input aktif lagi (galat dari peladen).
+  const fokusTertunda = useRef<KolomForm | null>(null);
 
   const sedangKirim = useRef(false); // penjaga sinkron klik ganda
-  const pilihanJadwal = opsiJadwal(mulai, selesai);
+  const { hari: pilihanJadwal, terpotong } = opsiJadwal(mulai, selesai);
+
+  // Saat mengirim semua input `disabled`, jadi `.focus()` tidak berefek.
+  // Fokus baru diberikan setelah `mengirim` kembali false.
+  useEffect(() => {
+    if (mengirim || !fokusTertunda.current) return;
+    document.getElementById(`${idDasar}-${fokusTertunda.current}`)?.focus();
+    fokusTertunda.current = null;
+  }, [mengirim, idDasar]);
 
   function tutupBilaBoleh() {
     if (!sedangKirim.current) onTutup();
@@ -112,6 +125,10 @@ export function FormPendaftaranRelawanView({
 
     sedangKirim.current = true;
     setMengirim(true);
+    // Tanpa batas waktu, peladen yang menggantung mengunci modal (Cancel dan
+    // penutupan dinonaktifkan selama mengirim).
+    const pembatal = new AbortController();
+    const pewaktu = setTimeout(() => pembatal.abort(), BATAS_WAKTU_MS);
     try {
       const respons = await fetch(
         `/api/projects/${encodeURIComponent(idProject)}/relawan`,
@@ -119,6 +136,7 @@ export function FormPendaftaranRelawanView({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(form),
+          signal: pembatal.signal,
         },
       );
       const isi = (await respons.json().catch(() => ({}))) as JawabanApi;
@@ -130,13 +148,18 @@ export function FormPendaftaranRelawanView({
       if (isi.galat) {
         setGalat(isi.galat);
         const kolom = URUTAN_KOLOM.find((k) => isi.galat?.[k]);
-        if (kolom) fokusKeKolom(kolom);
+        if (kolom) fokusTertunda.current = kolom;
       }
       setPerluLogin(respons.status === 401);
-      setGalatUmum(isi.pesan ?? 'Pendaftaran belum dapat dikirim.');
+      setGalatUmum(isi.pesan ?? 'Your application could not be sent.');
     } catch {
-      setGalatUmum('Koneksi terputus. Periksa jaringan Anda lalu coba lagi.');
+      setGalatUmum(
+        pembatal.signal.aborted
+          ? 'The server took too long to respond. Please try again.'
+          : 'Connection lost. Check your network and try again.',
+      );
     } finally {
+      clearTimeout(pewaktu);
       sedangKirim.current = false;
       setMengirim(false);
     }
@@ -296,6 +319,17 @@ export function FormPendaftaranRelawanView({
               </button>
             ))}
           </div>
+          {pilihanJadwal.length === 0 && (
+            <p className="small muted">
+              No days are open to choose: the organizer has not set valid
+              activity dates, or they have already passed.
+            </p>
+          )}
+          {terpotong && (
+            <p className="small muted">
+              Only the first {MAKS_HARI} days from today are shown.
+            </p>
+          )}
           {pesanGalat('jadwal')}
         </div>
 
