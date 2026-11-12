@@ -14,7 +14,7 @@ export function DetailCampaignView({ detail }: { detail: DetailAksi }) {
         sisi={
           <PanelSamping
             detail={detail}
-            pemilik={<AksiPemilik />}
+            pemilik={<AksiPemilik detail={detail} />}
             donasi={<TombolDonasi detail={detail} />}
           />
         }

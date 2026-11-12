@@ -26,7 +26,12 @@ export function gagal(e: unknown, headers?: HeadersInit): Response {
   unstable_rethrow(e);
   if (e instanceof GalatAplikasi) {
     return Response.json(
-      { ok: false, kode: e.kode, pesan: e.message } satisfies ApiGagal,
+      {
+        ok: false,
+        kode: e.kode,
+        pesan: e.message,
+        ...(e.bidang ? { bidang: e.bidang } : {}),
+      } satisfies ApiGagal,
       { status: STATUS_HTTP[e.kode], headers },
     );
   }
@@ -52,3 +57,22 @@ export async function bacaJson(req: Request): Promise<unknown> {
     throw new GalatAplikasi('PERMINTAAN_TIDAK_VALID');
   }
 }
+
+/**
+ * Isi body JSON sebagai objek; body kosong, rusak, atau bukan objek dianggap {}.
+ * Dipakai form login/daftar agar kolom kosong dilaporkan per kolom oleh validasi.
+ */
+export async function bacaObjek(
+  req: Request,
+): Promise<Record<string, unknown>> {
+  try {
+    const nilai = await bacaJson(req);
+    return typeof nilai === 'object' && nilai !== null
+      ? (nilai as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+export const teks = (v: unknown): string => (typeof v === 'string' ? v : '');

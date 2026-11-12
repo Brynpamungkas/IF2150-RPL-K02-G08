@@ -51,6 +51,12 @@ interface BarisBukti extends RowDataPacket {
   rincian: string;
 }
 
+/** Hasil LEFT JOIN: kedua kolom null bila transaksi belum punya bukti. */
+interface BarisBuktiMilik extends RowDataPacket {
+  id_bukti: string | null;
+  rincian: string | null;
+}
+
 // nama ada di tabel pengguna dan email di tabel akun (skema 001), bukan di donatur.
 const SELECT_DONATUR = `
   SELECT d.id_donatur, u.nama, a.email, d.saldo
@@ -197,16 +203,33 @@ export const DonasiRepository = {
     };
   },
 
-  /** Q-119. Memastikan transaksi milik donatur yang login. */
-  async milikDonatur(idTransaksi: string, idDonatur: string): Promise<boolean> {
-    const [b] = await query<BarisJumlah>(
-      'SELECT COUNT(*) AS jumlah FROM transaksi_donasi WHERE id_transaksi = ? AND id_donatur = ?',
+  /* ---------- BuktiTransaksi (C07) ---------- */
+
+  /**
+   * Q-119 + Q-114 dalam satu query (issue #42): memastikan transaksi milik donatur
+   * yang login sekaligus mengambil buktinya, sehingga cukup satu kali ke database.
+   * @returns null bila transaksi tidak ada atau bukan milik donatur itu;
+   *          `bukti: null` bila transaksinya ada tetapi buktinya belum dibuat.
+   */
+  async getBuktiMilik(
+    idTransaksi: string,
+    idDonatur: string,
+  ): Promise<{ bukti: { idBukti: string; rincian: string } | null } | null> {
+    const [b] = await query<BarisBuktiMilik>(
+      `SELECT b.id_bukti, b.rincian
+         FROM transaksi_donasi t
+         LEFT JOIN bukti_transaksi b ON b.id_transaksi = t.id_transaksi
+        WHERE t.id_transaksi = ? AND t.id_donatur = ?`,
       [idTransaksi, idDonatur],
     );
-    return Number(b?.jumlah ?? 0) > 0;
+    if (!b) return null;
+    return {
+      bukti:
+        b.id_bukti === null || b.rincian === null
+          ? null
+          : { idBukti: b.id_bukti, rincian: b.rincian },
+    };
   },
-
-  /* ---------- BuktiTransaksi (C07) ---------- */
 
   /** Q-113. Unique id_transaksi: pemanggilan ulang tidak membuat bukti ganda. */
   async simpanBukti(bukti: BuktiTransaksi): Promise<void> {

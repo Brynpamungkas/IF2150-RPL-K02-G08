@@ -12,14 +12,16 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "test": "npm run test:node && npm run test:vitest",
-    "test:node": "node --env-file-if-exists=.env --import tsx --test tests/donasi.integrasi.test.ts tests/donasi.unit.test.ts tests/relawanProgres.unit.test.ts tests/relawanProgres.integrasi.test.ts",
+    "test:node": "node --env-file-if-exists=.env --import tsx --test tests/donasi.integrasi.test.ts tests/donasi.unit.test.ts tests/topup.integrasi.test.ts tests/topup.unit.test.ts tests/autentikasi.unit.test.ts tests/relawanProgres.unit.test.ts tests/relawanProgres.integrasi.test.ts",
     "test:vitest": "vitest run --passWithNoTests",
     "test:watch": "vitest",
+    "perf:bukti": "node --env-file-if-exists=.env --import tsx scripts/ukur-performa-bukti.ts",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:reset": "docker compose down -v && docker compose up -d"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "mysql2": "^3.24.6",
     "next": "16.4.4",
     "react": "19.3.0",

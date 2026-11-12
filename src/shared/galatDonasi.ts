@@ -1,14 +1,19 @@
 /**
- * Galat berkode untuk modul donasi (UC06), dipakai bersama client dan server.
+ * Galat berkode untuk modul donasi (UC06) dan autentikasi (UC01), dipakai bersama client dan server.
  * Berisi kode galat, pesan untuk pengguna (bahasa Inggris, mengikuti prototipe),
  * dan pemetaan ke status HTTP (lihat server/controllers/respons.ts).
  */
 
 export type KodeGalat =
   | 'BELUM_LOGIN'
+  | 'VALIDASI'
+  | 'EMAIL_TERPAKAI'
+  | 'KREDENSIAL_SALAH'
+  | 'DILARANG'
   | 'BUKAN_DONATUR'
   | 'PERMINTAAN_TIDAK_VALID'
   | 'NOMINAL_TIDAK_VALID'
+  | 'NOMINAL_TOPUP_TIDAK_VALID'
   | 'SALDO_KURANG'
   | 'TUJUAN_TIDAK_DITEMUKAN'
   | 'TUJUAN_DITUTUP'
@@ -20,10 +25,17 @@ export type KodeGalat =
 
 export const PESAN_GALAT: Record<KodeGalat, string> = {
   BELUM_LOGIN: 'Please log in first.',
+  VALIDASI: 'Please check the highlighted fields and try again.',
+  EMAIL_TERPAKAI: 'This email is already registered.',
+  KREDENSIAL_SALAH:
+    "The email or password doesn't match. Check them and try again.",
+  DILARANG: 'You do not have access to this page.',
   BUKAN_DONATUR: 'This account does not have a donation balance.',
   PERMINTAAN_TIDAK_VALID: 'The data sent is incomplete or invalid.',
   NOMINAL_TIDAK_VALID:
     'The donation amount must be more than Rp0 and no more than Rp1,000,000,000.',
+  NOMINAL_TOPUP_TIDAK_VALID:
+    'The top-up amount must be a whole number from Rp10,000 to Rp10,000,000.',
   SALDO_KURANG: 'Insufficient balance for this donation.',
   TUJUAN_TIDAK_DITEMUKAN: 'The campaign or project could not be found.',
   TUJUAN_DITUTUP:
@@ -40,9 +52,14 @@ export const PESAN_GALAT: Record<KodeGalat, string> = {
 
 export const STATUS_HTTP: Record<KodeGalat, number> = {
   BELUM_LOGIN: 401,
+  VALIDASI: 400,
+  EMAIL_TERPAKAI: 409,
+  KREDENSIAL_SALAH: 401,
+  DILARANG: 403,
   BUKAN_DONATUR: 403,
   PERMINTAAN_TIDAK_VALID: 400,
   NOMINAL_TIDAK_VALID: 422,
+  NOMINAL_TOPUP_TIDAK_VALID: 422,
   SALDO_KURANG: 422,
   TUJUAN_TIDAK_DITEMUKAN: 404,
   TUJUAN_DITUTUP: 409,
@@ -57,6 +74,8 @@ export class GalatAplikasi extends Error {
   constructor(
     readonly kode: KodeGalat,
     pesan: string = PESAN_GALAT[kode],
+    /** Nama kolom form yang salah, bila ada (dipakai form login dan daftar). */
+    readonly bidang?: string,
   ) {
     super(pesan);
     this.name = 'GalatAplikasi';

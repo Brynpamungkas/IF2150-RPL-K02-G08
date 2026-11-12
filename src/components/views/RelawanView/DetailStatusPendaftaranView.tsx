@@ -16,6 +16,9 @@ const KELAS_STATUS: Record<StatusPendaftaran, string> = {
   rejected: 'bad',
 };
 
+/** Batas tunggu peladen; lewat dari ini tampilan jatuh ke keadaan "gagal". */
+const BATAS_WAKTU_MS = 15_000;
+
 type Keadaan =
   | { tahap: 'memuat' }
   | { tahap: 'gagal'; pesan: string; perluLogin: boolean }
@@ -37,10 +40,14 @@ function periode(p: PendaftaranSayaDto): string {
  */
 export function DetailStatusPendaftaranView() {
   const [keadaan, setKeadaan] = useState<Keadaan>({ tahap: 'memuat' });
+  // Naik setiap kali pengguna menekan "Try again", memicu pemuatan ulang.
+  const [percobaan, setPercobaan] = useState(0);
 
   useEffect(() => {
     let batal = false;
-    fetch('/api/relawan/saya')
+    const pembatal = new AbortController();
+    const pewaktu = setTimeout(() => pembatal.abort(), BATAS_WAKTU_MS);
+    fetch('/api/relawan/saya', { signal: pembatal.signal })
       .then(async (respons) => {
         const isi = (await respons.json().catch(() => ({}))) as {
           pesan?: string;
@@ -61,15 +68,20 @@ export function DetailStatusPendaftaranView() {
         if (!batal) {
           setKeadaan({
             tahap: 'gagal',
-            pesan: 'Connection lost. Check your network and reload.',
+            pesan: pembatal.signal.aborted
+              ? 'The server took too long to respond.'
+              : 'Connection lost. Check your network.',
             perluLogin: false,
           });
         }
-      });
+      })
+      .finally(() => clearTimeout(pewaktu));
     return () => {
       batal = true;
+      clearTimeout(pewaktu);
+      pembatal.abort();
     };
-  }, []);
+  }, [percobaan]);
 
   if (keadaan.tahap === 'memuat') {
     return (
@@ -84,10 +96,21 @@ export function DetailStatusPendaftaranView() {
       <div className="notice bad" role="alert">
         <strong>Applications not available</strong>
         <span>{keadaan.pesan}</span>
-        {keadaan.perluLogin && (
+        {keadaan.perluLogin ? (
           <Link className="btn btn-primary btn-sm" href="/login">
             Log in
           </Link>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={() => {
+              setKeadaan({ tahap: 'memuat' });
+              setPercobaan((n) => n + 1);
+            }}
+          >
+            Try again
+          </button>
         )}
       </div>
     );
@@ -113,12 +136,12 @@ export function DetailStatusPendaftaranView() {
         <li
           key={p.idPendaftaran}
           style={{
-            border: '1.5px solid #dce0d6',
+            border: '1.5px solid var(--line)',
             borderRadius: 16,
             padding: 18,
             display: 'grid',
             gap: 10,
-            background: '#fff',
+            background: 'var(--paper)',
           }}
         >
           <div

@@ -27,4 +27,12 @@ export class Donatur {
   kurangiSaldo(nominal: number): void {
     this.saldo = Math.round((this.saldo - nominal) * 100) / 100;
   }
+
+  /**
+   * Tambahan B.1 baris 1 (top-up simulasi). Menyamakan saldo di memori setelah
+   * TopupRepository.tambahSaldo() berhasil di basis data.
+   */
+  tambahSaldo(nominal: number): void {
+    this.saldo = Math.round((this.saldo + nominal) * 100) / 100;
+  }
 }

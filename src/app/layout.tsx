@@ -29,8 +29,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
       className={`${lora.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        {/* TODO(#14): ganti user={null} dengan data sesi login yang asli */}
-        <AppShell user={null}>{children}</AppShell>
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );
