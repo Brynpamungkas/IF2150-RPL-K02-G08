@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import {
   DOKUMENTASI_ACCEPT,
   DOKUMENTASI_PETUNJUK,
@@ -42,6 +42,9 @@ const LABEL_STATUS: Record<StatusPelaksanaan, string> = {
   selesai: 'Completed',
 };
 
+/** Batas tunggu peladen; lebih longgar karena berkas ikut diunggah. */
+const BATAS_WAKTU_MS = 60_000;
+
 const URUTAN_KOLOM: KolomProgres[] = [
   'milestone',
   'statusPelaksanaan',
@@ -81,7 +84,16 @@ export function FormProgresProjectView({
   const [mengirim, setMengirim] = useState(false);
 
   const sedangKirim = useRef(false); // penjaga sinkron klik ganda
-  const inputBerkas = useRef<HTMLInputElement>(null);
+  // Kolom yang harus difokuskan setelah input aktif lagi (galat dari peladen).
+  const fokusTertunda = useRef<KolomProgres | null>(null);
+
+  // Saat mengirim semua input `disabled`, jadi `.focus()` tidak berefek.
+  // Fokus baru diberikan setelah `mengirim` kembali false.
+  useEffect(() => {
+    if (mengirim || !fokusTertunda.current) return;
+    document.getElementById(`${idDasar}-${fokusTertunda.current}`)?.focus();
+    fokusTertunda.current = null;
+  }, [mengirim, idDasar]);
 
   function tutupBilaBoleh() {
     if (!sedangKirim.current) onTutup();
@@ -136,11 +148,15 @@ export function FormProgresProjectView({
 
     sedangKirim.current = true;
     setMengirim(true);
+    // Tanpa batas waktu, peladen yang menggantung mengunci modal (Cancel dan
+    // penutupan dinonaktifkan selama mengirim).
+    const pembatal = new AbortController();
+    const pewaktu = setTimeout(() => pembatal.abort(), BATAS_WAKTU_MS);
     try {
       // Tanpa header Content-Type: peramban mengisi batas multipart sendiri.
       const respons = await fetch(
         `/api/projects/${encodeURIComponent(idProject)}/progres`,
-        { method: 'POST', body: badan },
+        { method: 'POST', body: badan, signal: pembatal.signal },
       );
       const isi = (await respons.json().catch(() => ({}))) as JawabanApi;
 
@@ -151,13 +167,18 @@ export function FormProgresProjectView({
       if (isi.galat) {
         setGalat(isi.galat);
         const kolom = URUTAN_KOLOM.find((k) => isi.galat?.[k]);
-        if (kolom) fokusKeKolom(kolom);
+        if (kolom) fokusTertunda.current = kolom;
       }
       setPerluLogin(respons.status === 401);
-      setGalatUmum(isi.pesan ?? 'Pembaruan progres belum dapat disimpan.');
+      setGalatUmum(isi.pesan ?? 'Your progress update could not be saved.');
     } catch {
-      setGalatUmum('Koneksi terputus. Periksa jaringan Anda lalu coba lagi.');
+      setGalatUmum(
+        pembatal.signal.aborted
+          ? 'The server took too long to respond. Please try again.'
+          : 'Connection lost. Check your network and try again.',
+      );
     } finally {
+      clearTimeout(pewaktu);
       sedangKirim.current = false;
       setMengirim(false);
     }
@@ -293,7 +314,6 @@ export function FormProgresProjectView({
           </label>
           <input
             {...atribut('dokumentasi')}
-            ref={inputBerkas}
             type="file"
             multiple
             accept={DOKUMENTASI_ACCEPT}
