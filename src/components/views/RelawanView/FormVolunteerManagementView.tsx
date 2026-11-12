@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { formatTanggal } from '@/shared/detail';
 import type {
   KeputusanPendaftaran,
@@ -37,6 +37,9 @@ const URUTAN: Record<StatusPendaftaran, number> = {
 
 type JawabanApi = { pesan?: string; pendaftaran?: PendaftaranRelawanDto };
 
+/** Batas tunggu peladen; lewat dari ini permintaan dibatalkan. */
+const BATAS_WAKTU_MS = 15_000;
+
 /**
  * C35 - FormVolunteerManagementView (Boundary). Daftar pendaftar relawan
  * untuk pemilik project; menerima atau menolak satu per satu (UC08, KF20,
@@ -52,11 +55,16 @@ export function FormVolunteerManagementView({
   onKeputusan,
 }: Props) {
   const [diproses, setDiproses] = useState<string | null>(null);
+  // Pendaftar yang penolakannya sedang menunggu konfirmasi.
+  const [konfirmasiTolak, setKonfirmasiTolak] = useState<string | null>(null);
+  const sedangProses = useRef(false); // penjaga sinkron klik ganda
   const [galat, setGalat] = useState<{ id: string; pesan: string } | null>(
     null,
   );
 
   const diterima = pendaftar.filter((p) => p.status === 'accepted').length;
+  // `kuota > 0`: kuota 0 berarti belum diketahui, jangan mengunci tombol.
+  const penuh = kuota > 0 && diterima >= kuota;
   const urut = [...pendaftar].sort(
     (a, b) =>
       URUTAN[a.status] - URUTAN[b.status] ||
@@ -67,9 +75,14 @@ export function FormVolunteerManagementView({
     pendaftaran: PendaftaranRelawanDto,
     keputusan: KeputusanPendaftaran,
   ) {
-    if (diproses) return;
+    if (sedangProses.current) return;
+    sedangProses.current = true;
     setDiproses(pendaftaran.idPendaftaran);
+    setKonfirmasiTolak(null);
     setGalat(null);
+    // Tanpa batas waktu, peladen yang menggantung mengunci modal selamanya.
+    const pembatal = new AbortController();
+    const pewaktu = setTimeout(() => pembatal.abort(), BATAS_WAKTU_MS);
     try {
       const respons = await fetch(
         `/api/projects/${encodeURIComponent(idProject)}/relawan/${encodeURIComponent(pendaftaran.idPendaftaran)}`,
@@ -77,6 +90,7 @@ export function FormVolunteerManagementView({
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ keputusan }),
+          signal: pembatal.signal,
         },
       );
       const isi = (await respons.json().catch(() => ({}))) as JawabanApi;
@@ -85,15 +99,19 @@ export function FormVolunteerManagementView({
       } else {
         setGalat({
           id: pendaftaran.idPendaftaran,
-          pesan: isi.pesan ?? 'Keputusan belum dapat disimpan.',
+          pesan: isi.pesan ?? 'Your decision could not be saved.',
         });
       }
     } catch {
       setGalat({
         id: pendaftaran.idPendaftaran,
-        pesan: 'Koneksi terputus. Periksa jaringan Anda lalu coba lagi.',
+        pesan: pembatal.signal.aborted
+          ? 'The server took too long to respond. Please try again.'
+          : 'Connection lost. Check your network and try again.',
       });
     } finally {
+      clearTimeout(pewaktu);
+      sedangProses.current = false;
       setDiproses(null);
     }
   }
@@ -103,7 +121,7 @@ export function FormVolunteerManagementView({
       open
       wide
       onClose={() => {
-        if (!diproses) onTutup();
+        if (!sedangProses.current) onTutup();
       }}
       title="Manage volunteers"
       subtitle={
@@ -165,27 +183,69 @@ export function FormVolunteerManagementView({
                 </div>
               )}
 
-              {p.status === 'pending' && (
-                <div className="form-actions">
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm"
-                    disabled={diproses !== null}
-                    aria-busy={diproses === p.idPendaftaran}
-                    onClick={() => void putuskan(p, 'accepted')}
-                  >
-                    Accept
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-sm"
-                    disabled={diproses !== null}
-                    onClick={() => void putuskan(p, 'rejected')}
-                  >
-                    Reject
-                  </button>
-                </div>
+              {p.status === 'pending' && penuh && (
+                <p className="small muted">
+                  All {kuota} spots are filled. You can still reject this
+                  application.
+                </p>
               )}
+
+              {p.status === 'pending' &&
+                konfirmasiTolak === p.idPendaftaran && (
+                  <div className="notice warn" role="alertdialog">
+                    <strong>
+                      Reject {p.dataDiri.nama || 'this volunteer'}?
+                    </strong>
+                    <span>This cannot be undone.</span>
+                    <div className="form-actions">
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        disabled={diproses !== null}
+                        aria-busy={diproses === p.idPendaftaran}
+                        onClick={() => void putuskan(p, 'rejected')}
+                      >
+                        Yes, reject
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        disabled={diproses !== null}
+                        onClick={() => setKonfirmasiTolak(null)}
+                      >
+                        Keep
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+              {p.status === 'pending' &&
+                konfirmasiTolak !== p.idPendaftaran && (
+                  <div className="form-actions">
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      disabled={diproses !== null || penuh}
+                      aria-busy={diproses === p.idPendaftaran}
+                      aria-label={`Accept ${p.dataDiri.nama}`}
+                      onClick={() => void putuskan(p, 'accepted')}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      disabled={diproses !== null}
+                      aria-label={`Reject ${p.dataDiri.nama}`}
+                      onClick={() => {
+                        setGalat(null);
+                        setKonfirmasiTolak(p.idPendaftaran);
+                      }}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
             </li>
           ))}
         </ul>
