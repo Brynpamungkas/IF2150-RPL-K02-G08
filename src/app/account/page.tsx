@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { GateLogin } from '@/components/ui/GateLogin';
 import { DompetKartu } from '@/components/views/DonasiView/DompetKartu';
+import { DetailStatusPendaftaranView } from '@/components/views/RelawanView/DetailStatusPendaftaranView';
 import { FormRiwayatView } from '@/components/views/RiwayatView/FormRiwayatView';
 import { TabRiwayat } from '@/components/views/RiwayatView/TabRiwayat';
 import { penggunaSaatIni } from '@/server/controllers/guard';
@@ -52,8 +53,11 @@ async function IsiAccount() {
 
       <section className="pb-16 pt-7">
         <div className="mx-auto max-w-[1240px] px-5">
-          {/* Tab lain dipasang lewat props relawan={...} dan aksi={...}. */}
-          <FormRiwayatView riwayat={<TabRiwayat />} />
+          {/* Tab aksi dipasang lewat props aksi={...}. */}
+          <FormRiwayatView
+            riwayat={<TabRiwayat />}
+            relawan={<DetailStatusPendaftaranView />}
+          />
         </div>
       </section>
     </main>

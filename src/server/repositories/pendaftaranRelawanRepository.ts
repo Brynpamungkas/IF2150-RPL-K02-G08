@@ -202,3 +202,51 @@ export async function daftarPendaftarProject(
   );
   return baris.map(dariBaris);
 }
+
+/** Satu pendaftaran milik relawan beserta ringkasan project-nya. */
+export type PendaftaranDenganProject = PendaftaranRelawan & {
+  namaProject: string;
+  kota: string;
+  provinsi: string;
+  jadwalMulai: string | null;
+  jadwalSelesai: string | null;
+  lokasiKumpul: string | null;
+};
+
+type BarisDenganProject = BarisPendaftaran & {
+  nama_project: string;
+  kota: string;
+  provinsi: string;
+  jadwal_mulai: string | null;
+  jadwal_selesai: string | null;
+  lokasi_kumpul: string | null;
+};
+
+/** Seluruh pendaftaran seorang relawan, yang terbaru lebih dulu. */
+export async function daftarPendaftaranSaya(
+  idVolunteer: string,
+): Promise<PendaftaranDenganProject[]> {
+  const baris = await query<BarisDenganProject>(
+    `SELECT pr.id_pendaftaran, pr.id_volunteer, pr.id_project, pr.data_diri,
+            pr.keahlian, pr.pengalaman, pr.ketersediaan_jadwal,
+            pr.status_pendaftaran, pr.tanggal_daftar, pr.tanggal_keputusan,
+            p.nama AS nama_project, p.kota, p.provinsi,
+            DATE_FORMAT(p.jadwal_mulai, '%Y-%m-%d') AS jadwal_mulai,
+            DATE_FORMAT(p.jadwal_selesai, '%Y-%m-%d') AS jadwal_selesai,
+            p.lokasi_kumpul
+       FROM pendaftaran_relawan pr
+       JOIN project p ON p.id_project = pr.id_project
+      WHERE pr.id_volunteer = ?
+      ORDER BY pr.tanggal_daftar DESC, pr.id_pendaftaran DESC`,
+    [idVolunteer],
+  );
+  return baris.map((b) => ({
+    ...dariBaris(b),
+    namaProject: b.nama_project,
+    kota: b.kota,
+    provinsi: b.provinsi,
+    jadwalMulai: b.jadwal_mulai,
+    jadwalSelesai: b.jadwal_selesai,
+    lokasiKumpul: b.lokasi_kumpul,
+  }));
+}

@@ -221,3 +221,38 @@ export function isKeputusan(nilai: unknown): nilai is KeputusanPendaftaran {
     (KEPUTUSAN_PENDAFTARAN as readonly string[]).includes(nilai)
   );
 }
+
+/**
+ * Satu pendaftaran milik pengguna sendiri beserta ringkasan project-nya,
+ * untuk tab "Volunteer applications" (UC07, KF22, issue #35).
+ */
+export type PendaftaranSayaDto = {
+  idPendaftaran: string;
+  idProject: string;
+  namaProject: string;
+  kota: string;
+  provinsi: string;
+  /** Periode kegiatan project (YYYY-MM-DD), bisa kosong bila belum diisi. */
+  jadwalMulai: string | null;
+  jadwalSelesai: string | null;
+  /** Hari yang dipilih relawan saat mendaftar. */
+  jadwal: string[];
+  status: StatusPendaftaran;
+  tanggalDaftar: string;
+  tanggalKeputusan: string | null;
+  /**
+   * Titik kumpul. Hanya terisi bila status `accepted` (KF22); selama pending
+   * atau rejected nilainya `null` dan tidak ikut dikirim ke peramban.
+   */
+  lokasiKumpul: string | null;
+};
+
+/** Titik kumpul hanya boleh dilihat relawan yang pendaftarannya diterima (KF22). */
+export function lokasiKumpulUntuk(
+  status: StatusPendaftaran,
+  lokasiKumpul: string | null,
+): string | null {
+  if (status !== 'accepted') return null;
+  const bersih = lokasiKumpul?.trim();
+  return bersih ? bersih : null;
+}
