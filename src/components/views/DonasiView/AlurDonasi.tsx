@@ -1,11 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
-import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
-import { saranNominalTopup } from '@/shared/topup';
 import { useContext, useState, type ReactNode } from 'react';
 import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
+import { saranNominalTopup } from '@/shared/topup';
 import { SesiContext, useWajibLogin } from '../../ui/SesiContext';
 import { useToast } from '../../ui/Toast';
 import { FormTopupView } from '../TopupView/FormTopupView';
@@ -79,7 +77,7 @@ export function AlurDonasi({
   // Tamu diminta login dulu, lalu formulir terbuka otomatis (#15).
   function tekanDonasi() {
     setNominalLanjut(undefined);
-    setFormTerbuka(true);
+    wajibLogin(PESAN_LOGIN, () => setFormTerbuka(true));
   }
 
   // Modal donasi ditutup sementara; nominal yang dipilih disimpan untuk "Continue donating".
@@ -92,7 +90,6 @@ export function AlurDonasi({
     setNominalLanjut(topup?.nominalDonasi);
     setTopup(null);
     setFormTerbuka(true);
-    wajibLogin(PESAN_LOGIN, () => setFormTerbuka(true));
   }
 
   // Server menjawab BELUM_LOGIN (mis. sesi kedaluwarsa): login, lalu lanjutkan.
@@ -133,7 +130,7 @@ export function AlurDonasi({
           idTujuan={idTujuan}
           onTutup={() => setFormTerbuka(false)}
           onBerhasil={selesaiDonasi}
-          onPerluLogin={onPerluLogin}
+          onPerluLogin={perluLogin}
           onTopup={bukaTopup}
           nominalAwal={nominalLanjut}
         />
@@ -143,10 +140,12 @@ export function AlurDonasi({
         <FormTopupView
           nominalAwal={topup.nominalTopup}
           onTutup={() => setTopup(null)}
-          onBerhasil={() => router.refresh()}
+          onBerhasil={() => {
+            // Saldo di navbar dibaca dari sesi klien, jadi dimuat ulang.
+            void sesi?.muatUlang();
+            router.refresh();
+          }}
           onLanjutDonasi={lanjutDonasi}
-          onPerluLogin={perluLogin}
-          onTopup={onTopup}
         />
       ) : null}
 
