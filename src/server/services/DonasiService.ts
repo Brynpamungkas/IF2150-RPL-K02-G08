@@ -132,11 +132,11 @@ export const DonasiService = {
     idDonatur: string,
     idTransaksi: string,
   ): Promise<BuktiDTO> {
-    if (!(await DonasiRepository.milikDonatur(idTransaksi, idDonatur))) {
-      throw new GalatAplikasi('TIDAK_DITEMUKAN');
-    }
+    // Satu query untuk cek pemilik sekaligus ambil bukti (issue #42).
+    const milik = await DonasiRepository.getBuktiMilik(idTransaksi, idDonatur);
+    if (!milik) throw new GalatAplikasi('TIDAK_DITEMUKAN');
 
-    let baris = await DonasiRepository.getBukti(idTransaksi);
+    let baris = milik.bukti;
     if (!baris) {
       await cetakBukti(idTransaksi, null);
       baris = await DonasiRepository.getBukti(idTransaksi);

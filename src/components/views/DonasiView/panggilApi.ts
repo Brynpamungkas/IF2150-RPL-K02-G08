@@ -20,3 +20,12 @@ export async function panggilApi<T>(
     };
   }
 }
+
+/** POST dengan body JSON lewat panggilApi (form login dan daftar). */
+export function kirimJson<T>(url: string, isi: unknown): Promise<ApiHasil<T>> {
+  return panggilApi<T>(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(isi),
+  });
+}

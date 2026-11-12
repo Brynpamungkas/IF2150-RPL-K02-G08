@@ -1,8 +1,14 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState, type ReactNode } from 'react';
 import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
+import { saranNominalTopup } from '@/shared/topup';
+import { useContext, useState, type ReactNode } from 'react';
+import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
+import { SesiContext, useWajibLogin } from '../../ui/SesiContext';
 import { useToast } from '../../ui/Toast';
+import { FormTopupView } from '../TopupView/FormTopupView';
 import { DetailBuktiTransaksiView } from './DetailBuktiTransaksiView';
 import { FormDonasiView } from './FormDonasiView';
 import { rupiah } from './format';
@@ -15,10 +21,11 @@ interface PropsAlurDonasi {
   className?: string;
   /** Setelah donasi berhasil, mis. untuk memperbarui saldo navbar dan dana terkumpul. */
   onSelesai?: (hasil: HasilDonasi) => void;
-  /** TODO(#14): sambungkan ke modal login (I-02). */
+  /**
+   * Bawaan: buka modal login (I-02), lalu buka lagi formulir setelah login
+   * berhasil. Isi hanya bila halaman butuh perilaku lain.
+   */
   onPerluLogin?: () => void;
-  /** Sambungkan saat modal top up (I-07) tersedia. */
-  onTopup?: () => void;
   /** Sambungkan saat halaman My activity (KF27) tersedia. */
   onLihatRiwayat?: () => void;
 }
@@ -52,17 +59,51 @@ export function AlurDonasi({
   className = 'btn btn-primary btn-block',
   onSelesai,
   onPerluLogin,
-  onTopup,
   onLihatRiwayat,
 }: PropsAlurDonasi) {
   const [formTerbuka, setFormTerbuka] = useState(false);
   const [hasil, setHasil] = useState<HasilDonasi | null>(null);
+  /** Top up dari notice saldo kurang: nominal donasi yang dipertahankan dan saran top up. */
+  const [topup, setTopup] = useState<{
+    nominalDonasi: number;
+    nominalTopup: number;
+  } | null>(null);
+  const [nominalLanjut, setNominalLanjut] = useState<number | undefined>();
   const { showToast } = useToast();
+  const router = useRouter();
+  const sesi = useContext(SesiContext);
+  const wajibLogin = useWajibLogin();
+  const PESAN_LOGIN = 'Log in to donate. Your donation form opens right after.';
 
   // tekanDonasi (C30): menerima pilihan tujuan donasi dan meminta formulir.
+  // Tamu diminta login dulu, lalu formulir terbuka otomatis (#15).
   function tekanDonasi() {
+    setNominalLanjut(undefined);
     setFormTerbuka(true);
   }
+
+  // Modal donasi ditutup sementara; nominal yang dipilih disimpan untuk "Continue donating".
+  function bukaTopup(nominalDonasi: number, kekurangan: number) {
+    setFormTerbuka(false);
+    setTopup({ nominalDonasi, nominalTopup: saranNominalTopup(kekurangan) });
+  }
+
+  function lanjutDonasi() {
+    setNominalLanjut(topup?.nominalDonasi);
+    setTopup(null);
+    setFormTerbuka(true);
+    wajibLogin(PESAN_LOGIN, () => setFormTerbuka(true));
+  }
+
+  // Server menjawab BELUM_LOGIN (mis. sesi kedaluwarsa): login, lalu lanjutkan.
+  const perluLogin =
+    onPerluLogin ??
+    (sesi
+      ? () => {
+          setFormTerbuka(false);
+          sesi.bukaAuth('masuk', PESAN_LOGIN, () => setFormTerbuka(true));
+        }
+      : undefined);
 
   function selesaiDonasi(h: HasilDonasi, nominal: number) {
     setFormTerbuka(false);
@@ -93,6 +134,18 @@ export function AlurDonasi({
           onTutup={() => setFormTerbuka(false)}
           onBerhasil={selesaiDonasi}
           onPerluLogin={onPerluLogin}
+          onTopup={bukaTopup}
+          nominalAwal={nominalLanjut}
+        />
+      ) : null}
+
+      {topup ? (
+        <FormTopupView
+          nominalAwal={topup.nominalTopup}
+          onTutup={() => setTopup(null)}
+          onBerhasil={() => router.refresh()}
+          onLanjutDonasi={lanjutDonasi}
+          onPerluLogin={perluLogin}
           onTopup={onTopup}
         />
       ) : null}

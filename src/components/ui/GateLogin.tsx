@@ -1,4 +1,6 @@
-import Link from 'next/link';
+'use client';
+
+import { useSesi } from './SesiContext';
 
 interface GateLoginProps {
   /** Judul halaman penghalang, mis. "Log in to see your activity". */
@@ -7,10 +9,11 @@ interface GateLoginProps {
 
 /**
  * Halaman penghalang untuk pengguna yang belum login (acuan: gateLogin di
- * prototipe). Rute /login dan /register diasumsikan dibuat oleh issue
- * autentikasi; sesuaikan href bila rutenya berbeda.
+ * prototipe). Tombolnya membuka modal auth; setelah login, halaman dirender
+ * ulang (router.refresh di formulir) sehingga isinya langsung tampil.
  */
 export function GateLogin({ pesan }: GateLoginProps) {
+  const { bukaAuth } = useSesi();
   return (
     <div className="mx-auto grid max-w-[640px] justify-items-center gap-4 px-5 py-28 text-center">
       <div
@@ -37,18 +40,20 @@ export function GateLogin({ pesan }: GateLoginProps) {
         This page requires a KlimPooL account.
       </p>
       <div className="flex flex-wrap justify-center gap-3">
-        <Link
-          href="/login"
+        <button
+          type="button"
+          onClick={() => bukaAuth('masuk')}
           className="inline-flex min-h-[50px] items-center justify-center rounded-full bg-[#3F6B3E] px-6 text-base font-extrabold text-white hover:bg-[#2D4F2D]"
         >
           Log in
-        </Link>
-        <Link
-          href="/register"
+        </button>
+        <button
+          type="button"
+          onClick={() => bukaAuth('daftar')}
           className="inline-flex min-h-[50px] items-center justify-center rounded-full border-[1.5px] border-[#DCE0D6] px-6 text-base font-extrabold hover:border-[#3F6B3E] hover:text-[#3F6B3E]"
         >
           Create an account
-        </Link>
+        </button>
       </div>
     </div>
   );

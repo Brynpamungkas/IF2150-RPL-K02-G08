@@ -16,11 +16,11 @@ import {
 } from '@/server/repositories/pendaftaranRelawanRepository';
 import { GalatValidasi } from '@/shared/galat';
 import {
+  bacaJadwal,
   bersihkanForm,
   formatDataDiri,
   formatJadwal,
   formatKeahlian,
-  bacaJadwal,
   isKeputusan,
   lokasiKumpulUntuk,
   validasiFormPendaftaran,
