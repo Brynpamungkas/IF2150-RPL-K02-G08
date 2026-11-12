@@ -1,7 +1,8 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { SesiContext } from '@/components/ui/SesiContext';
 import { useToast } from '@/components/ui/Toast';
 import { FormProgresProjectView } from '@/components/views/ProgresView/FormProgresProjectView';
 import { FormVolunteerManagementView } from '@/components/views/RelawanView/FormVolunteerManagementView';
@@ -11,12 +12,17 @@ import type { PendaftaranRelawanDto } from '@/shared/relawan';
 /**
  * Tombol khusus pemilik project di panel samping halaman detail.
  * Pemilik dikenali dari jawaban peladen: daftar pendaftar hanya terbuka bagi
- * pembuat project, jadi 401/403 berarti pengunjung biasa dan tidak ada yang
- * ditampilkan.
+ * pembuat project, jadi 401/403 berarti bukan pemilik.
+ *
+ * Admin Sistem boleh memperbarui progres project mana pun (UC09, KF14), jadi
+ * ia mendapat tombol progres saja. Mengelola relawan tetap khusus pemilik
+ * (KF21), sehingga tombolnya hanya muncul bila daftar pendaftar terbuka.
+ * Peran hanya menentukan tombol yang tampil; peladen yang memutuskan akses.
  */
 export function AksiPemilik({ detail }: { detail: DetailAksi }) {
   const router = useRouter();
   const { showToast } = useToast();
+  const adalahAdmin = useContext(SesiContext)?.pengguna?.peran === 'admin';
   const [pendaftar, setPendaftar] = useState<PendaftaranRelawanDto[] | null>(
     null,
   );
@@ -46,9 +52,12 @@ export function AksiPemilik({ detail }: { detail: DetailAksi }) {
     };
   }, [adalahProject, detail.id]);
 
-  if (!adalahProject || pendaftar === null) return null;
+  const adalahPemilik = pendaftar !== null;
+  if (!adalahProject || (!adalahPemilik && !adalahAdmin)) return null;
 
-  const menunggu = pendaftar.filter((p) => p.status === 'pending').length;
+  const menunggu = (pendaftar ?? []).filter(
+    (p) => p.status === 'pending',
+  ).length;
 
   return (
     <>
@@ -59,13 +68,15 @@ export function AksiPemilik({ detail }: { detail: DetailAksi }) {
       >
         Post a progress update
       </button>
-      <button
-        type="button"
-        className="btn btn-light btn-block"
-        onClick={() => setKelolaTerbuka(true)}
-      >
-        Manage volunteers{menunggu > 0 ? ` (${menunggu} pending)` : ''}
-      </button>
+      {adalahPemilik && (
+        <button
+          type="button"
+          className="btn btn-light btn-block"
+          onClick={() => setKelolaTerbuka(true)}
+        >
+          Manage volunteers{menunggu > 0 ? ` (${menunggu} pending)` : ''}
+        </button>
+      )}
       {progresTerbuka && (
         <FormProgresProjectView
           idProject={detail.id}
@@ -80,7 +91,7 @@ export function AksiPemilik({ detail }: { detail: DetailAksi }) {
           }}
         />
       )}
-      {kelolaTerbuka && (
+      {kelolaTerbuka && pendaftar !== null && (
         <FormVolunteerManagementView
           idProject={detail.id}
           judul={detail.judul}
