@@ -6,6 +6,10 @@ import {
 } from '@/server/repositories/progresRepository';
 import { GalatValidasi } from '@/shared/galat';
 import {
+  daftarTopupPengguna,
+  daftarRiwayatRelawan,
+} from '@/server/repositories/riwayatTambahanRepository';
+import {
   gabungkanRiwayat,
   type DetailProgresRiwayat,
   type DetailTransaksiRiwayat,
@@ -16,11 +20,11 @@ import {
 } from '@/shared/riwayat';
 
 /**
- * Aturan riwayat transaksi dan progres (UC10, KF27, issue #38).
+ * Aturan riwayat donasi, top-up, pendaftaran relawan dan progres.
  * Dipanggil `RiwayatController` (C41).
  *
  * Kepemilikan data selalu diperiksa di dalam kueri (`id_donatur = ?`, syarat
- * pembuat/relawan diterima), dengan id pengguna dari sesi, bukan dari klien.
+ * `id_volunteer = ?`, pembuat/relawan diterima), dengan id dari sesi, bukan klien.
  * Data milik orang lain diperlakukan sama seperti data yang tidak ada.
  */
 
@@ -41,9 +45,13 @@ export async function riwayatPengguna(
 ): Promise<ItemRiwayat[]> {
   const id = wajibMasuk(idPengguna);
 
-  const [transaksi, progres] = await Promise.all([
-    filter === 'progres' ? [] : DonasiRepository.getRiwayatTransaksi(id),
-    filter === 'transaksi' ? [] : daftarProgresPengguna(id),
+  const termasuk = (jenis: FilterRiwayat) =>
+    filter === 'semua' || filter === jenis;
+  const [transaksi, progres, topup, relawan] = await Promise.all([
+    termasuk('transaksi') ? DonasiRepository.getRiwayatTransaksi(id) : [],
+    termasuk('progres') ? daftarProgresPengguna(id) : [],
+    termasuk('topup') ? daftarTopupPengguna(id) : [],
+    termasuk('relawan') ? daftarRiwayatRelawan(id) : [],
   ]);
 
   return gabungkanRiwayat(
@@ -67,6 +75,8 @@ export async function riwayatPengguna(
       statusPelaksanaan: g.statusPelaksanaan,
       persentase: g.persentase,
     })),
+    topup,
+    relawan,
   );
 }
 

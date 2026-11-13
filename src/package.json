@@ -17,6 +17,7 @@
     "test:watch": "vitest",
     "test:aksi": "node --env-file-if-exists=.env --import tsx --test tests/aksi.akses.test.ts tests/aksi.validasi.test.ts tests/aksi.integrasi.test.ts",
     "test:aksi:browser": "node scripts/aksi.browser.mjs",
+    "test:account:browser": "node scripts/account.browser.mjs",
     "perf:bukti": "node --env-file-if-exists=.env --import tsx scripts/ukur-performa-bukti.ts",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",

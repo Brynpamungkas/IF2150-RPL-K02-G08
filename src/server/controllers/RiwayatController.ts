@@ -15,7 +15,7 @@ import { bacaFilterRiwayat } from '@/shared/riwayat';
  * di kueri masing-masing (lihat `riwayatService`).
  */
 
-/** GET /api/riwayat?jenis=transaksi|progres: riwayat milik pengguna, terbaru lebih dulu. */
+/** GET /api/riwayat: donasi, top-up, pendaftaran relawan dan progres milik sesi. */
 export function getRiwayat(request: Request): Promise<Response> {
   // Dibaca di luar `jalankan`: dengan cacheComponents, akses `request.url`
   // menghentikan prerender lewat galat khusus Next yang tidak boleh ditangkap
@@ -25,7 +25,7 @@ export function getRiwayat(request: Request): Promise<Response> {
     const filter = bacaFilterRiwayat(jenis);
     if (!filter) {
       throw new GalatValidasi(
-        'Jenis riwayat tidak dikenal. Gunakan "transaksi" atau "progres".',
+        'Jenis riwayat tidak dikenal. Gunakan "transaksi", "topup", "relawan", atau "progres".',
       );
     }
     const idPengguna = await getIdPenggunaSaatIni();

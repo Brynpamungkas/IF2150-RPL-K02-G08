@@ -7,10 +7,13 @@ import type {
   DetailTransaksiRiwayat,
   ItemRiwayat,
   ItemRiwayatTransaksi,
+  ItemRiwayatProgres,
+  ItemRiwayatTopup,
+  ItemRiwayatRelawan,
 } from '@/shared/riwayat';
+import { LABEL_STATUS_RELAWAN } from '@/shared/riwayat';
 import { Modal } from '../../ui/Modal';
 import { rupiah, waktuLokal } from '../DonasiView/format';
-import { IkonDokumen } from './ikon';
 import { LABEL_STATUS_PELAKSANAAN, LABEL_STATUS_TRANSAKSI } from './label';
 import { mintaRiwayat } from './mintaRiwayat';
 
@@ -39,6 +42,19 @@ type Keadaan =
  * detail tujuannya (`?tab=`, lihat bacaTabDetail).
  */
 export function DetailRiwayatView({ item, onTutup }: Props) {
+  if (item.jenis === 'topup' || item.jenis === 'relawan') {
+    return <DetailAktivitasTambahan item={item} onTutup={onTutup} />;
+  }
+  return <DetailDonasiProgres item={item} onTutup={onTutup} />;
+}
+
+function DetailDonasiProgres({
+  item,
+  onTutup,
+}: {
+  item: ItemRiwayatTransaksi | ItemRiwayatProgres;
+  onTutup: () => void;
+}) {
   const [keadaan, setKeadaan] = useState<Keadaan>({ tahap: 'memuat' });
 
   useEffect(() => {
@@ -185,24 +201,6 @@ function RincianProgres({ data }: { data: DetailProgresRiwayat }) {
 
       {data.catatan ? <p>{data.catatan}</p> : null}
 
-      {data.dokumentasi.length > 0 ? (
-        <div className="flex flex-wrap gap-2">
-          {data.dokumentasi.map((url) => (
-            <a
-              key={url}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-[10px] border-[1.5px] border-[#DCE0D6] bg-white px-2.5 py-[5px] text-sm font-bold hover:border-[#3F6B3E]"
-            >
-              <IkonDokumen />
-              {namaBerkas(url)}
-              <span className="sr-only"> (opens in a new tab)</span>
-            </a>
-          ))}
-        </div>
-      ) : null}
-
       {/* Progres hanya dimiliki project, jadi tujuannya selalu /project/[id]. */}
       <Link
         href={`/project/${encodeURIComponent(data.idProject)}?tab=progress`}
@@ -214,13 +212,58 @@ function RincianProgres({ data }: { data: DetailProgresRiwayat }) {
   );
 }
 
-/** Nama berkas dari alamat dokumentasi, mis. /api/dokumentasi/P1/foto.jpg -> foto.jpg. */
-function namaBerkas(url: string): string {
-  const bagian = url.split('?')[0]?.split('/').filter(Boolean) ?? [];
-  const nama = bagian[bagian.length - 1] ?? url;
-  try {
-    return decodeURIComponent(nama);
-  } catch {
-    return nama;
-  }
+function DetailAktivitasTambahan({
+  item,
+  onTutup,
+}: {
+  item: ItemRiwayatTopup | ItemRiwayatRelawan;
+  onTutup: () => void;
+}) {
+  const baris: [string, string][] =
+    item.jenis === 'topup'
+      ? [
+          ['Transaction ID', item.id],
+          ['Type', 'Top-up'],
+          ['Amount', rupiah(item.nominal)],
+          ['Method', item.metode],
+          ['Time', waktuLokal(item.waktu)],
+          ['Status', 'Successful'],
+        ]
+      : [
+          ['Application ID', item.id],
+          ['Action', item.namaProject],
+          ['Type', 'Volunteering'],
+          ['Applied', waktuLokal(item.waktu)],
+          ['Status', LABEL_STATUS_RELAWAN[item.status]],
+          ...(item.tanggalKeputusan
+            ? [
+                ['Decision recorded', waktuLokal(item.tanggalKeputusan)] as [
+                  string,
+                  string,
+                ],
+              ]
+            : []),
+        ];
+  return (
+    <Modal open onClose={onTutup} title="Activity details">
+      <dl className="m-0 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2.5 rounded-2xl bg-[#F7F6F2] p-[18px]">
+        {baris.map(([label, value]) => (
+          <div key={label} className="contents">
+            <dt className="font-bold text-[#4A544B]">{label}</dt>
+            <dd className="m-0 break-words text-right font-extrabold">
+              {value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+      {item.jenis === 'relawan' && (
+        <Link
+          href={`/project/${encodeURIComponent(item.idProject)}`}
+          className="btn btn-ghost mt-4"
+        >
+          View project
+        </Link>
+      )}
+    </Modal>
+  );
 }

@@ -155,9 +155,11 @@ describe('bacaFilterRiwayat', () => {
   it('menerima jenis yang dikenal tanpa memedulikan huruf besar', () => {
     assert.equal(bacaFilterRiwayat('transaksi'), 'transaksi');
     assert.equal(bacaFilterRiwayat(' Progres '), 'progres');
+    assert.equal(bacaFilterRiwayat(' Topup '), 'topup');
+    assert.equal(bacaFilterRiwayat('relawan'), 'relawan');
   });
 
   it('menolak jenis yang tidak dikenal', () => {
-    assert.equal(bacaFilterRiwayat('relawan'), null);
+    assert.equal(bacaFilterRiwayat('unknown'), null);
   });
 });

@@ -180,14 +180,22 @@ describe('riwayatPengguna (Algo-129, KF27)', () => {
     if (lewatiBilaTanpaDb(t)) return;
     const riwayat = await riwayatPengguna(ID.relawan, 'semua');
     assert.deepEqual(
-      riwayat.map((i) => i.id),
-      [ID.progres],
+      riwayat.map((item) => [item.jenis, item.id]).sort(),
+      [
+        ['progres', ID.progres],
+        ['relawan', `tst-rpa-${akhiran}`],
+      ].sort(),
     );
   });
 
   it('relawan yang masih pending tidak melihat progres', async (t) => {
     if (lewatiBilaTanpaDb(t)) return;
-    assert.deepEqual(await riwayatPengguna(ID.pendaftar, 'semua'), []);
+    assert.deepEqual(await riwayatPengguna(ID.pendaftar, 'progres'), []);
+    const riwayat = await riwayatPengguna(ID.pendaftar, 'semua');
+    assert.deepEqual(
+      riwayat.map((item) => [item.jenis, item.id]),
+      [['relawan', `tst-rpp-${akhiran}`]],
+    );
   });
 
   it('pengguna tanpa riwayat mendapat daftar kosong, bukan galat', async (t) => {
