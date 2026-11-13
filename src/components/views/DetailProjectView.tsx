@@ -4,14 +4,21 @@ import { TombolRelawan } from '@/components/detail/aksi/TombolRelawan';
 import { HeroDetail } from '@/components/detail/HeroDetail';
 import { KerangkaDetail } from '@/components/detail/KerangkaDetail';
 import { PanelSamping } from '@/components/detail/PanelSamping';
-import type { DetailAksi } from '@/shared/detail';
+import type { DetailAksi, TabDetail } from '@/shared/detail';
 
-export function DetailProjectView({ detail }: { detail: DetailAksi }) {
+export function DetailProjectView({
+  detail,
+  tabAwal,
+}: {
+  detail: DetailAksi;
+  tabAwal?: TabDetail;
+}) {
   return (
     <>
       <HeroDetail detail={detail} />
       <KerangkaDetail
         detail={detail}
+        tabAwal={tabAwal}
         sisi={
           <PanelSamping
             detail={detail}

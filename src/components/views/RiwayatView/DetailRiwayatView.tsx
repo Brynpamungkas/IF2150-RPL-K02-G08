@@ -1,10 +1,12 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type {
   DetailProgresRiwayat,
   DetailTransaksiRiwayat,
   ItemRiwayat,
+  ItemRiwayatTransaksi,
 } from '@/shared/riwayat';
 import { Modal } from '../../ui/Modal';
 import { rupiah, waktuLokal } from '../DonasiView/format';
@@ -32,8 +34,9 @@ type Keadaan =
  * (acuan: `mHist` pada KlimPooL-prototype-final). Transaksi diambil dari
  * GET /api/riwayat/transaksi/[id], progres dari GET /api/riwayat/progres/[id].
  *
- * Tombol "See use of funds", "See progress", dan "Open all updates" pada
- * prototipe belum dipasang karena halaman detail project belum ada.
+ * Rincian donasi punya tombol "See use of funds" dan "See progress", rincian
+ * progres punya "Open all updates". Ketiganya membuka tab terkait di halaman
+ * detail tujuannya (`?tab=`, lihat bacaTabDetail).
  */
 export function DetailRiwayatView({ item, onTutup }: Props) {
   const [keadaan, setKeadaan] = useState<Keadaan>({ tahap: 'memuat' });
@@ -93,7 +96,10 @@ export function DetailRiwayatView({ item, onTutup }: Props) {
 
       {keadaan.tahap === 'siap' ? (
         keadaan.detail.jenis === 'transaksi' ? (
-          <RincianTransaksi data={keadaan.detail.data} />
+          <>
+            <RincianTransaksi data={keadaan.detail.data} />
+            {item.jenis === 'transaksi' ? <TautanTujuan item={item} /> : null}
+          </>
         ) : (
           <RincianProgres data={keadaan.detail.data} />
         )
@@ -129,6 +135,26 @@ function RincianTransaksi({ data }: { data: DetailTransaksiRiwayat }) {
         </div>
       ))}
     </dl>
+  );
+}
+
+/**
+ * Tombol ke halaman detail project/campaign penerima donasi (prototipe mHist).
+ * Tidak tampil bila tujuannya sudah dihapus, karena halamannya tidak ada lagi.
+ */
+function TautanTujuan({ item }: { item: ItemRiwayatTransaksi }) {
+  if (item.namaTujuan === null) return null;
+  const dasar = `/${item.jenisTujuan}/${encodeURIComponent(item.idTujuan)}`;
+
+  return (
+    <div className="form-actions">
+      <Link href={`${dasar}?tab=funds`} className="btn btn-ghost">
+        See use of funds
+      </Link>
+      <Link href={`${dasar}?tab=progress`} className="btn btn-ghost">
+        See progress
+      </Link>
+    </div>
   );
 }
 
@@ -176,6 +202,14 @@ function RincianProgres({ data }: { data: DetailProgresRiwayat }) {
           ))}
         </div>
       ) : null}
+
+      {/* Progres hanya dimiliki project, jadi tujuannya selalu /project/[id]. */}
+      <Link
+        href={`/project/${encodeURIComponent(data.idProject)}?tab=progress`}
+        className="btn btn-ghost"
+      >
+        Open all updates
+      </Link>
     </div>
   );
 }
