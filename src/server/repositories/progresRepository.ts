@@ -136,17 +136,23 @@ type BarisRingkasanProgres = RowDataPacket & {
 };
 
 /**
- * Syarat akses riwayat progres (KF27): pengguna pembuat project, atau relawan
- * yang pendaftarannya sudah `accepted`. Dua parameter `?` diisi id pengguna.
+ * Syarat akses riwayat progres (KF27, UC10): pengguna yang mengelola project,
+ * relawan yang pendaftarannya `accepted`, atau donatur yang donasinya berhasil
+ * ke project itu. Tiga parameter `?` diisi id pengguna.
  */
 const SYARAT_PROGRES_PENGGUNA = `(
       p.id_pembuat = ?
       OR EXISTS (SELECT 1 FROM pendaftaran_relawan r
                   WHERE r.id_project = p.id_project
                     AND r.id_volunteer = ?
-                    AND r.status_pendaftaran = 'accepted'))`;
+                    AND r.status_pendaftaran = 'accepted')
+      OR EXISTS (SELECT 1 FROM transaksi_donasi t
+                  WHERE t.id_tujuan = p.id_project
+                    AND t.jenis_tujuan = 'project'
+                    AND t.id_donatur = ?
+                    AND t.status_transaksi = 'berhasil'))`;
 
-/** Q-136 (Algo-143). Progres project milik atau yang diikuti pengguna, terbaru lebih dulu. */
+/** Q-136 (Algo-143). Progres project yang dikelola, didukung, atau diikuti pengguna, terbaru lebih dulu. */
 export async function daftarProgresPengguna(
   idPengguna: string,
 ): Promise<RingkasanProgresPengguna[]> {
@@ -157,7 +163,7 @@ export async function daftarProgresPengguna(
        JOIN project p ON p.id_project = g.id_project
       WHERE ${SYARAT_PROGRES_PENGGUNA}
       ORDER BY g.timestamp_pembaruan DESC, g.id_progres DESC`,
-    [idPengguna, idPengguna],
+    [idPengguna, idPengguna, idPengguna],
   );
   return baris.map((b) => ({
     idProgres: b.id_progres,
@@ -186,7 +192,7 @@ export async function ambilProgresPengguna(
        FROM progres_project g
        JOIN project p ON p.id_project = g.id_project
       WHERE g.id_progres = ? AND ${SYARAT_PROGRES_PENGGUNA}`,
-    [idProgres, idPengguna, idPengguna],
+    [idProgres, idPengguna, idPengguna, idPengguna],
   );
   return baris
     ? { progres: dariBaris(baris), namaProject: baris.nama_project }

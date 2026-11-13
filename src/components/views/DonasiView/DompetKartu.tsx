@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useSesi } from '../../ui/SesiContext';
 import { useToast } from '../../ui/Toast';
 import { FormTopupView } from '../TopupView/FormTopupView';
 import { rupiah } from './format';
@@ -22,6 +23,7 @@ export function DompetKartu({ saldoDonasi, saldoGalang }: DompetKartuProps) {
   const [saldo, setSaldo] = useState(saldoDonasi);
   const [topupTerbuka, setTopupTerbuka] = useState(false);
   const { showToast } = useToast();
+  const { muatUlang } = useSesi();
   const router = useRouter();
 
   return (
@@ -72,6 +74,8 @@ export function DompetKartu({ saldoDonasi, saldoGalang }: DompetKartuProps) {
           onTutup={() => setTopupTerbuka(false)}
           onBerhasil={(h) => {
             setSaldo(h.saldoSesudah);
+            // Saldo di navbar dan riwayat top-up ikut diperbarui.
+            void muatUlang();
             router.refresh();
             showToast(
               <>

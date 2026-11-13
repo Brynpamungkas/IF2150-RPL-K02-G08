@@ -30,6 +30,10 @@ interface BarisStatus extends RowDataPacket {
   aktif: number;
 }
 
+interface BarisJumlah extends RowDataPacket {
+  jumlah: number;
+}
+
 interface BarisCapaian extends RowDataPacket {
   dana_terkumpul: number;
   kebutuhan_dana: number;
@@ -99,5 +103,18 @@ export const CampaignProjectRepository = {
       targetNominal: target,
       persentasePencapaian: persen,
     };
+  },
+
+  /**
+   * Saldo penggalangan pengguna: total dana terkumpul semua project dan campaign
+   * yang ia buat (dokumen implementasi, keputusan 6). Tidak disimpan di kolom mana pun.
+   */
+  async saldoGalang(idPembuat: string): Promise<number> {
+    const [b] = await query<BarisJumlah>(
+      `SELECT (SELECT COALESCE(SUM(dana_terkumpul), 0) FROM project WHERE id_pembuat = ?)
+            + (SELECT COALESCE(SUM(dana_terkumpul), 0) FROM campaign WHERE id_pembuat = ?) AS jumlah`,
+      [idPembuat, idPembuat],
+    );
+    return Number(b?.jumlah ?? 0);
   },
 };

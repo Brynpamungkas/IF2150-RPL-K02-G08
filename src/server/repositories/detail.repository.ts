@@ -88,7 +88,7 @@ SELECT p.lokasi_kumpul AS lokasi
 
 const SQL_PROGRES = `
 SELECT id_progres AS id, milestone, status_pelaksanaan, catatan, persentase, dana_terpakai,
-       dokumentasi_url, DATE_FORMAT(timestamp_pembaruan, '%Y-%m-%d %H:%i') AS waktu
+       dokumentasi_url, DATE_FORMAT(timestamp_pembaruan, '%Y-%m-%dT%H:%i:%sZ') AS waktu
   FROM progres_project
  WHERE id_project = ?
  ORDER BY timestamp_pembaruan DESC`;
