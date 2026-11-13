@@ -43,13 +43,13 @@ export async function TabMyActions() {
   }
   if (pengguna.peran !== 'pembuat_project') {
     return (
-      <section aria-label="My Actions" className="grid gap-4">
-        <h2>My Actions</h2>
+      <div className="grid gap-4">
+        <MyActions aksi={[]} bolehBuat={false} />
         <p className="notice info">
           Creating and managing actions is available to project creators. You
           can still donate or volunteer.
         </p>
-      </section>
+      </div>
     );
   }
   return <MyActions aksi={await AksiService.milikSaya(pengguna)} />;

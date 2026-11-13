@@ -323,7 +323,7 @@ async function run() {
   );
   const otherPanel = await openAccountActions(outsider);
   await otherPanel
-    .getByText('Belum ada project atau campaign milik Anda.', { exact: false })
+    .getByText("You haven't created an action yet", { exact: true })
     .waitFor();
   assert.equal(
     await outsider.getByText(`Campaign ${stamp}`, { exact: true }).count(),

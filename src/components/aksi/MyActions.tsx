@@ -3,19 +3,51 @@ import { LABEL_STATUS_AKSI, type Aksi } from '@/shared/aksi';
 import { TombolPengajuan } from './TombolPengajuan';
 
 /** Isi slot `aksi` pada FormRiwayatView (#58); tidak mengganti halaman Account tim. */
-export function MyActions({ aksi }: { aksi: Aksi[] }) {
+export function MyActions({
+  aksi,
+  bolehBuat = true,
+}: {
+  aksi: Aksi[];
+  bolehBuat?: boolean;
+}) {
   return (
     <section aria-label="My Actions" className="grid gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2>My Actions</h2>
-        <Link href="/start" className="btn btn-primary">
-          Buat aksi
+      {bolehBuat ? (
+        <Link
+          href="/start"
+          className="btn btn-primary w-fit gap-2 rounded-full px-6"
+        >
+          <span aria-hidden="true" className="text-[22px] leading-none">
+            +
+          </span>
+          New submission
         </Link>
-      </div>
+      ) : (
+        <button
+          type="button"
+          disabled
+          className="btn btn-primary w-fit gap-2 rounded-full px-6 opacity-60"
+          title="Creating actions is available to project creators."
+        >
+          <span aria-hidden="true" className="text-[22px] leading-none">
+            +
+          </span>
+          New submission
+        </button>
+      )}
       {aksi.length === 0 && (
-        <p className="notice info">
-          Belum ada project atau campaign milik Anda. Mulai aksi pertama Anda.
-        </p>
+        <div className="grid min-h-[226px] justify-items-center content-center gap-3 rounded-[20px] border border-dashed border-[#DCE0D6] bg-white px-6 py-10 text-center">
+          <span aria-hidden="true" className="mb-1 text-[28px] leading-none">
+            +
+          </span>
+          <h2 className="text-[22px] font-extrabold">
+            You haven&apos;t created an action yet
+          </h2>
+          <p className="max-w-[52ch] text-[18px] leading-relaxed text-[#4A544B]">
+            Have a climate action plan? Submit a project or a fundraising
+            campaign.
+          </p>
+        </div>
       )}
       {aksi.map((item) => (
         <article
