@@ -1,7 +1,16 @@
 # Implementasi Aksi — UC02, UC03, UC04
 
-PIC: Bryan. Reviewer yang ditugaskan: Sahla (`shlanailah`). Acuan lanjutan lengkap: `fix/runtime-suspense`; cadangan implementasi awal tetap `feat/aksi-pembuat`.
-Implementasi awal berbasis `6c3b021` sudah diajukan pada PR #66–73 dan berstatus approved/merged di GitHub. Namun sebagian hasil masih berada pada branch parent, bukan `develop`. Lanjutan ini berbasis `develop` `a562a6f`, membawa kembali stack yang sudah disetujui ke branch integrasi lokal, kemudian menyambungkan Account dan memperbaiki batas rendering. Branch lanjutan belum dipush/merge ke branch tim. Peta branch ada di [Pembagian Branch Aksi](BRANCH-AKSI.md).
+PIC: Bryan. Reviewer yang ditugaskan: Sahla (`shlanailah`). Acuan kode terbaru: `fix/aksi-current-integration`, berbasis `develop` `2d37202`; cadangan implementasi awal tetap `feat/aksi-pembuat`. Laporan resmi bagian Bryan disiapkan terpisah pada `docs/bryan-m9-completion`, berbasis main agar tidak menimpa isian teman. Peta branch ada di [Pembagian Branch Aksi](BRANCH-AKSI.md).
+
+## Pembaruan 13 November 2026
+
+- Stack UI yang sudah disetujui dipulihkan ke develop terbaru sambil mempertahankan auth, saldo, riwayat dan relawan tim pada Account. API aksi kini memakai `AutentikasiService` resmi; pemeriksaan sesi bersama menolak waktu mulai yang masih di masa depan.
+- My Actions terpasang pada Account. Tujuan `/progress/[id]` memeriksa pemilik dan status publikasi sebelum membuka `FormProgresProjectView` tim; tidak mengimplementasikan ulang UC09. Login utama browser memakai modal auth resmi dan bcrypt fixture, bukan cookie dev.
+- `npm test`: **83 node:test lulus, 37 dilewati; 175 Vitest lulus**. Runner default kini mencakup tes aksi dan tes tim yang ditemukan rekursif. Suite integrasi aksi opt-in tetap dijalankan terpisah.
+- Database aksi: **15/15 lulus tanpa skip** pada MariaDB 11.8.6 terisolasi. Browser produksi lulus, termasuk login → Account → Progres → satu milestone tersimpan, penolakan akses pemilik lain, empat status, retry, Back/satu ID dan mobile 375 px.
+- Lint dan typecheck mandiri lulus. Build lulus dengan warning tracing filesystem dan log percobaan prerender/cookies/DB_NAME yang belum diatur saat build. Bukan klaim build tanpa warning, validasi MySQL 8.4 atau UAT manusia.
+- Bagian di bawah yang berlabel 8/9 November adalah **hasil historis**, bukan kondisi integrasi terkini. Bloker auth/detail/progres lama telah digantikan integrasi 13 November; review baru, UAT manusia, konfirmasi persentase dan merge/rilis tim tetap diperlukan. Tidak ada klaim pengumpulan sebelum tenggat.
+- Bukti lengkap serta B.1–B.5/logbook/deklarasi AI milik Bryan: [BUKTI-AKSI-BRYAN.md pada branch dokumentasi](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/blob/docs/bryan-m9-completion/docs/M9/BUKTI-AKSI-BRYAN.md). Karya tim tidak diatribusikan kepada Bryan.
 
 ## Cakupan dan keterlacakan
 
@@ -148,7 +157,7 @@ Mode ini menjalankan `next start`, bukan `next dev`. Nilai `AKSI_TEST_SERVER_MOD
 - Lint tidak memiliki error; satu warning `<img>` dari peta Explore basis masih ada. Typecheck mandiri juga lulus.
 - Pengujian memakai **MariaDB terisolasi dan sesi fixture sah**, bukan login UI tim atau validasi MySQL 8 produksi. Review/UAT manusia atas lanjutan ini masih diperlukan.
 
-## Integrasi tim yang masih diperlukan
+## Catatan integrasi historis, 9 November (digantikan pembaruan 13 November di atas)
 
 1. **Login #57:** adapter fitur bersifat kompatibel dengan cookie/schema sesi sekarang, tetapi harus disatukan dengan guard auth resmi setelah tersedia. Jangan mengganti dengan cookie ID pengguna sementara. Navbar/login basis branch masih placeholder; browser test menanam sesi fixture, bukan mengklaim UI login selesai.
 2. **Account #58 / #45:** slot `aksi` sudah terhubung melalui `TabMyActions` di balik `Suspense`, menggunakan sesi asli di server. Header dan dompet Account masih preview milik integrasi auth/wallet; peringatan tampil agar identitas/saldo dummy tidak disangka data sesi. Modul riwayat/relawan tetap disediakan bagi pemiliknya. Ini bukan penyelesaian auth/wallet tim.

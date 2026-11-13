@@ -42,9 +42,9 @@ The app is a Next.js web application with a layered architecture (View → Contr
 | Use case | Feature | Status |
 | --- | --- | --- |
 | UC01 | Register, log in, log out, session cookie, role-based access | ✅ Available |
-| UC02 | Create a fundraising campaign (save draft, submit for review) | ✅ API · 🚧 Form UI *(to be completed)* |
-| UC03 | Create a climate-action project | ✅ API · 🚧 Form UI *(to be completed)* |
-| UC04 | Admin verification (approve / reject with a reason) | ✅ API · 🚧 Admin UI *(to be completed)* |
+| UC02 | Create a fundraising campaign (save draft, submit for review) | API and form available on this integration branch; human UAT pending |
+| UC03 | Create a climate-action project | API and two-stage form available on this integration branch; human UAT pending |
+| UC04 | Admin verification (approve / reject with a reason) | API and protected admin UI available on this integration branch; human UAT pending |
 | UC05 | Search and filter on the Explore page, map of actions, detail page with tabs | ✅ Available |
 | UC06 | Atomic donation with an idempotency key, printable receipt | ✅ Available |
 | UC07 | Volunteer sign-up | ✅ API · 🚧 Form UI *(to be completed)* |
@@ -53,9 +53,13 @@ The app is a Next.js web application with a layered architecture (View → Contr
 | UC10 | Donation and progress history | ✅ Available |
 | – | Home page, account page with wallet | ✅ Available |
 | – | Simulated balance top-up | 🚧 *(to be completed)* |
-| – | "My actions" tab (status, rejection reason, resubmit) | 🚧 *(to be completed)* |
+| – | "My actions" tab (status, rejection reason, resubmit) | Session-backed Account slot; Manage and private Progress bridge available; human UAT pending |
 
 **Main pages:** `/` (home) · `/explore` · `/project/[id]` · `/campaign/[id]` · `/account` · `/history`
+
+**Action pages (Bryan):** `/start?type=campaign` · `/start?type=project` · `/manage/[jenis]/[id]` (private owner preview, including drafts) · `/my-actions` · `/progress/[id]` (owner-only bridge to the team's progress form) · `/admin` · `/admin/pengajuan/[jenis]/[id]`.
+
+UC02–UC04 use the official `klimpool_sesi` authentication service. Drafts are not sent to public detail pages. This branch restores the approved action stack onto `develop`; availability here does not mean it has been merged or released.
 
 ---
 
@@ -214,13 +218,13 @@ This runs two test suites:
 | Command | Runner | Files | Needs a database? |
 | --- | --- | --- | --- |
 | `npm run test:vitest` | Vitest | `tests/*.spec.ts` (catalog, Explore, detail page, map) | No, they use fake repositories |
-| `npm run test:node` | Node test runner | the files listed in `package.json` (donation, authentication) | Only the integration tests. Without a database they are **skipped**, not failed |
+| `npm run test:node` | Node test runner | All `*.test.ts` discovered recursively under `tests/` by `scripts/test-node.mjs` | Only integration tests; the action suite requires `AKSI_TEST_DB=1` and a dedicated test database |
 
 To run the integration tests too, start the database first (`npm run db:up`) and make sure `.env` is filled in.
 
 📊 Test results are reported in section B.2 of the M9 report (`docs/M9/K02_G08_Implementasi.md`).
 
-🚧 *Tests for the other modules (campaign/project, volunteer, progress) will be added to `npm test` (to be completed).*
+Action validation/access tests now run with `npm test`, without removing the existing team tests. Run `npm run test:aksi` for the action suite alone and `npm run test:aksi:browser` for real browser/API/database coverage. For integration opt-in, production browser mode, and limitations, see [Implementasi Aksi](../docs/M9/IMPLEMENTASI-AKSI.md).
 
 ---
 
@@ -279,7 +283,7 @@ src/
 └── .env.example         # Configuration template (no secrets)
 ```
 
-🚧 *Folders for the pages that are not merged yet (campaign/project forms, admin verification, volunteer and progress UI) will be added here (to be completed).*
+Bryan's action forms and private controls are in `components/aksi/`; their route entry points are `app/start/`, `app/manage/`, `app/my-actions/`, `app/progress/`, and `app/admin/`. The progress bridge reuses the team's `FormProgresProjectView`, not a second implementation of UC09.
 
 ---
 

@@ -60,3 +60,14 @@ Catatan jumlah: rentang `develop..fix/aksi-stack-integration` memuat **18 commit
 - Tiga branch lanjutan masih lokal dan belum dipush/dibuatkan PR; tidak ada merge ke branch tim pada tahap ini.
 - Tidak mengambil branch auth #57, detail #55, atau progres #60 yang masih terbuka. Header/dompet Account tetap preview yang ditandai jelas; daftar aksi menggunakan sesi server sendiri.
 - Review baru diperlukan untuk perubahan lanjutan. Jangan menganggap approval delapan PR awal mencakup perubahan ini.
+
+## Integrasi terkini, 13 November 2026
+
+Status pada bagian 9 November di atas adalah historis. Setelah audit, tidak mem-push tiga branch lama secara buta di atas develop yang sudah berubah. Kelanjutannya memakai dua branch berikut:
+
+| Branch | Base PR | Isi |
+| --- | --- | --- |
+| `fix/aksi-current-integration` | `develop` (`2d37202`) | Merge stack yang telah disetujui dengan develop terbaru; resolusi mempertahankan auth/saldo/riwayat/relawan tim; adapter auth resmi; penghubung Progres; tes dan panduan terbaru |
+| `docs/bryan-m9-completion` | `main` (`2a832b4`) | Tambahan Bryan pada laporan resmi B.1–B.5, logbook 4/5/4 jam, deklarasi AI dan bukti tes; isian teman tetap dipertahankan |
+
+Kode memiliki commit baru terpisah untuk merge integrasi, autentikasi, navigasi Progres, pengujian produksi dan dokumentasi. Rentang review juga membawa sejarah stack lama yang belum terjangkau develop; bukan hanya jumlah commit baru tersebut dan tidak di-squash. PR dokumentasi hanya mengubah dokumen milik kontribusi Bryan; persentase kontribusi dan UAT manusia belum diisi tanpa konfirmasi. Tidak ada merge atau rilis tim yang dilakukan otomatis.
