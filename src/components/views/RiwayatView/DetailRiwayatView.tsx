@@ -13,7 +13,9 @@ import type {
 } from '@/shared/riwayat';
 import { LABEL_STATUS_RELAWAN } from '@/shared/riwayat';
 import { Modal } from '../../ui/Modal';
+import { LembarCetakBukti, TombolCetakBukti } from '../DonasiView/LembarCetakBukti';
 import { rupiah, waktuLokal } from '../DonasiView/format';
+import { useBukti } from '../DonasiView/useBukti';
 import { LABEL_STATUS_PELAKSANAAN, LABEL_STATUS_TRANSAKSI } from './label';
 import { mintaRiwayat } from './mintaRiwayat';
 
@@ -114,7 +116,7 @@ function DetailDonasiProgres({
         keadaan.detail.jenis === 'transaksi' ? (
           <>
             <RincianTransaksi data={keadaan.detail.data} />
-            {item.jenis === 'transaksi' ? <TautanTujuan item={item} /> : null}
+            {item.jenis === 'transaksi' ? <AksiTransaksi item={item} /> : null}
           </>
         ) : (
           <RincianProgres data={keadaan.detail.data} />
@@ -155,22 +157,43 @@ function RincianTransaksi({ data }: { data: DetailTransaksiRiwayat }) {
 }
 
 /**
- * Tombol ke halaman detail project/campaign penerima donasi (prototipe mHist).
- * Tidak tampil bila tujuannya sudah dihapus, karena halamannya tidak ada lagi.
+ * Tombol ke halaman detail project/campaign penerima donasi (prototipe mHist)
+ * di kiri, dan "Print receipt" di kanan bawah. Tujuan tidak ditampilkan bila
+ * sudah dihapus, karena halamannya tidak ada lagi.
  */
-function TautanTujuan({ item }: { item: ItemRiwayatTransaksi }) {
-  if (item.namaTujuan === null) return null;
-  const dasar = `/${item.jenisTujuan}/${encodeURIComponent(item.idTujuan)}`;
+function AksiTransaksi({ item }: { item: ItemRiwayatTransaksi }) {
+  const keadaan = useBukti(item.id);
+  const dasar =
+    item.namaTujuan === null
+      ? null
+      : `/${item.jenisTujuan}/${encodeURIComponent(item.idTujuan)}`;
 
   return (
-    <div className="form-actions">
-      <Link href={`${dasar}?tab=funds`} className="btn btn-ghost">
-        See use of funds
-      </Link>
-      <Link href={`${dasar}?tab=progress`} className="btn btn-ghost">
-        See progress
-      </Link>
-    </div>
+    <>
+      <div className="form-actions">
+        {dasar ? (
+          <>
+            <Link href={`${dasar}?tab=funds`} className="btn btn-ghost">
+              See use of funds
+            </Link>
+            <Link href={`${dasar}?tab=progress`} className="btn btn-ghost">
+              See progress
+            </Link>
+          </>
+        ) : null}
+        {keadaan.status === 'ada' ? (
+          <span className="ml-auto">
+            <TombolCetakBukti
+              bukti={keadaan.bukti}
+              className="btn btn-primary"
+            />
+          </span>
+        ) : null}
+      </div>
+      {keadaan.status === 'ada' ? (
+        <LembarCetakBukti bukti={keadaan.bukti} />
+      ) : null}
+    </>
   );
 }
 
