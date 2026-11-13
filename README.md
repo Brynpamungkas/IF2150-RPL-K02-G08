@@ -1,4 +1,4 @@
-# <img src="public/klimpool-badge.png" width="60" height="60" alt="KlimPooL logo"> KlimPooL
+# <img src="src/public/klimpool-badge.png" width="60" height="60" alt="KlimPooL logo"> KlimPooL
 
 > A climate-action platform where people can **donate** to and **volunteer** for local climate projects all in one place!
 
