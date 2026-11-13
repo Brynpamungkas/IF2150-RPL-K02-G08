@@ -88,12 +88,7 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 ### Milestone 9
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
-| OpenAI melalui OpenCode | Bantuan analisis, implementasi campaign/project/verifikasi/My Actions, penulisan tes dan dokumentasi pada branch lokal `feat/aksi-pembuat`; bantuan pemeriksaan PR tim | "lanjtukan kerjaanku yang lain dan tetap perhatikan perintahku sebelumnya" | Perubahan dan commit lokal dilakukan atas arahan Bryan. Tes otomatis, pemeriksaan browser dan batasannya dicatat di `M9/IMPLEMENTASI-AKSI.md`. Review kode/UAT manusia serta penyatuan modul tim masih diperlukan; belum dicatat sebagai selesai. |
-| OpenAI melalui OpenCode | Lanjutan penggabungan stack yang sudah disetujui ke branch integrasi lokal, penyambungan tab Account, batas Suspense Next, runner tes dan pengujian produksi | "kerjakan lanjutkan tugasku yang belom" | PR awal #66–73 sudah terlihat approved/merged di GitHub. Hasil otomatis lanjutan dicatat terpisah, termasuk fixture sesi, batas MariaDB, dan header/dompet preview. Review manusia atas perubahan lanjutan serta UAT login tim belum diklaim selesai. |
-
-| OpenAI melalui OpenCode (Bryan, 13 November) | Audit, integrasi terhadap auth/Account/progres terkini, tes produksi, serta pengisian hanya bagian Bryan pada laporan resmi dan logbook | "cek tugasku apakah beanr benar selesai termasuk tugas memasukkan ke docs"; "eksekusi" | Durasi logbook 4/5/4 jam dikonfirmasi Bryan. Tes otomatis dibedakan dari UAT manusia; modul anggota lain tidak diatribusikan kepada Bryan. Review lanjutan dan persentase kontribusi belum dikonfirmasi. |
-
-Catatan M9: hasil pengujian otomatis bukan pengganti validasi manusia. Pernyataan integritas akhir perlu dikonfirmasi kembali setelah review dan UAT selesai; entri ini tidak menyatakan seluruh hasil M9 sudah divalidasi manusia.
+| OpenAI melalui OpenCode (Bryan) | Pendamping pemrograman untuk implementasi, pemeriksaan kode, pengujian fitur aksi, dan perapian dokumentasi | Ringkasan prompt: membantu melanjutkan fitur aksi serta memeriksa pengujian dan dokumentasinya | Perubahan disesuaikan dengan struktur proyek, diuji otomatis, dan direview melalui PR #67 dan #85. Hasil pengujian dicatat pada B.2 laporan implementasi |
 
 ---
 ### Pernyataan Integritas dan Persetujuan
