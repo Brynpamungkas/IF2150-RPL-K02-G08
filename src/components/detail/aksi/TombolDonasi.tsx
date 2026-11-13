@@ -1,12 +1,20 @@
-import { IkonHati } from '@/components/ui/Ikon';
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { AlurDonasi } from '@/components/views/DonasiView';
 import { formatTanggal, type DetailAksi } from '@/shared/detail';
 
 export function TombolDonasi({ detail }: { detail: DetailAksi }) {
+  const router = useRouter();
+
   if (detail.terbukaDonasi) {
+    // Alur UC06: tombol "Donate now" -> formulir donasi -> bukti transaksi.
     return (
-      <button type="button" className="btn btn-primary btn-block">
-        <IkonHati /> Donate now
-      </button>
+      <AlurDonasi
+        jenisTujuan={detail.tipe}
+        idTujuan={detail.id}
+        onSelesai={() => router.refresh()}
+      />
     );
   }
 
