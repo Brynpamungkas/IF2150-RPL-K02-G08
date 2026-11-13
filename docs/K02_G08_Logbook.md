@@ -207,10 +207,15 @@
 | 8-11-2026 | Neysa | Revisi issue #23 dan #24 dari hasil review (campaign belum mulai, sinkron filter URL, peta untuk hasil closed, galat Show more) | 1 | Done | - |
 | 8-11-2026 | Neysa | Fix eksekusi tes agar jalan di Node 20 dan terbaca Vitest | 0,5 | Done | Pola glob tes tidak terbaca di Node 20 |
 | 10-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi fitur top-up saldo (di luar use case) #30 | 5 | Done | - |
+| 08-11-2026 | Bryan | Implementasi campaign UC02 (#16–17), project dua tahap UC03 (#18–19), pengajuan/verifikasi admin UC04 (#20–22), dan My Actions (#45); validasi, pemeriksaan sesi/peran/pemilik dan transaksi status; tes unit/API/database/browser; commit/PR per bagian dan review PR tim sebagai reviewer, bukan implementer modul tersebut | 4 | Implementasi dan tes awal tersedia pada branch/PR fitur | Integrasi stack bertingkat, slot Account dan modul auth/detail/progres tim belum lengkap pada basis saat itu; build basis gagal prerender donasi |
+| 09-11-2026 | Bryan | Integrasi lokal stack aksi dengan develop saat itu; penyambungan My Actions ke slot Account, runner tes rekursif dan batas Suspense navbar/donasi; tes fitur/database aksi dan browser produksi; dokumentasi hasil/batas pengujian | 5 | Lanjutan lokal teruji; belum dipush pada tanggal tersebut | Integrasi auth/detail/progres terbaru, review baru dan UAT manusia masih diperlukan; hasil ini tidak memvalidasi develop 13 November |
+| 13-11-2026 | Bryan | Audit kode/issue/PR/dokumen pekerjaan sendiri; pemulihan stack aksi ke develop terbaru dengan mempertahankan perubahan tim; adapter autentikasi resmi dan pemeriksaan waktu sesi; tujuan Progres privat memakai form/API tim; pengujian ulang; pengisian B.1–B.5 bagian Bryan, logbook dan deklarasi AI | 4 | Implementasi dan pengujian otomatis lanjutan tersedia pada branch integrasi; dokumentasi disiapkan lewat PR terpisah | Menunggu review/penggabungan ke branch tim, konfirmasi persentase kontribusi dan UAT manusia; rilis serta asistensi harus dikoordinasikan tim |
 
 
 **Catatan/Evaluasi Milestone 9:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+
+**Catatan Bryan:** Durasi 8, 9 dan 13 November (4, 5 dan 4 jam; total **13 jam**) dikonfirmasi langsung oleh Bryan pada 13 November 2026, bukan perkiraan alat. Entri tambahan ini hanya mencatat kontribusi Bryan; form/API progres, autentikasi inti, Account/dompet, riwayat, detail dan relawan tetap karya anggota terkait. Penghubung integrasinya tidak mengalihkan atribusi modul tersebut. Hasil otomatis dan batasannya tercatat pada [Bukti Aksi Bryan](M9/BUKTI-AKSI-BRYAN.md). Pekerjaan 13 November berada setelah tenggat 11 November, bukan bukti pengumpulan tepat waktu. Tidak ada klaim UAT manusia atau persentase kontribusi yang belum dikonfirmasi.
 ---
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``
