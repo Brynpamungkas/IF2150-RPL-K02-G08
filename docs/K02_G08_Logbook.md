@@ -29,6 +29,7 @@
 * [Milestone 6](#milestone-6)
 * [Milestone 7](#milestone-7)
 * [Milestone 8](#milestone-8)
+* [Milestone 9](#milestone-9)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -185,5 +186,17 @@
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 ---
 
+
+### Milestone 9
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 08-11-2026 | Bryan | Implementasi lokal UC02–UC04 dan komponen My Actions (#16–22, #45), commit per bagian; pengujian validasi/akses/database/browser; pemeriksaan PR #52–56 sebagai reviewer, bukan implementer modul tersebut, dengan bantuan alat yang dicatat pada deklarasi penggunaan AI | 4 | Implementasi lokal dan tes fitur tersedia; menunggu review/UAT manusia dan integrasi tim | UI login/detail/progres serta penyatuan slot Account belum terintegrasi di basis branch; build basis terhambat prerender halaman donasi |
+| 09-11-2026 | Bryan | Integrasi lokal stack fitur aksi milik Bryan dengan develop; penyambungan tab My Actions pada slot Account yang disediakan tim memakai sesi server; batas Suspense navbar/donasi; pengujian unit, database aksi, serta browser pada next start; dokumentasi hasil dan batas pengujian | 5 | Lanjutan lokal teruji; menunggu review dan izin publikasi branch baru | Login UI resmi, header/dompet Account, detail/progres tim, MySQL 8 dan UAT manusia belum lengkap |
+| 13-11-2026 | Bryan | Audit ketercakupan pekerjaan sendiri (#16–22, #45) pada origin/main dan origin/develop, status issue/PR, serta kelengkapan laporan implementasi, traceability, logbook dan deklarasi AI; menjalankan ulang tes default, lint dan build pada snapshot develop; pembaruan logbook pekerjaan Bryan | 4 | Kesenjangan integrasi dan dokumentasi teridentifikasi; logbook lokal diperbarui, penyelesaian seluruh fitur belum diklaim | UI aksi dan dokumen pendukung belum masuk branch tim; entri Bryan belum ada pada B.4/B.5 laporan main; perubahan lanjutan belum dipush; tes default develop tidak mencakup tes aksi Bryan |
+
+**Catatan/Evaluasi Milestone 9:** Hasil dan batas pengujian pekerjaan Bryan ada pada [Implementasi Aksi](M9/IMPLEMENTASI-AKSI.md). Durasi 8, 9, dan 13 November (4, 5, dan 4 jam; total 13 jam) dikonfirmasi langsung oleh Bryan pada 13 November 2026, bukan perkiraan alat. Entri ini hanya mencatat kontribusi Bryan; implementasi modul teman tidak diatribusikan kepadanya. Persentase kontribusi dan validasi manusia belum dikonfirmasi. Delapan branch awal sudah dipush, ditata ulang dengan izin Bryan, dan PR #66–73 berstatus approved/merged, tetapi audit 13 November menunjukkan UI aksi belum seluruhnya mencapai branch tim. Cadangan tetap dipertahankan. Perubahan lanjutan 9 November dan pembaruan logbook ini masih lokal; belum ada push atau merge lanjutan ke branch tim. Detail base dan urutan review ada pada [Pembagian Branch Aksi](M9/BRANCH-AKSI.md). Entri 13 November adalah pekerjaan setelah tenggat M9 (11 November), bukan bukti pengumpulan sebelum tenggat.
+
+**Batas verifikasi 13 November:** Snapshot `origin/develop` `2d372029948c5b57b434e4be8fce826bdd7cacc9` berhasil menjalankan 44 tes node:test dan 152 tes Vitest; 26 tes integrasi dilewati karena database tidak tersedia. Lint lulus dan build lulus dengan warning tracing filesystem serta log percobaan prerender/DB_NAME belum diatur. Daftar `test:node` belum memasukkan `aksi.*.test.ts`; hasil tersebut bukan validasi fitur aksi Bryan secara lengkap, bukan pengujian browser/login terpadu, dan bukan atribusi implementasi modul yang diuji kepada Bryan. Laporan resmi yang diaudit berada pada `origin/main` `2a832b455b5ce5360f24e8840e101e11b72d4d37`, bukan template laporan di branch lokal ini.
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``

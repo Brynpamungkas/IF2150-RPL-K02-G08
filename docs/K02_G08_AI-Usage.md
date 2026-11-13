@@ -30,6 +30,7 @@
 * [Milestone 6](#milestone-6)
 * [Milestone 7](#milestone-7)
 * [Milestone 8](#milestone-8)
+* [Milestone 9](#milestone-9)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -83,6 +84,14 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 ### Milestone 8
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
+
+### Milestone 9
+| Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
+| :--- | :--- | :--- | :--- |
+| OpenAI melalui OpenCode | Bantuan analisis, implementasi campaign/project/verifikasi/My Actions, penulisan tes dan dokumentasi pada branch lokal `feat/aksi-pembuat`; bantuan pemeriksaan PR tim | "lanjtukan kerjaanku yang lain dan tetap perhatikan perintahku sebelumnya" | Perubahan dan commit lokal dilakukan atas arahan Bryan. Tes otomatis, pemeriksaan browser dan batasannya dicatat di `M9/IMPLEMENTASI-AKSI.md`. Review kode/UAT manusia serta penyatuan modul tim masih diperlukan; belum dicatat sebagai selesai. |
+| OpenAI melalui OpenCode | Lanjutan penggabungan stack yang sudah disetujui ke branch integrasi lokal, penyambungan tab Account, batas Suspense Next, runner tes dan pengujian produksi | "kerjakan lanjutkan tugasku yang belom" | PR awal #66–73 sudah terlihat approved/merged di GitHub. Hasil otomatis lanjutan dicatat terpisah, termasuk fixture sesi, batas MariaDB, dan header/dompet preview. Review manusia atas perubahan lanjutan serta UAT login tim belum diklaim selesai. |
+
+Catatan M9: hasil pengujian otomatis bukan pengganti validasi manusia. Pernyataan integritas akhir perlu dikonfirmasi kembali setelah review dan UAT selesai; entri ini tidak menyatakan seluruh hasil M9 sudah divalidasi manusia.
 
 ---
 ### Pernyataan Integritas dan Persetujuan

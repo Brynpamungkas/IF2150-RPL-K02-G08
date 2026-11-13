@@ -102,11 +102,19 @@ test('tipe badan, panjang teks, koordinat dan rincian dana tidak dipercaya', () 
     { ...dasar, latitude: -91, longitude: 110 },
     { ...dasar, latitude: -8 },
     { ...dasar, latitude: '0', longitude: 0 },
-    { ...dasar, rincianDana: [{ label: 'Barang', nominal: -1 }] },
+    { ...dasar, rincianDana: [{ uraian: 'Barang', nominal: -1 }] },
   ]) {
     assert.throws(() => validasi(b), GalatValidasi);
   }
   assert.equal(validasi({ ...dasar, latitude: 0, longitude: 0 }).latitude, 0);
+  assert.deepEqual(
+    validasi({
+      ...dasar,
+      rincianDana: [{ uraian: ' Peralatan ', nominal: 100 }],
+    }).rincianDana,
+    [{ uraian: 'Peralatan', nominal: 100 }],
+    'Kontrak rincian mengikuti seed dan pembaca detail publik.',
+  );
 });
 test('alasan penolakan tidak boleh kosong dan hari kalender memakai WIB', () => {
   for (const b of ['', ' ', null, 'x'.repeat(2001)])

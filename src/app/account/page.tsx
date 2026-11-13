@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { TabMyActions } from '@/components/aksi/TabMyActions';
+import LoadingAksi from '@/components/aksi/LoadingAksi';
 import { GateLogin } from '@/components/ui/GateLogin';
 import { DompetKartu } from '@/components/views/DonasiView/DompetKartu';
 import { DetailStatusPendaftaranView } from '@/components/views/RelawanView/DetailStatusPendaftaranView';
@@ -53,10 +55,14 @@ async function IsiAccount() {
 
       <section className="pb-16 pt-7">
         <div className="mx-auto max-w-[1240px] px-5">
-          {/* Tab aksi dipasang lewat props aksi={...}. */}
           <FormRiwayatView
             riwayat={<TabRiwayat />}
             relawan={<DetailStatusPendaftaranView />}
+            aksi={
+              <Suspense fallback={<LoadingAksi />}>
+                <TabMyActions />
+              </Suspense>
+            }
           />
         </div>
       </section>

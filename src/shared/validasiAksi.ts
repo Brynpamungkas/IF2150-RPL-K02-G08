@@ -135,16 +135,16 @@ export function validasiAksi(
         if (
           !baris ||
           typeof baris !== 'object' ||
-          typeof baris.label !== 'string' ||
-          !baris.label.trim() ||
-          baris.label.length > 200 ||
+          typeof baris.uraian !== 'string' ||
+          !baris.uraian.trim() ||
+          baris.uraian.length > 200 ||
           !nominalValid(baris.nominal)
         ) {
           galat.rincianDana =
             'Setiap rincian memerlukan label dan nominal positif.';
         } else
           rincianDana.push({
-            label: baris.label.trim(),
+            uraian: baris.uraian.trim(),
             nominal: baris.nominal,
           });
       }
