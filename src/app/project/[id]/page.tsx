@@ -9,8 +9,12 @@ export const metadata: Metadata = {
 
 export default function HalamanProject({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string | string[] }>;
 }) {
-  return <MuatDetail tipe="project" params={params} />;
+  return (
+    <MuatDetail tipe="project" params={params} searchParams={searchParams} />
+  );
 }
