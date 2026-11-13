@@ -21,10 +21,11 @@ export function buatSesi(idPengguna: string, sekarang: Date): SesiLogin {
   };
 }
 
-/** Sesi sah hanya bila aktif dan belum kedaluwarsa. */
+/** Sesi sah hanya bila aktif, sudah dimulai, dan belum kedaluwarsa. */
 export function cekStatusLogin(sesi: SesiLogin, sekarang: Date): boolean {
   return (
     sesi.statusSesi === 'aktif' &&
+    sesi.waktuMulai.getTime() <= sekarang.getTime() &&
     sesi.waktuKedaluwarsa.getTime() > sekarang.getTime()
   );
 }
