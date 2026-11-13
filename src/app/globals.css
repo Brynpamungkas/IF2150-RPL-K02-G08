@@ -69,13 +69,12 @@ img {
   max-width: 100%;
   display: block;
 }
-button,
-input,
-select,
-textarea {
-  font: inherit;
-  color: inherit;
-}
+/*
+ * `font: inherit` dan `color: inherit` untuk button/input/select/textarea sudah
+ * disediakan preflight Tailwind di @layer base. Jangan diulang di sini: aturan tanpa
+ * layer selalu menang atas utilitas, sehingga text-white, text-[...], font-extrabold,
+ * dan sejenisnya pada tombol tidak akan pernah berlaku.
+ */
 button {
   cursor: pointer;
 }
