@@ -1,9 +1,11 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useContext, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
 import { saranNominalTopup } from '@/shared/topup';
+import { useContext, useState, type ReactNode } from 'react';
+import type { HasilDonasi, JenisTujuan } from '@/shared/donasi';
 import { SesiContext, useWajibLogin } from '../../ui/SesiContext';
 import { useToast } from '../../ui/Toast';
 import { FormTopupView } from '../TopupView/FormTopupView';
@@ -77,7 +79,7 @@ export function AlurDonasi({
   // Tamu diminta login dulu, lalu formulir terbuka otomatis (#15).
   function tekanDonasi() {
     setNominalLanjut(undefined);
-    wajibLogin(PESAN_LOGIN, () => setFormTerbuka(true));
+    setFormTerbuka(true);
   }
 
   // Modal donasi ditutup sementara; nominal yang dipilih disimpan untuk "Continue donating".
@@ -90,6 +92,7 @@ export function AlurDonasi({
     setNominalLanjut(topup?.nominalDonasi);
     setTopup(null);
     setFormTerbuka(true);
+    wajibLogin(PESAN_LOGIN, () => setFormTerbuka(true));
   }
 
   // Server menjawab BELUM_LOGIN (mis. sesi kedaluwarsa): login, lalu lanjutkan.
@@ -130,7 +133,7 @@ export function AlurDonasi({
           idTujuan={idTujuan}
           onTutup={() => setFormTerbuka(false)}
           onBerhasil={selesaiDonasi}
-          onPerluLogin={perluLogin}
+          onPerluLogin={onPerluLogin}
           onTopup={bukaTopup}
           nominalAwal={nominalLanjut}
         />
@@ -142,6 +145,8 @@ export function AlurDonasi({
           onTutup={() => setTopup(null)}
           onBerhasil={() => router.refresh()}
           onLanjutDonasi={lanjutDonasi}
+          onPerluLogin={perluLogin}
+          onTopup={onTopup}
         />
       ) : null}
 
