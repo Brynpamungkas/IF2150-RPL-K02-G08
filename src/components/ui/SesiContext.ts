@@ -16,7 +16,10 @@ export interface NilaiSesi {
    */
   bukaAuth: (tab?: TabAuth, alasan?: string, lanjutan?: () => void) => void;
   setPengguna: (p: PenggunaDto | null) => void;
+  /** Memuat ulang sesi (saldo navbar) dan menaikkan `versiSaldo`. */
   muatUlang: () => Promise<void>;
+  /** Bertambah setiap `muatUlang`; komponen yang menampilkan saldo atau riwayat memakainya sebagai pemicu. */
+  versiSaldo: number;
 }
 
 export const SesiContext = createContext<NilaiSesi | null>(null);

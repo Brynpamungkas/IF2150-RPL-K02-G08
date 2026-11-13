@@ -1,5 +1,5 @@
 import { IkonDokumen } from '@/components/ui/Ikon';
-import { formatJam, formatTanggal, type ProgresItem } from '@/shared/detail';
+import { formatWaktuWib, type ProgresItem } from '@/shared/detail';
 import { LABEL_PELAKSANAAN, rupiah } from '@/shared/explore';
 
 const KELAS_STATUS = {
@@ -24,9 +24,9 @@ export function PanelProgres({ progres }: { progres: ProgresItem[] }) {
       {progres.map((p) => (
         <div key={p.id} className="tl-item">
           <div className="when">
-            {formatTanggal(p.waktu)}
+            {formatWaktuWib(p.waktu).tanggal}
             <br />
-            <span style={{ fontWeight: 600 }}>{formatJam(p.waktu)}</span>
+            <span style={{ fontWeight: 600 }}>{formatWaktuWib(p.waktu).jam}</span>
           </div>
           <div className="what">
             <div className="judul-progres">

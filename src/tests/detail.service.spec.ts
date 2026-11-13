@@ -10,7 +10,7 @@ import {
   pecahDaftar,
   type SumberDetail,
 } from '@/server/services/detail.service';
-import { formatJam, formatTanggal, plural } from '@/shared/detail';
+import { formatTanggal, formatWaktuWib, plural } from '@/shared/detail';
 
 function barisProject(ubah: Record<string, unknown> = {}): BarisDetail {
   return {
@@ -49,7 +49,7 @@ function barisProgres(ubah: Record<string, unknown> = {}): BarisProgres {
     persentase: 40,
     dana_terpakai: '100',
     dokumentasi_url: 'a.jpg, b.jpg',
-    waktu: '2026-10-21 16:20',
+    waktu: '2026-10-21T16:20:00Z',
     ...ubah,
   } as unknown as BarisProgres;
 }
@@ -346,7 +346,10 @@ describe('helper detail', () => {
   it('format tampilan', () => {
     expect(formatTanggal('2026-10-05')).toBe('5 Oct 2026');
     expect(formatTanggal(null)).toBe('-');
-    expect(formatJam('2026-10-21 16:20')).toBe('16:20 WIB');
+    expect(formatWaktuWib('2026-10-21T13:23:00Z')).toEqual({
+      tanggal: '21 Oct 2026',
+      jam: '20:23 WIB',
+    });
     expect(plural(1, 'day')).toBe('1 day');
     expect(plural(2, 'day')).toBe('2 days');
   });

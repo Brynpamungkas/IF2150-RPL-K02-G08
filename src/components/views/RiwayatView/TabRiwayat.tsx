@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { SesiContext } from '@/components/ui/SesiContext';
 import {
   kelompokkanPerBulan,
   LABEL_STATUS_RELAWAN,
@@ -40,8 +41,11 @@ export function TabRiwayat() {
   const [percobaan, setPercobaan] = useState(0);
   const [filter, setFilter] = useState<FilterRiwayat>('semua');
   const [terpilih, setTerpilih] = useState<ItemRiwayat | null>(null);
+  // Di luar SesiProvider (mis. pengujian) riwayat tetap dimuat sekali.
+  const versiSaldo = useContext(SesiContext)?.versiSaldo ?? 0;
 
-  // tampilkanDaftarRiwayat: ambil riwayat milik pengguna yang login.
+  // tampilkanDaftarRiwayat: ambil riwayat milik pengguna yang login. Dimuat
+  // ulang setiap ada donasi atau top-up (versiSaldo), tanpa reload halaman.
   useEffect(() => {
     const kendali = new AbortController();
     mintaRiwayat<{ riwayat: ItemRiwayat[] }>('/api/riwayat', kendali.signal)
@@ -56,7 +60,7 @@ export function TabRiwayat() {
         // Dibatalkan karena komponen dilepas atau dicoba ulang.
       });
     return () => kendali.abort();
-  }, [percobaan]);
+  }, [percobaan, versiSaldo]);
 
   function cobaLagi() {
     setKeadaan({ tahap: 'memuat' });

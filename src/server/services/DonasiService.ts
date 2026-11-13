@@ -161,6 +161,11 @@ export const DonasiService = {
   async getRiwayatTransaksi(idDonatur: string): Promise<RingkasanTransaksi[]> {
     return DonasiRepository.getRiwayatTransaksi(idDonatur);
   },
+
+  /** Saldo penggalangan pengguna: dana terkumpul dari aksi yang ia buat (kartu Fundraising balance). */
+  async saldoGalang(idPengguna: string): Promise<number> {
+    return CampaignProjectRepository.saldoGalang(idPengguna);
+  },
 };
 
 /** Algo-111 (Q-112 + Q-113). Idempoten: aman dipanggil ulang untuk transaksi yang sama. */
