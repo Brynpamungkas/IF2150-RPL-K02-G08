@@ -1,6 +1,13 @@
 # Implementasi Aksi — UC02, UC03, UC04
 
-PIC: Bryan. Reviewer yang ditugaskan: Sahla (`shlanailah`). Acuan kode terbaru: `fix/aksi-current-integration`, berbasis `develop` `2d37202`; cadangan implementasi awal tetap `feat/aksi-pembuat`. Laporan resmi bagian Bryan disiapkan terpisah pada `docs/bryan-m9-completion`, berbasis main agar tidak menimpa isian teman. Peta branch ada di [Pembagian Branch Aksi](BRANCH-AKSI.md).
+PIC: Bryan. Reviewer yang ditugaskan: Sahla (`shlanailah`). Acuan kode terbaru: `fix/aksi-current-integration`, kini diselaraskan dengan `develop` `13838ee` setelah PR #83 merged; cadangan implementasi awal tetap `feat/aksi-pembuat`. Laporan resmi bagian Bryan sudah dimasukkan langsung ke main atas arahan Bryan pada `bc10ebe`, tanpa menimpa isian teman. Peta branch ada di [Pembagian Branch Aksi](BRANCH-AKSI.md).
+
+### Penyelarasan setelah PR #83 merged
+
+- Merge lokal `81f2f85` mempertahankan perbaikan login/top-up tim dan boundary Suspense navbar. Tidak mengambil branch #84 yang belum merged.
+- Seluruh validasi dijalankan ulang pada basis `13838ee`: **175 Vitest + 83 node:test lulus** (37 dilewati pada run default), **15/15 tes aksi/database tanpa skip**, lint, typecheck, build dan browser produksi lulus. Warning/log build tetap seperti yang dicatat di bawah.
+- Approval awal Sahla untuk PR #85 berada pada head `6e66e38`; penyelarasan ini menambah head baru dan perlu dikonfirmasi reviewer, bukan dianggap otomatis disetujui. UI issue #19/#21/#22/#45 tetap terbuka sampai integrasi selesai.
+- Bryan juga mereview dan memberi approval PR #84 pada head `3b9a409` setelah uji role/API/browser produksi; ini kontribusi review, bukan implementasi modul progres Nathan, dan bukan merge PR tersebut.
 
 ## Pembaruan 13 November 2026
 

@@ -71,3 +71,10 @@ Status pada bagian 9 November di atas adalah historis. Setelah audit, tidak mem-
 | `docs/bryan-m9-completion` | `main` (`2a832b4`) | Tambahan Bryan pada laporan resmi B.1–B.5, logbook 4/5/4 jam, deklarasi AI dan bukti tes; isian teman tetap dipertahankan |
 
 Kode memiliki commit baru terpisah untuk merge integrasi, autentikasi, navigasi Progres, pengujian produksi dan dokumentasi. Rentang review juga membawa sejarah stack lama yang belum terjangkau develop; bukan hanya jumlah commit baru tersebut dan tidak di-squash. PR dokumentasi hanya mengubah dokumen milik kontribusi Bryan; persentase kontribusi dan UAT manusia belum diisi tanpa konfirmasi. Tidak ada merge atau rilis tim yang dilakukan otomatis.
+
+### Status lanjutan setelah review tim
+
+- Dokumentasi dimasukkan langsung ke main pada `bc10ebe` atas arahan Bryan; #86 otomatis tercatat merged. Issue API #16/#18/#20 ditutup berdasarkan implementasi approved/merged #67 dan tes bawaan develop terbaru 15/15; #17 sudah closed sebelumnya.
+- PR #83 merged oleh tim ke develop `13838ee`. Branch kode diselaraskan melalui `81f2f85`, tanpa mengambil PR #84 yang belum merged. Tes unit/database/browser produksi, build, lint dan typecheck dijalankan ulang dan lulus.
+- Approval #85 sebelumnya ada pada `6e66e38`; reviewer diminta mengonfirmasi head baru. Issue UI #19/#21/#22/#45 belum ditutup dan tidak ada merge kode ke develop/main pada tahap ini.
+- Review Bryan terhadap #84 sudah dipublikasikan untuk head `3b9a409`; implementasi tetap diatribusikan kepada Nathan.
