@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import {
   kelompokkanPerBulan,
+  LABEL_STATUS_RELAWAN,
   saringRiwayat,
   type FilterRiwayat,
   type ItemRiwayat,
@@ -19,14 +20,13 @@ import { mintaRiwayat } from './mintaRiwayat';
  * UC10, KF27). Acuan: `pageDash` dan `histRow` pada KlimPooL-prototype-final.
  * Mengambil riwayat sekali dari GET /api/riwayat, lalu menyaring dan
  * mengelompokkan per bulan di sisi klien (I-10.12, I-10.13).
- *
- * Filter Top-ups dan Volunteering pada prototipe belum ditampilkan karena
- * API riwayat (#38) baru mencakup transaksi donasi dan progres.
  */
 
 const PILIHAN_FILTER: { nilai: FilterRiwayat; label: string }[] = [
   { nilai: 'semua', label: 'All' },
   { nilai: 'transaksi', label: 'Donations' },
+  { nilai: 'topup', label: 'Top-ups' },
+  { nilai: 'relawan', label: 'Volunteering' },
   { nilai: 'progres', label: 'Progress' },
 ];
 
@@ -219,13 +219,18 @@ function BarisRiwayat({
   item: ItemRiwayat;
   onPilih: (item: ItemRiwayat) => void;
 }) {
-  const transaksi = item.jenis === 'transaksi';
-  const judul = transaksi
-    ? `Donation to ${item.namaTujuan ?? 'a removed action'}`
-    : item.milestone;
-  const keterangan = transaksi
-    ? `${waktuLokal(item.waktu)} · ${item.id}`
-    : `${item.namaProject} · ${waktuLokal(item.waktu)}`;
+  const judul =
+    item.jenis === 'transaksi'
+      ? `Donation to ${item.namaTujuan ?? 'a removed action'}`
+      : item.jenis === 'topup'
+        ? 'Balance top-up'
+        : item.jenis === 'relawan'
+          ? `Volunteer application: ${item.namaProject}`
+          : item.milestone;
+  const keterangan =
+    item.jenis === 'transaksi' || item.jenis === 'topup'
+      ? `${waktuLokal(item.waktu)} · ${item.id}`
+      : `${item.namaProject} · ${waktuLokal(item.waktu)}`;
 
   return (
     <button
@@ -238,7 +243,7 @@ function BarisRiwayat({
         aria-hidden="true"
         className="grid size-[46px] place-items-center rounded-[14px] bg-[#E5ECDC] text-[#2D4F2D]"
       >
-        {transaksi ? <IkonHati /> : <IkonGrafik />}
+        {item.jenis === 'transaksi' ? <IkonHati /> : <IkonGrafik />}
       </span>
 
       <span className="grid min-w-0">
@@ -251,12 +256,20 @@ function BarisRiwayat({
       </span>
 
       <span className="col-start-2 text-left text-[17px] font-extrabold min-[721px]:col-start-auto min-[721px]:text-right">
-        {transaksi ? (
+        {item.jenis === 'transaksi' ? (
           <span className="text-[#B3261E] tabular-nums">
             −{rupiah(item.nominal)}
             <small className="block text-sm font-bold text-[#4A544B]">
               {LABEL_STATUS_TRANSAKSI[item.status]}
             </small>
+          </span>
+        ) : item.jenis === 'topup' ? (
+          <span className="text-[#2F7D32] tabular-nums">
+            +{rupiah(item.nominal)}
+          </span>
+        ) : item.jenis === 'relawan' ? (
+          <span className="inline-flex rounded-full bg-[#E5ECDC] px-3 py-1 text-sm font-extrabold text-[#2D4F2D]">
+            {LABEL_STATUS_RELAWAN[item.status]}
           </span>
         ) : item.persentase !== null ? (
           <span className="inline-flex whitespace-nowrap rounded-full bg-[#E5ECDC] px-3 py-1 text-sm font-extrabold text-[#2D4F2D]">

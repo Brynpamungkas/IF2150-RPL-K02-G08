@@ -1,11 +1,17 @@
 /**
- * Kontrak data riwayat transaksi dan progres (UC10, KF27, issue #38).
+ * Kontrak riwayat donasi, top-up, pendaftaran relawan dan progres.
  * Modul ini aman di-import oleh client dan server.
  */
 import type { JenisTujuan, RincianBukti, StatusTransaksi } from './donasi';
 import type { PembaruanProgresDto, StatusPelaksanaan } from './progres';
+import type { StatusPendaftaran } from './relawan';
 
-export const JENIS_RIWAYAT = ['transaksi', 'progres'] as const;
+export const JENIS_RIWAYAT = [
+  'transaksi',
+  'topup',
+  'relawan',
+  'progres',
+] as const;
 export type JenisRiwayat = (typeof JENIS_RIWAYAT)[number];
 
 /** Nilai `?jenis=` pada GET /api/riwayat. Tanpa parameter berarti semua. */
@@ -38,7 +44,35 @@ export type ItemRiwayatProgres = {
   persentase: number | null;
 };
 
-export type ItemRiwayat = ItemRiwayatTransaksi | ItemRiwayatProgres;
+export type ItemRiwayatTopup = {
+  jenis: 'topup';
+  id: string;
+  waktu: string;
+  nominal: number;
+  metode: string;
+};
+
+export type ItemRiwayatRelawan = {
+  jenis: 'relawan';
+  id: string;
+  waktu: string;
+  idProject: string;
+  namaProject: string;
+  status: StatusPendaftaran;
+  tanggalKeputusan: string | null;
+};
+
+export const LABEL_STATUS_RELAWAN: Record<StatusPendaftaran, string> = {
+  pending: 'Pending review',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+};
+
+export type ItemRiwayat =
+  | ItemRiwayatTransaksi
+  | ItemRiwayatProgres
+  | ItemRiwayatTopup
+  | ItemRiwayatRelawan;
 
 /** Rincian satu transaksi (Algo-110). */
 export type DetailTransaksiRiwayat = Omit<RincianBukti, 'pesan'> & {
@@ -116,15 +150,17 @@ export function kelompokkanPerBulan(
 }
 
 /**
- * Menggabungkan riwayat dari dua tabel dan mengurutkannya dari yang terbaru
+ * Menggabungkan kategori riwayat dan mengurutkannya dari yang terbaru
  * (Algo-129). Waktu yang sama diurutkan menurut jenis lalu id agar urutannya
  * tetap sama setiap kali diminta.
  */
 export function gabungkanRiwayat(
   transaksi: readonly ItemRiwayatTransaksi[],
   progres: readonly ItemRiwayatProgres[],
+  topup: readonly ItemRiwayatTopup[] = [],
+  relawan: readonly ItemRiwayatRelawan[] = [],
 ): ItemRiwayat[] {
-  return [...transaksi, ...progres].sort((a, b) => {
+  return [...transaksi, ...progres, ...topup, ...relawan].sort((a, b) => {
     const selisih = Date.parse(b.waktu) - Date.parse(a.waktu);
     if (selisih !== 0) return selisih;
     if (a.jenis !== b.jenis) return a.jenis < b.jenis ? -1 : 1;
