@@ -18,7 +18,8 @@ IF2150 Software Engineering · Class 02 · Group 08 (BS3N)
 8. [Running the Tests](#running-the-tests)
 9. [Demo Accounts](#demo-accounts)
 10. [Project Structure](#project-structure)
-11. [Database Tables](#database-tables)
+11. [Modules and Team](#modules-and-team)
+12. [Database Tables](#database-tables)
 
 ---
 
@@ -39,27 +40,20 @@ The app is a Next.js web application with a layered architecture (View → Contr
 <a id="features"></a>
 
 ## 🚀 Features
-| Use case | Feature | Status |
+| Feature | Description | Page |
 | --- | --- | --- |
-| UC01 | Register, log in, log out, session cookie, role-based access | ✅ Available |
-| UC02 | Create a fundraising campaign (save draft, submit for review) | API and form available on this integration branch; human UAT pending |
-| UC03 | Create a climate-action project | API and two-stage form available on this integration branch; human UAT pending |
-| UC04 | Admin verification (approve / reject with a reason) | API and protected admin UI available on this integration branch; human UAT pending |
-| UC05 | Search and filter on the Explore page, map of actions, detail page with tabs | ✅ Available |
-| UC06 | Atomic donation with an idempotency key, printable receipt | ✅ Available |
-| UC07 | Volunteer sign-up | ✅ API · 🚧 Form UI *(to be completed)* |
-| UC08 | Accept or reject volunteers | ✅ API · 🚧 UI *(to be completed)* |
-| UC09 | Progress updates with photo and PDF uploads | ✅ API · 🚧 UI *(to be completed)* |
-| UC10 | Donation and progress history | ✅ Available |
-| – | Home page, account page with wallet | ✅ Available |
-| – | Simulated balance top-up | 🚧 *(to be completed)* |
-| – | "My actions" tab (status, rejection reason, resubmit) | Session-backed Account slot; Manage and private Progress bridge available; human UAT pending |
-
-**Main pages:** `/` (home) · `/explore` · `/project/[id]` · `/campaign/[id]` · `/account` · `/history`
-
-**Action pages (Bryan):** `/start?type=campaign` · `/start?type=project` · `/manage/[jenis]/[id]` (private owner preview, including drafts) · `/my-actions` · `/progress/[id]` (owner-only bridge to the team's progress form) · `/admin` · `/admin/pengajuan/[jenis]/[id]`.
-
-UC02–UC04 use the official `klimpool_sesi` authentication service. Drafts are not sent to public detail pages. This branch restores the approved action stack onto `develop`; availability here does not mean it has been merged or released.
+| Account | Register, log in, and log out. What you can do depends on your role: user, project creator, or admin. | Login button in the navbar |
+| Explore | Search campaigns and projects by keyword, filter them, and see where they are on a map. | `/explore` |
+| Action details | See a campaign or project in tabs: about, needs, fund usage, and progress. | `/project/[id]`, `/campaign/[id]` |
+| Donation | Donate from your in-app balance and get a printable receipt. A double click never charges you twice. | Donate button on a detail page |
+| Balance top-up | Add balance to your wallet. This is a simulation, so no real payment is made. | `/account` |
+| Create a campaign or project | Fill in the form, save it as a draft, and submit it for review when it is ready. | `/start` |
+| Admin verification | Admins review each submission and approve it or reject it with a reason. Only approved actions are shown to the public. | `/admin` |
+| My actions | See the status of your campaigns and projects, read the rejection reason, and submit again after fixing it. | `/my-actions` |
+| Volunteer sign-up | Sign up as a volunteer for a project and follow the status of your application. | Detail page, `/account` |
+| Volunteer management | Project creators accept or reject volunteer applications. | `/manage/[jenis]/[id]` |
+| Progress updates | Project creators post progress with photos and PDF documents, so donors can see how the money is used. | `/progress/[id]` |
+| History | See your past donations, plus progress updates of projects you created or joined as an accepted volunteer. | `/history`, `/account` |
 
 ---
 
@@ -169,7 +163,7 @@ cmd /c "$mysql -u root klimpool < db\migrations\002_seed.sql"
 
 > ⚠️ The app refuses to start with an empty `DB_PASSWORD`, so do not connect as XAMPP's default `root` user (it has no password). Create the `klimpool` user above instead.
 
-> ℹ️ XAMPP ships MariaDB, while the app is built for MySQL 8.4. If you get an SQL error during import, use the Docker option.
+> ℹ️ The app is built for **MySQL 8.4**, while XAMPP ships **MariaDB**. XAMPP works well for trying the app and running most tests. **Donation and balance top-up** use a MySQL 8 feature to keep balances safe when several donations happen at once (`SELECT ... FOR UPDATE OF`), so use the Docker option to try or test these two features.
 
 Prefer a GUI? Open phpMyAdmin (`http://localhost/phpmyadmin`), create the `klimpool` database and user, then use the **Import** tab for `001_schema.sql` followed by `002_seed.sql`.
 
@@ -220,11 +214,14 @@ This runs two test suites:
 | `npm run test:vitest` | Vitest | `tests/*.spec.ts` (catalog, Explore, detail page, map) | No, they use fake repositories |
 | `npm run test:node` | Node test runner | All `*.test.ts` discovered recursively under `tests/` by `scripts/test-node.mjs` | Only integration tests; the action suite requires `AKSI_TEST_DB=1` and a dedicated test database |
 
-To run the integration tests too, start the database first (`npm run db:up`) and make sure `.env` is filled in.
+To run the integration tests too, start the database first (`npm run db:up`, or MySQL in XAMPP) and make sure `.env` is filled in. Without a database, these tests are skipped instead of failing.
 
-📊 Test results are reported in section B.2 of the M9 report (`docs/M9/K02_G08_Implementasi.md`).
+> 💡 **Tips for a full test run**
+>
+> - The donation, receipt, and top-up integration tests need **MySQL 8.4** (see [Database Setup](#database-setup)), so run them with the Docker database. All other integration tests also run on XAMPP.
+> - On **Windows**, turn on **Developer Mode** (Settings → System → For developers) before running the tests. One test creates a folder shortcut (symlink), which Windows only allows in this mode.
 
-Action validation/access tests now run with `npm test`, without removing the existing team tests. Run `npm run test:aksi` for the action suite alone and `npm run test:aksi:browser` for real browser/API/database coverage. For integration opt-in, production browser mode, and limitations, see [Implementasi Aksi](../docs/M9/IMPLEMENTASI-AKSI.md).
+📊 Test results are reported in `docs/M9/K02_G08_Implementasi.md`.
 
 ---
 
@@ -246,7 +243,7 @@ Every demo account uses the password **`klimpool123`**. Passwords are stored as 
 | 🙋 Volunteer / donor | Bima Saputra | `bima@klimpool.id` |
 | 🙋 Volunteer / donor | Sekar Ningrum | `sekar@klimpool.id` |
 
-💡 Try logging in as **Andi** to donate, or as **Sari** to see a project creator's view.
+💡 Try logging in as **Andi** to donate, or as **Sari** to see a project creator's view :D
 
 ---
 
@@ -261,12 +258,18 @@ src/
 │   ├── project/[id]/    #   Project detail page
 │   ├── campaign/[id]/   #   Campaign detail page
 │   ├── donasi/          #   Donation and receipt pages
-│   ├── account/         #   Account and wallet page
-│   └── history/         #   Donation and progress history
+│   ├── account/         #   Account and wallet page (top-up, volunteer status, history tabs)
+│   ├── history/         #   Donation and progress history
+│   ├── start/           #   Campaign and project creation forms
+│   ├── manage/          #   Owner's private page: verification, volunteers, progress
+│   ├── my-actions/      #   The user's own campaigns and projects
+│   ├── progress/[id]/   #   Progress update form
+│   └── admin/           #   Admin verification queue and detail
 ├── components/
 │   ├── ui/              # Shared UI: navbar, footer, modal, toast, map, cards
 │   ├── views/           # Boundary classes from the DPPL (FormLoginView, ExploreView, ...)
-│   └── detail/          # Detail page parts: tabs, side panel, action buttons
+│   ├── detail/          # Detail page parts: tabs, side panel, action buttons
+│   └── aksi/            # Campaign/project forms and owner controls
 ├── server/              # Server-only code
 │   ├── controllers/     #   Controller layer (one per use case group)
 │   ├── services/        #   Business rules
@@ -283,7 +286,18 @@ src/
 └── .env.example         # Configuration template (no secrets)
 ```
 
-Bryan's action forms and private controls are in `components/aksi/`; their route entry points are `app/start/`, `app/manage/`, `app/my-actions/`, `app/progress/`, and `app/admin/`. The progress bridge reuses the team's `FormProgresProjectView`, not a second implementation of UC09.
+---
+
+<a id="modules-and-team"></a>
+
+## 👥 Modules and Team
+| NIM | Name | Modules |
+| --- | --- | --- |
+| 13525140 | Nayla Putri Ghaisani | Project setup, database and connection pool, shared UI components, UC01 registration, login, session and access control, home page |
+| 13525080 | Neysa Alya Mukhbita | UC05 catalog search and filter API, Explore page, project and campaign detail pages, map of actions, test setup (Vitest), README |
+| 13525092 | Bryan Pamungkas Prahara | UC02–UC04 campaign and project creation, admin verification, "My actions" and manage pages |
+| 13525134 | Sahla Nailah Salsabilla | UC06 atomic donation, idempotency key and receipt, account and wallet page, balance top-up, UC10 history, profiling |
+| 13525023 | Shaquille Nathan Kalevi | UC07–UC08 volunteer sign-up and management, UC09 progress updates and document uploads |
 
 ---
 
@@ -314,7 +328,7 @@ There are 11 InnoDB tables. The full definitions, including keys and constraints
 
 | Table | Primary key | Main columns | Description |
 | --- | --- | --- | --- |
-| `transaksi_donasi` | `id_transaksi` | `id_donatur`, `id_tujuan`, `jenis_tujuan`, `idempotency_key` (unique), `nominal`, `tanggal`, `status_transaksi` | Donations; the unique key prevents double charges |
+| `transaksi_donasi` | `id_transaksi` | `id_donatur`, `id_tujuan`, `jenis_tujuan`, `idempotency_key` (unique), `nominal`, `tanggal`, `status_transaksi` | Donations. Unique key prevents double charges |
 | `bukti_transaksi` | `id_bukti` | `id_transaksi` (unique), `rincian` | One receipt per donation |
 | `topup_saldo` | `id_topup` | `id_donatur`, `nominal`, `metode`, `waktu` | Simulated balance top-ups |
 
@@ -324,6 +338,7 @@ There are 11 InnoDB tables. The full definitions, including keys and constraints
 
 ## 📚 Documents
 
-All project documents are in the [`docs/`](../docs) folder at the repository root.
+All project documents (SKPL, APL, DPPL, M9 report, AI usage, logbook) are in the [`docs/`](../docs) folder at the repository root.
 
 <p align="center">Made with 💚 by BS3N </p>
+
