@@ -215,7 +215,6 @@
 **Catatan/Evaluasi Milestone 9:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 
-**Catatan Bryan:** Rincian pengujian fitur aksi ada di [Bukti Aksi Bryan](M9/BUKTI-AKSI-BRYAN.md).
 ---
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``
