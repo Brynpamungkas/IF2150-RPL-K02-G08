@@ -9,6 +9,20 @@ vi.mock('@/components/ui/Navbar', () => ({
     return createElement('nav', null, 'Loaded navigation');
   },
 }));
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+}));
+vi.mock('@/components/ui/SesiProvider', () => ({
+  SesiProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+vi.mock('@/components/ui/SesiContext', () => ({
+  useSesi: () => ({
+    pengguna: null,
+    bukaAuth: vi.fn(),
+    setPengguna: vi.fn(),
+    muatUlang: vi.fn(),
+  }),
+}));
 
 import { AppShell } from '@/components/ui/AppShell';
 
@@ -21,7 +35,7 @@ describe('navbar dinamis tidak memblokir konten halaman', () => {
       createElement(
         AppShell,
         // React memasang children dari argumen ketiga sesudah menerima props.
-        { user: null } as Parameters<typeof AppShell>[0],
+        {} as Parameters<typeof AppShell>[0],
         createElement('p', null, 'Private route content'),
       ),
     );

@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import mysql from 'mysql2/promise';
+import { hash } from 'bcryptjs';
 
 const load = createRequire(import.meta.url);
 const { chromium } = load(process.env.PLAYWRIGHT_MODULE || 'playwright');
@@ -27,6 +28,7 @@ assert.ok(
 );
 const base = `http://127.0.0.1:${port}`;
 const stamp = randomUUID().slice(0, 8);
+const fixturePassword = `aksi-browser-only-${stamp}`;
 const ids = ['owner', 'other', 'admin', 'volunteer'].map(
   (v) => `browser-${v}-${stamp}`,
 );
@@ -38,6 +40,7 @@ let db, browser, child;
 let serverLog = '';
 
 async function seed() {
+  const passwordHash = await hash(fixturePassword, 12);
   db = await mysql.createConnection({
     host: process.env.DB_HOST || '127.0.0.1',
     port: Number(process.env.DB_PORT),
@@ -59,8 +62,8 @@ async function seed() {
       ],
     );
     await db.execute(
-      "INSERT INTO akun (id_akun, id_pengguna, email, password_hash) VALUES (?, ?, ?, 'test-only')",
-      [id, id, `${id}@example.invalid`],
+      'INSERT INTO akun (id_akun, id_pengguna, email, password_hash) VALUES (?, ?, ?, ?)',
+      [id, id, `${id}@example.invalid`, passwordHash],
     );
     await db.execute(
       `INSERT INTO sesi_login (id_sesi, id_pengguna, waktu_mulai, waktu_kedaluwarsa)
@@ -117,6 +120,8 @@ async function pageFor(id) {
   return context.newPage();
 }
 async function fillInfo(page, title, project = false) {
+  // Next Activity dapat mempertahankan DOM rute lama dalam keadaan tersembunyi.
+  page = page.locator('form:visible');
   await page.getByLabel('Judul', { exact: false }).fill(title);
   await page
     .getByLabel('Deskripsi', { exact: false })
@@ -185,7 +190,26 @@ async function run() {
   await guest.goto(`${base}/start`);
   await guest.getByRole('alert').filter({ hasText: 'login' }).waitFor();
   assert.equal(await guest.locator('form').count(), 0);
-  const page = await pageFor(owner);
+  // Pemilik utama masuk melalui UI/API resmi; peran lain tetap fixture sesi terisolasi.
+  const page = await pageFor();
+  await page.goto(`${base}/account`);
+  await page
+    .getByRole('heading', { name: 'Log in to see your activity' })
+    .waitFor();
+  await page
+    .getByRole('button', { name: 'Log in', exact: true })
+    .last()
+    .click();
+  const login = page.getByRole('dialog');
+  await login
+    .getByLabel('Email', { exact: true })
+    .fill(`${owner}@example.invalid`);
+  await login.getByLabel('Password', { exact: true }).fill(fixturePassword);
+  await login.getByRole('button', { name: 'Log in', exact: true }).click();
+  await login.waitFor({ state: 'detached' });
+  await page
+    .getByRole('heading', { name: `Hi, ${owner}`, exact: true })
+    .waitFor();
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   page.on('response', async (response) => {
@@ -200,25 +224,30 @@ async function run() {
   });
   await page.goto(`${base}/start?type=campaign`);
   await fillInfo(page, `Campaign ${stamp}`);
-  await page.getByLabel('Target dana').fill('0');
-  await page.getByLabel('Tanggal mulai').fill(today);
-  await page.getByLabel('Tanggal selesai').fill(end);
+  await page.getByLabel('Target dana').filter({ visible: true }).fill('0');
+  await page.getByLabel('Tanggal mulai').filter({ visible: true }).fill(today);
+  await page.getByLabel('Tanggal selesai').filter({ visible: true }).fill(end);
   await page.getByRole('button', { name: 'Simpan Draft', exact: true }).click();
   await page
     .getByLabel('Target dana')
+    .filter({ visible: true })
     .and(page.locator('[aria-invalid="true"]'))
     .waitFor();
-  await page.getByLabel('Target dana').fill('10000');
+  await page.getByLabel('Target dana').filter({ visible: true }).fill('10000');
   await page.getByRole('button', { name: 'Tambah rincian' }).click();
   await page
     .getByLabel('Rincian 1', { exact: true })
+    .filter({ visible: true })
     .fill('Peralatan lapangan');
-  await page.getByLabel('Nominal rincian 1', { exact: true }).fill('10000');
+  await page
+    .getByLabel('Nominal rincian 1', { exact: true })
+    .filter({ visible: true })
+    .fill('10000');
   await page.route('**/api/campaigns', (route) => route.abort(), { times: 1 });
   await page.getByRole('button', { name: 'Simpan Draft', exact: true }).click();
   await page.getByRole('alert').filter({ hasText: 'Koneksi gagal' }).waitFor();
   assert.equal(
-    await page.getByLabel('Judul').inputValue(),
+    await page.getByLabel('Judul').filter({ visible: true }).inputValue(),
     `Campaign ${stamp}`,
   );
   await page.getByRole('button', { name: 'Simpan Draft', exact: true }).click();
@@ -306,17 +335,21 @@ async function run() {
     false,
     'Payload HTML/Flight Account pengguna lain tidak memuat ID aksi privat.',
   );
-  const guestPanel = await openAccountActions(guest);
-  await guestPanel
-    .getByText('Log in to see your actions.', { exact: false })
+  await guest.goto(`${base}/account`);
+  await guest
+    .getByRole('heading', { name: 'Log in to see your activity' })
     .waitFor();
+  assert.equal(
+    await guest.getByRole('tab', { name: 'My actions', exact: true }).count(),
+    0,
+  );
   await db.execute(
     'UPDATE sesi_login SET waktu_kedaluwarsa = UTC_TIMESTAMP() WHERE id_sesi = ?',
     [tokens[other]],
   );
-  const expiredPanel = await openAccountActions(outsider);
-  await expiredPanel
-    .getByText('Log in to see your actions.', { exact: false })
+  await outsider.goto(`${base}/account`);
+  await outsider
+    .getByRole('heading', { name: 'Log in to see your activity' })
     .waitFor();
   await reviewer.reload();
   await reviewer.getByRole('button', { name: 'Setujui', exact: true }).click();
@@ -328,23 +361,44 @@ async function run() {
   await page.goto(`${base}/start?type=project`);
   await fillInfo(page, `Project ${stamp}`, true);
   await page.getByRole('button', { name: 'Simpan dan lanjut' }).click();
-  await page.getByLabel('Kebutuhan dana').fill('0');
-  await page.getByLabel('Kebutuhan logistik').fill('Sarung tangan');
-  await page.getByLabel('Kriteria relawan').fill('Bersedia berkegiatan');
-  await page.getByLabel('Kuota relawan').fill('5');
-  await page.getByLabel('Tanggal mulai').fill(today);
-  await page.getByLabel('Tanggal selesai').fill(end);
-  await page.getByLabel('Titik kumpul').fill('Alamat privat relawan');
+  await page.getByLabel('Kebutuhan dana').filter({ visible: true }).fill('0');
+  await page
+    .getByLabel('Kebutuhan logistik')
+    .filter({ visible: true })
+    .fill('Sarung tangan');
+  await page
+    .getByLabel('Kriteria relawan')
+    .filter({ visible: true })
+    .fill('Bersedia berkegiatan');
+  await page.getByLabel('Kuota relawan').filter({ visible: true }).fill('5');
+  await page.getByLabel('Tanggal mulai').filter({ visible: true }).fill(today);
+  await page.getByLabel('Tanggal selesai').filter({ visible: true }).fill(end);
+  await page
+    .getByLabel('Titik kumpul')
+    .filter({ visible: true })
+    .fill('Alamat privat relawan');
   await page.getByRole('button', { name: 'Kembali ke informasi' }).click();
-  assert.equal(await page.getByLabel('Judul').inputValue(), `Project ${stamp}`);
-  await page.getByLabel('Judul').fill(`Project revisi ${stamp}`);
+  assert.equal(
+    await page.getByLabel('Judul').filter({ visible: true }).inputValue(),
+    `Project ${stamp}`,
+  );
+  await page
+    .getByLabel('Judul')
+    .filter({ visible: true })
+    .fill(`Project revisi ${stamp}`);
   await page.getByRole('button', { name: 'Simpan dan lanjut' }).click();
   assert.equal(
-    await page.getByLabel('Kebutuhan logistik').inputValue(),
+    await page
+      .getByLabel('Kebutuhan logistik')
+      .filter({ visible: true })
+      .inputValue(),
     'Sarung tangan',
   );
   assert.equal(
-    await page.getByLabel('Titik kumpul').inputValue(),
+    await page
+      .getByLabel('Titik kumpul')
+      .filter({ visible: true })
+      .inputValue(),
     'Alamat privat relawan',
   );
   await page.getByRole('button', { name: 'Simpan Draft', exact: true }).click();
@@ -373,6 +427,52 @@ async function run() {
     .filter({ hasText: `Campaign ${stamp}` })
     .getByText('Campaign · Terpublikasi', { exact: true })
     .waitFor();
+  await publishedPanel
+    .getByRole('article')
+    .filter({ hasText: `Project revisi ${stamp}` })
+    .getByRole('link', { name: 'Progres', exact: true })
+    .click();
+  await page.waitForURL(`${base}/progress/${projectId}`);
+  await page.getByRole('button', { name: 'Post a progress update' }).click();
+  const progress = page.getByRole('dialog');
+  await progress
+    .getByLabel('Milestone', { exact: false })
+    .fill(`Milestone ${stamp}`);
+  await progress
+    .getByLabel('Status', { exact: false })
+    .selectOption('berjalan');
+  await progress
+    .getByRole('button', { name: 'Post update', exact: true })
+    .click();
+  await page
+    .getByRole('status')
+    .filter({ hasText: 'Pembaruan progres berhasil' })
+    .waitFor();
+  const [updates] = await db.execute(
+    'SELECT milestone FROM progres_project WHERE id_project = ?',
+    [projectId],
+  );
+  assert.equal(updates.length, 1);
+  assert.equal(updates[0].milestone, `Milestone ${stamp}`);
+  await page.getByRole('link', { name: 'Lihat project publik' }).click();
+  await page
+    .getByRole('heading', { name: `Project revisi ${stamp}`, exact: true })
+    .waitFor();
+  // Sesi lain yang masih aktif tidak boleh membuka halaman penghubung pemilik.
+  const otherOwner = await pageFor(other);
+  await db.execute(
+    "UPDATE sesi_login SET waktu_kedaluwarsa = DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR), status_sesi = 'aktif' WHERE id_sesi = ?",
+    [tokens[other]],
+  );
+  await otherOwner.goto(`${base}/progress/${projectId}`);
+  await otherOwner
+    .getByRole('alert')
+    .filter({ hasText: 'tidak ditemukan' })
+    .waitFor();
+  assert.equal(
+    (await otherOwner.content()).includes(`Project revisi ${stamp}`),
+    false,
+  );
   const [rows] = await db.execute(
     'SELECT id_project FROM project WHERE id_pembuat = ?',
     [owner],
@@ -404,7 +504,7 @@ async function run() {
     .waitFor();
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto(`${base}/start?type=project`);
-  await page.getByLabel('Judul').waitFor();
+  await page.locator('input[name="judul"]:visible').waitFor();
   const overflow = await page.evaluate(() =>
     [...document.querySelectorAll('body *')]
       .filter((el) => el.getBoundingClientRect().right > window.innerWidth + 1)
@@ -434,7 +534,8 @@ async function run() {
         'campaign draft/ajukan/tolak/ulang/setujui',
         'project dua tahap/kembali/satu ID/setujui',
         'My Actions dalam Account: pemilik/tamu/volunteer/admin/sesi kedaluwarsa + refresh tab',
-        'tautan Progres (halaman tujuan masih milik modul tim)',
+        'login UI resmi ke My Actions',
+        'tujuan Progres privat memakai form/API tim hingga tersimpan di database',
         'mobile 375px',
       ],
       campaignId,
