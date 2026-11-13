@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation';
 import { Suspense, useState, type ReactNode } from 'react';
-import { rupiah } from '@/components/views/DonasiView/format';
 import { panggilApi } from '@/components/views/DonasiView/panggilApi';
 import type { NavUser } from '@/shared/types';
 import { FormTopupView } from '../views/TopupView/FormTopupView';
@@ -11,6 +10,8 @@ import { Navbar } from './Navbar';
 import { useSesi } from './SesiContext';
 import { SesiProvider } from './SesiProvider';
 import { ToastProvider, useToast } from './Toast';
+
+const rupiah = (n: number) => 'Rp' + Math.round(n).toLocaleString('en-US');
 
 function Shell({ children }: { children: ReactNode }) {
   const { pengguna, bukaAuth, setPengguna, muatUlang } = useSesi();
@@ -63,7 +64,8 @@ function Shell({ children }: { children: ReactNode }) {
         <FormTopupView
           onTutup={() => setTopup(false)}
           onBerhasil={(h) => {
-            // Saldo navbar berasal dari sesi klien; halaman dari data server.
+            // Saldo di navbar dibaca dari sesi klien, jadi sesi dimuat ulang;
+            // router.refresh() menyegarkan data server di halaman aktif.
             void muatUlang();
             router.refresh();
             showToast(

@@ -140,7 +140,11 @@ export function AlurDonasi({
         <FormTopupView
           nominalAwal={topup.nominalTopup}
           onTutup={() => setTopup(null)}
-          onBerhasil={() => router.refresh()}
+          onBerhasil={() => {
+            // Saldo di navbar dibaca dari sesi klien, jadi dimuat ulang.
+            void sesi?.muatUlang();
+            router.refresh();
+          }}
           onLanjutDonasi={lanjutDonasi}
         />
       ) : null}
