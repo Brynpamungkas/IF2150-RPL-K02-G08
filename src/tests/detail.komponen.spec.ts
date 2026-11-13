@@ -1,15 +1,32 @@
 import { createElement, type FunctionComponent } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }));
+vi.mock('@/components/ui/Toast', () => ({
+  useToast: () => ({ showToast: vi.fn() }),
+}));
 import { HeroDetail } from '@/components/detail/HeroDetail';
 import { PanelProgres } from '@/components/detail/PanelProgres';
 import { PanelTentang } from '@/components/detail/PanelTentang';
 import { TombolDonasi } from '@/components/detail/aksi/TombolDonasi';
 import {
   bentukDokumen,
+  bacaTabDetail,
   type DetailAksi,
   type ProgresItem,
 } from '@/shared/detail';
+
+describe('tab awal halaman detail', () => {
+  it('menerima tab yang dikenal, termasuk nilai dari URL yang berulang', () => {
+    expect(bacaTabDetail(' FUNDS ')).toBe('funds');
+    expect(bacaTabDetail(['progress', 'about'])).toBe('progress');
+  });
+  it('nilai kosong atau tidak dikenal kembali ke About', () => {
+    for (const nilai of [undefined, '', 'bogus', []])
+      expect(bacaTabDetail(nilai)).toBe('about');
+  });
+});
 
 function detail(ubah: Partial<DetailAksi> = {}): DetailAksi {
   return {

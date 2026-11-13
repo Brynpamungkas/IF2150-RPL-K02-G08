@@ -1,5 +1,23 @@
 import type { StatusPelaksanaan, TipeItem } from '@/shared/katalog';
 
+/** Tab halaman detail aksi, urut seperti prototipe (KerangkaDetail). */
+export const TAB_DETAIL = ['about', 'needs', 'progress', 'funds'] as const;
+export type TabDetail = (typeof TAB_DETAIL)[number];
+
+/**
+ * Membaca `?tab=` pada /project/[id] dan /campaign/[id] supaya tautan seperti
+ * `?tab=funds` (tombol "See use of funds" di riwayat) membuka tab yang tepat.
+ * Nilai kosong atau tidak dikenal jatuh ke tab "about".
+ */
+export function bacaTabDetail(nilai: string | string[] | undefined): TabDetail {
+  const bersih = (Array.isArray(nilai) ? nilai[0] : nilai)
+    ?.trim()
+    .toLowerCase();
+  return (TAB_DETAIL as readonly string[]).includes(bersih ?? '')
+    ? (bersih as TabDetail)
+    : 'about';
+}
+
 export interface RincianDana {
   uraian: string;
   nominal: number;
