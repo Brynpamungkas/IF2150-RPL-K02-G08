@@ -77,9 +77,9 @@ AKSI_TEST_DB=1 AKSI_TEST_SERVER_MODE=production npm run test:aksi:browser
 
 Fixture menggunakan ID acak dan membersihkan data miliknya setelah tes. Jangan menambahkan kredensial database ke Git. Untuk menjalankan aplikasi demo, gunakan setup dan akun demo pada `src/README.md` branch kode; snapshot `main` sebelum penggabungan belum berisi aplikasi terintegrasi.
 
-## Yang masih memerlukan keputusan manusia/tim
+## Status akhir dan tindak lanjut tim
 
 1. Promosi kode dari develop ke main dan rilis M9 oleh tim. Approval Sahla dan merge PR #85 ke develop sudah selesai; dokumentasi sudah dimasukkan langsung ke main atas arahan Bryan.
 2. UAT manusia dan kesesuaian prototipe; tidak digantikan oleh tes otomatis.
-3. Persentase kontribusi Bryan belum dikonfirmasi. Durasi **4 + 5 + 4 = 13 jam** untuk 8/9/13 November telah dikonfirmasi Bryan dan masuk logbook; bukan durasi yang diperkirakan alat.
+3. Kontribusi Bryan **20%** sesuai konfirmasinya dan sudah dicatat pada B.4. Durasi **4 + 5 + 4 = 13 jam** untuk 8/9/13 November juga telah dikonfirmasi Bryan dan masuk logbook.
 4. Tanggal/catatan asistensi dan rilis `v9` adalah koordinasi tim. Saat audit belum ditemukan tag/release `v9*`. Pekerjaan 13 November dilakukan setelah tenggat 11 November dan tidak dinyatakan sebagai pengumpulan tepat waktu; tidak ada tanggal yang dibackdate.
