@@ -217,12 +217,4 @@
 
 ---
 
-### Milestone 9
-
-| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| 8-11-2026 | Bryan | Mengerjakan fitur campaign, project, verifikasi admin, dan My Actions (#16–22, #45) | 4 | Done | Integrasi antarmodul belum selesai |
-| 9-11-2026 | Bryan | Menghubungkan My Actions ke halaman Akun, memperbaiki build, dan melakukan pengujian | 5 | Done | Menunggu integrasi modul tim |
-| 13-11-2026 | Bryan | Menyelesaikan integrasi fitur aksi, melakukan pengujian, melengkapi dokumentasi M9, dan review PR #84 | 4 | Done | - |
-
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``
