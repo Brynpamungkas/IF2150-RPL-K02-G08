@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, type ReactNode } from 'react';
+import { Suspense, useState, type ReactNode } from 'react';
 import { panggilApi } from '@/components/views/DonasiView/panggilApi';
 import type { NavUser } from '@/shared/types';
 import { FormTopupView } from '../views/TopupView/FormTopupView';
@@ -38,13 +38,25 @@ function Shell({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <Navbar
-        user={user}
-        onLoginClick={() => bukaAuth('masuk')}
-        onSignupClick={() => bukaAuth('daftar')}
-        onTopupClick={() => setTopup(true)}
-        onLogoutClick={keluar}
-      />
+      <Suspense
+        fallback={
+          <div className="nav-shell" role="status">
+            <div className="wrap">
+              <div className="nav">
+                <span className="small muted">Loading navigation…</span>
+              </div>
+            </div>
+          </div>
+        }
+      >
+        <Navbar
+          user={user}
+          onLoginClick={() => bukaAuth('masuk')}
+          onSignupClick={() => bukaAuth('daftar')}
+          onTopupClick={() => setTopup(true)}
+          onLogoutClick={keluar}
+        />
+      </Suspense>
       <main className="flex-1">{children}</main>
       <Footer />
 

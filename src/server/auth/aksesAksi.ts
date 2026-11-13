@@ -1,6 +1,6 @@
-import type { RowDataPacket } from 'mysql2/promise';
 import { cookies } from 'next/headers';
-import { query } from '@/server/db';
+import { AutentikasiService } from '@/server/services/AutentikasiService';
+import { NAMA_COOKIE_SESI } from '@/server/sesi';
 import { GalatValidasi } from '@/shared/galat';
 
 export interface PenggunaAksi {
@@ -8,7 +8,7 @@ export interface PenggunaAksi {
   peran: 'pembuat_project' | 'admin' | 'volunteer';
 }
 
-/** Adapter UC02–UC04 selama PR login belum terintegrasi. Tidak menerima dev cookie. */
+/** Adapter DTO UC02–UC04 ke layanan autentikasi resmi; tidak menerima dev cookie. */
 export async function sesiAksi(request?: Request): Promise<PenggunaAksi> {
   let token: string | undefined;
   if (request) {
@@ -16,30 +16,21 @@ export async function sesiAksi(request?: Request): Promise<PenggunaAksi> {
       .get('cookie')
       ?.split(';')
       .map((nilai) => nilai.trim())
-      .find((nilai) => nilai.startsWith('klimpool_sesi='));
+      .find((nilai) => nilai.startsWith(`${NAMA_COOKIE_SESI}=`));
     try {
       token = pasangan
-        ? decodeURIComponent(pasangan.slice('klimpool_sesi='.length))
+        ? decodeURIComponent(pasangan.slice(NAMA_COOKIE_SESI.length + 1))
         : undefined;
     } catch {
       throw new GalatValidasi('Silakan login terlebih dahulu.', 401);
     }
-  } else token = (await cookies()).get('klimpool_sesi')?.value;
+  } else token = (await cookies()).get(NAMA_COOKIE_SESI)?.value;
   if (!token || token.length > 64)
     throw new GalatValidasi('Silakan login terlebih dahulu.', 401);
-  const [baris] = await query<RowDataPacket & PenggunaAksi>(
-    `
-    SELECT p.id_pengguna AS id, p.peran FROM sesi_login s
-    JOIN pengguna p ON p.id_pengguna = s.id_pengguna
-    JOIN akun a ON a.id_pengguna = p.id_pengguna
-    WHERE s.id_sesi = ? AND s.status_sesi = 'aktif'
-      AND s.waktu_kedaluwarsa > UTC_TIMESTAMP() AND s.waktu_mulai <= UTC_TIMESTAMP()
-      AND a.status_akun = 'aktif'`,
-    [token],
-  );
-  if (!baris)
+  const pengguna = await new AutentikasiService().penggunaDariSesi(token);
+  if (!pengguna)
     throw new GalatValidasi('Sesi berakhir. Silakan login kembali.', 401);
-  return { id: baris.id, peran: baris.peran };
+  return { id: pengguna.idPengguna, peran: pengguna.peran };
 }
 
 export function wajibPeranAksi(

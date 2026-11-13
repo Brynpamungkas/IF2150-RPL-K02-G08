@@ -34,7 +34,7 @@ const data = {
   kriteriaRelawan: 'Siap berkegiatan',
   kuotaRelawan: 5,
   lokasiKumpul: 'Balai desa',
-  rincianDana: [{ label: 'Peralatan', nominal: 10000 }],
+  rincianDana: [{ uraian: 'Peralatan', nominal: 10000 }],
 };
 function request(id?: string, badan?: unknown, extra?: Record<string, string>) {
   return new Request('http://localhost/api/test', {
@@ -138,7 +138,7 @@ describe(
       );
       assert.equal((await buatCampaign(request(lain, data))).status, 401);
       await execute(
-        'UPDATE sesi_login SET waktu_kedaluwarsa = DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR) WHERE id_sesi = ?',
+        "UPDATE sesi_login SET waktu_kedaluwarsa = DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR), status_sesi = 'aktif' WHERE id_sesi = ?",
         [lain],
       );
       await execute(
