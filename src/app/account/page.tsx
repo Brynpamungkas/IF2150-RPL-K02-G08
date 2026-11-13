@@ -8,13 +8,9 @@ import { DetailStatusPendaftaranView } from '@/components/views/RelawanView/Deta
 import { FormRiwayatView } from '@/components/views/RiwayatView/FormRiwayatView';
 import { TabRiwayat } from '@/components/views/RiwayatView/TabRiwayat';
 import { penggunaSaatIni } from '@/server/controllers/guard';
+import { DonasiService } from '@/server/services/DonasiService';
 
 export const metadata: Metadata = { title: 'My activity | KlimPooL' };
-
-// ===================== DATA SEMENTARA =====================
-// saldoGalang belum punya sumber data; ganti setelah DonasiService siap.
-const SALDO_GALANG_SEMENTARA = 0;
-// ==========================================================
 
 export default function HalamanAccount() {
   // Sesi dibaca dari cookie, jadi harus di balik <Suspense> (cacheComponents).
@@ -33,6 +29,7 @@ async function IsiAccount() {
   }
 
   const namaDepan = pengguna.nama.split(' ')[0];
+  const saldoGalang = await DonasiService.saldoGalang(pengguna.idPengguna);
 
   return (
     <main>
@@ -48,7 +45,7 @@ async function IsiAccount() {
           </p>
           <DompetKartu
             saldoDonasi={pengguna.saldo ?? 0}
-            saldoGalang={SALDO_GALANG_SEMENTARA}
+            saldoGalang={saldoGalang}
           />
         </div>
       </section>

@@ -26,8 +26,19 @@ const ID = {
   trLama: `tst-rt1-${akhiran}`,
   trBaru: `tst-rt2-${akhiran}`,
   progres: `tst-rg-${akhiran}`,
+  donatur: `tst-rdn-${akhiran}`, // donasinya berhasil ke project, tidak mendaftar relawan
+  donGagal: `tst-rdg-${akhiran}`, // donasinya ke project gagal
+  trDonatur: `tst-rt3-${akhiran}`,
+  trGagal: `tst-rt4-${akhiran}`,
 };
-const PENGGUNA = [ID.pembuat, ID.relawan, ID.pendaftar, ID.kosong];
+const PENGGUNA = [
+  ID.pembuat,
+  ID.relawan,
+  ID.pendaftar,
+  ID.kosong,
+  ID.donatur,
+  ID.donGagal,
+];
 
 let dbSiap = false;
 
@@ -79,9 +90,9 @@ before(async () => {
       [id, `Uji ${id}`],
     );
   }
-  await execute('INSERT INTO donatur (id_donatur, saldo) VALUES (?, 0)', [
-    ID.pembuat,
-  ]);
+  for (const id of [ID.pembuat, ID.donatur, ID.donGagal]) {
+    await execute('INSERT INTO donatur (id_donatur, saldo) VALUES (?, 0)', [id]);
+  }
 
   await execute(
     `INSERT INTO project (id_project, id_pembuat, nama, deskripsi, provinsi, kota,
@@ -126,6 +137,27 @@ before(async () => {
     25_000,
     '2026-03-01 08:00:00',
   ]);
+  await execute(sqlTransaksi, [
+    ID.trDonatur,
+    ID.donatur,
+    ID.project,
+    `tst-${randomUUID()}`,
+    50_000,
+    '2026-01-15 08:00:00',
+  ]);
+  await execute(
+    `INSERT INTO transaksi_donasi (id_transaksi, id_donatur, id_tujuan,
+       jenis_tujuan, idempotency_key, nominal, tanggal, status_transaksi)
+     VALUES (?, ?, ?, 'project', ?, ?, ?, 'gagal')`,
+    [
+      ID.trGagal,
+      ID.donGagal,
+      ID.project,
+      `tst-${randomUUID()}`,
+      30_000,
+      '2026-01-20 08:00:00',
+    ],
+  );
 
   await execute(
     `INSERT INTO progres_project (id_progres, id_project, id_pengguna, milestone,
@@ -198,6 +230,23 @@ describe('riwayatPengguna (Algo-129, KF27)', () => {
     );
   });
 
+  it('donatur yang donasinya berhasil melihat progres project itu', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    const riwayat = await riwayatPengguna(ID.donatur, 'semua');
+    assert.deepEqual(
+      riwayat.map((item) => [item.jenis, item.id]).sort(),
+      [
+        ['progres', ID.progres],
+        ['transaksi', ID.trDonatur],
+      ].sort(),
+    );
+  });
+
+  it('donasi yang gagal tidak memberi akses ke progres project', async (t) => {
+    if (lewatiBilaTanpaDb(t)) return;
+    assert.deepEqual(await riwayatPengguna(ID.donGagal, 'progres'), []);
+  });
+
   it('pengguna tanpa riwayat mendapat daftar kosong, bukan galat', async (t) => {
     if (lewatiBilaTanpaDb(t)) return;
     assert.deepEqual(await riwayatPengguna(ID.kosong, 'semua'), []);
@@ -225,9 +274,9 @@ describe('detail riwayat (Algo-130, KF27)', () => {
     );
   });
 
-  it('pembuat dan relawan accepted dapat membuka rincian progres', async (t) => {
+  it('pembuat, relawan accepted, dan donatur berhasil dapat membuka rincian progres', async (t) => {
     if (lewatiBilaTanpaDb(t)) return;
-    for (const id of [ID.pembuat, ID.relawan]) {
+    for (const id of [ID.pembuat, ID.relawan, ID.donatur]) {
       const detail = await detailProgres(id, ID.progres);
       assert.equal(detail.idProgres, ID.progres);
       assert.equal(detail.namaProject, 'Project Riwayat Uji');
@@ -237,7 +286,7 @@ describe('detail riwayat (Algo-130, KF27)', () => {
 
   it('progres tidak dapat dibuka oleh pendaftar pending atau pengguna lain', async (t) => {
     if (lewatiBilaTanpaDb(t)) return;
-    for (const id of [ID.pendaftar, ID.kosong]) {
+    for (const id of [ID.pendaftar, ID.kosong, ID.donGagal]) {
       assert.equal(await statusGalat(detailProgres(id, ID.progres)), 404);
     }
   });

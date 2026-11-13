@@ -27,9 +27,12 @@ export function SesiProvider({ children }: { children: ReactNode }) {
   /** Aksi yang menunggu login berhasil (lihat NilaiSesi.bukaAuth). */
   const lanjutan = useRef<(() => void) | null>(null);
 
+  const [versiSaldo, setVersiSaldo] = useState(0);
+
   const muatUlang = useCallback(async () => {
     const res = await panggilApi<PenggunaDto | null>('/api/auth/saya');
     setPengguna(res.ok ? res.data : null);
+    setVersiSaldo((v) => v + 1);
   }, []);
 
   useEffect(() => {
@@ -51,8 +54,9 @@ export function SesiProvider({ children }: { children: ReactNode }) {
       },
       setPengguna,
       muatUlang,
+      versiSaldo,
     }),
-    [pengguna, muatUlang],
+    [pengguna, muatUlang, versiSaldo],
   );
 
   return (

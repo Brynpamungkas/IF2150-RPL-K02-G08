@@ -105,6 +105,8 @@ export function AlurDonasi({
   function selesaiDonasi(h: HasilDonasi, nominal: number) {
     setFormTerbuka(false);
     setHasil(h);
+    // Saldo donasi berkurang: navbar dan riwayat harus dimuat ulang.
+    void sesi?.muatUlang();
     onSelesai?.(h);
     showToast(
       <>

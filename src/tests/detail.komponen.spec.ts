@@ -75,7 +75,7 @@ function progres(dokumen: ProgresItem['dokumen']): ProgresItem {
     persentase: 10,
     danaTerpakai: null,
     dokumen,
-    waktu: '2026-10-21 16:20',
+    waktu: '2026-10-21T16:20:00Z',
   };
 }
 

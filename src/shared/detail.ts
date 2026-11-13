@@ -103,9 +103,24 @@ export function formatTanggal(tanggal: string | null): string {
   return `${Number(cocok[3])} ${BULAN[Number(cocok[2]) - 1]} ${cocok[1]}`;
 }
 
-export function formatJam(waktu: string): string {
-  const cocok = waktu.match(/(\d{2}:\d{2})$/);
-  return cocok ? `${cocok[1]} WIB` : '';
+/** Waktu ISO 8601 (UTC) ditampilkan sebagai tanggal dan jam WIB. */
+export function formatWaktuWib(waktu: string): { tanggal: string; jam: string } {
+  const zona = { timeZone: 'Asia/Jakarta' } as const;
+  const d = new Date(waktu);
+  return {
+    tanggal: new Intl.DateTimeFormat('en-GB', {
+      ...zona,
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(d),
+    jam: `${new Intl.DateTimeFormat('en-GB', {
+      ...zona,
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(d)} WIB`,
+  };
 }
 
 export function plural(jumlah: number, kata: string): string {
