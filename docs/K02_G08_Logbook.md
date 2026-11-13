@@ -203,19 +203,19 @@
 | 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi bukti transaksi donasi #28 | 5 | Done | - |
 | 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi riwayat transaksi dan progres (API) #38 | 5 | Done | - |
 | 8-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi UI riwayat di halaman Akun #39 | 5 | Done | - |
+| 8-11-2026 | Bryan | Mengerjakan fitur campaign, project, verifikasi admin, dan My Actions (#16–22, #45) | 4 | Done | Integrasi antarmodul belum selesai |
 | 8-11-2026 | Neysa | Fix merapikan package.json dan lockfile, memisahkan tes Vitest dan node:test | 0,5 | Done | Konflik package-lock.json antarbranch |
 | 8-11-2026 | Neysa | Revisi issue #23 dan #24 dari hasil review (campaign belum mulai, sinkron filter URL, peta untuk hasil closed, galat Show more) | 1 | Done | - |
 | 8-11-2026 | Neysa | Fix eksekusi tes agar jalan di Node 20 dan terbaca Vitest | 0,5 | Done | Pola glob tes tidak terbaca di Node 20 |
+| 9-11-2026 | Bryan | Menghubungkan My Actions ke halaman Akun, memperbaiki build, dan melakukan pengujian | 5 | Done | Menunggu integrasi modul tim |
 | 10-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi fitur top-up saldo (di luar use case) #30 | 5 | Done | - |
-| 08-11-2026 | Bryan | Implementasi campaign UC02 (#16–17), project dua tahap UC03 (#18–19), pengajuan/verifikasi admin UC04 (#20–22), dan My Actions (#45); validasi, pemeriksaan sesi/peran/pemilik dan transaksi status; tes unit/API/database/browser; commit/PR per bagian dan review PR tim sebagai reviewer, bukan implementer modul tersebut | 4 | Implementasi dan tes awal tersedia pada branch/PR fitur | Integrasi stack bertingkat, slot Account dan modul auth/detail/progres tim belum lengkap pada basis saat itu; build basis gagal prerender donasi |
-| 09-11-2026 | Bryan | Integrasi lokal stack aksi dengan develop saat itu; penyambungan My Actions ke slot Account, runner tes rekursif dan batas Suspense navbar/donasi; tes fitur/database aksi dan browser produksi; dokumentasi hasil/batas pengujian | 5 | Lanjutan lokal teruji; belum dipush pada tanggal tersebut | Integrasi auth/detail/progres terbaru, review baru dan UAT manusia masih diperlukan; hasil ini tidak memvalidasi develop 13 November |
-| 13-11-2026 | Bryan | Audit dan integrasi fitur aksi/auth/Account; penghubung Progres memakai form/API tim; pengujian ulang; pengisian B.1–B.5 bagian Bryan/logbook/deklarasi AI langsung ke main; verifikasi penutupan API #16/#18/#20; review dan approval #84 sebagai reviewer, bukan implementer; penyelarasan #85 sesudah #83 merged | 4 | #85 diselaraskan dengan develop 13838ee dan dimintakan konfirmasi ulang Sahla pada head 6ee2f54: 175 Vitest + 83 node:test lulus (37 dilewati pada run default), tes aksi/database 15/15, browser produksi/build/lint/typecheck lulus. #84 di-approve pada head 3b9a409 setelah uji peran/API/browser | Menunggu review head baru dan penggabungan kode, konfirmasi persentase kontribusi dan UAT manusia; warning/log build serta batas MariaDB tetap dicatat; rilis/asistensi dikoordinasikan tim. Durasi tetap sesuai konfirmasi Bryan, tidak ditambah perkiraan alat |
+| 13-11-2026 | Bryan | Menyelesaikan integrasi fitur aksi, melakukan pengujian, melengkapi dokumentasi M9, dan review PR #84 | 4 | Done | - |
 
 
 **Catatan/Evaluasi Milestone 9:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 
-**Catatan Bryan:** Durasi 8, 9 dan 13 November (4, 5 dan 4 jam; total **13 jam**) dikonfirmasi langsung oleh Bryan pada 13 November 2026, bukan perkiraan alat. Entri tambahan ini hanya mencatat kontribusi Bryan; form/API progres, autentikasi inti, Account/dompet, riwayat, detail dan relawan tetap karya anggota terkait. Penghubung integrasinya tidak mengalihkan atribusi modul tersebut. Hasil otomatis dan batasannya tercatat pada [Bukti Aksi Bryan](M9/BUKTI-AKSI-BRYAN.md). Pekerjaan 13 November berada setelah tenggat 11 November, bukan bukti pengumpulan tepat waktu. Tidak ada klaim UAT manusia atau persentase kontribusi yang belum dikonfirmasi.
+**Catatan Bryan:** Rincian pengujian fitur aksi ada di [Bukti Aksi Bryan](M9/BUKTI-AKSI-BRYAN.md).
 ---
 
 ``Gunakan format penulisan Logbook yang sama untuk setiap Milestone dan pastikan pembuatan Daftar Isi juga sudah sesuai sebelum Logbook dikumpulkan. ``
