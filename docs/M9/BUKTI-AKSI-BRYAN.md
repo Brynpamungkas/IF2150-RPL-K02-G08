@@ -4,7 +4,8 @@ Tanggal pembaruan: **13 November 2026**. PIC: Bryan Pamungkas Prahara (13525092)
 
 ## Versi dan batas atribusi
 
-- **Status setelah PR dibuat:** kode diajukan pada [PR #85](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/85) ke develop dan dokumen pada [PR #86](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/86) ke main. Keduanya belum merged. Develop kemudian bergerak ke `2b0d242`, yang mengembalikan potongan integrasi AppShell/AlurDonasi yang rusak. PR #85 terdeteksi konflik dan menunggu perbaikan tim [PR #83](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/83). Bryan memilih **menunggu #83**, bukan mengambil branch teman yang belum merged. Hasil di bawah tetap berlaku untuk basis kode `2d37202`, bukan validasi develop baru `2b0d242`. Percobaan merge basis baru dibatalkan tanpa mengganti perubahan tim; setelah #83 masuk perlu penyelarasan dan pengujian ulang.
+- **Alur publikasi:** atas arahan Bryan, tambahan dokumentasi miliknya dimasukkan **langsung ke main**, tanpa menunggu review PR dokumentasi; [PR #86](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/86) menjadi jejak pengajuan awal. Review perubahan kode tetap melalui [PR #85](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/85), yang belum merged.
+- **Bloker kode:** develop bergerak ke `2b0d242`, yang mengembalikan potongan integrasi AppShell/AlurDonasi yang rusak. PR #85 terdeteksi konflik dan menunggu perbaikan tim [PR #83](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/83). Bryan memilih **menunggu #83**, bukan mengambil branch teman yang belum merged. Hasil build/browser integrasi di bawah tetap berlaku untuk basis kode `2d37202`, bukan validasi aplikasi lengkap pada develop baru `2b0d242`. Percobaan merge basis baru dibatalkan tanpa mengganti perubahan tim; setelah #83 masuk perlu penyelarasan dan pengujian ulang. Pengujian API langsung pada `2b0d242` dicatat terpisah di bawah.
 - Basis kode terbaru yang diintegrasikan: `develop` `2d372029948c5b57b434e4be8fce826bdd7cacc9`.
 - Kode lanjutan: [`fix/aksi-current-integration`](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/tree/fix/aksi-current-integration). Commit implementasi/pengujian terbaru: `b4438fd` (dokumen dapat diperbarui sesudahnya).
 - Laporan resmi: [K02_G08_Implementasi.md](K02_G08_Implementasi.md), bagian tambahan Bryan pada B.1–B.5. Branch `docs/bryan-m9-completion` berbasis `main` `2a832b455b5ce5360f24e8840e101e11b72d4d37`; tidak menyalin atau mengganti laporan anggota lain.
@@ -39,6 +40,19 @@ Skenario browser: login pemilik melalui modal/UI resmi dan password bcrypt fixtu
 
 Tes diperbarui agar fixture sesi yang sudah diakhiri layanan auth tidak dianggap aktif hanya dengan mengubah expiry. Locator browser dibatasi ke formulir terlihat karena Next mempertahankan DOM rute tersembunyi. Penyesuaian ini tidak mengganti API sukses dengan mock.
 
+## Verifikasi issue API pada develop terbaru
+
+API #16 (campaign), #18 (project dua tahap) dan #20 (verifikasi admin) sudah berada pada develop melalui [PR #67](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/67), yang approved oleh Sahla dan merged. Pada 13 November, kode dan tes bawaan snapshot **`2b0d2428d2b38215cc8be8829634c8584be926cb`** diuji ulang tanpa mengambil implementasi yang masih tertahan di PR #85:
+
+```sh
+# Dari src/ snapshot develop terbaru, dengan DB_* khusus uji yang sudah disiapkan:
+AKSI_TEST_DB=1 node --import tsx --test tests/aksi.akses.test.ts tests/aksi.validasi.test.ts tests/aksi.integrasi.test.ts
+```
+
+Hasil: **15/15 lulus, 0 gagal, 0 skip**, MariaDB terisolasi. Mencakup validasi campaign/target/periode, project tahap informasi/lengkap/ubah informasi, pemilik/peran/sesi, antrean pending, persetujuan/penolakan beralasan, revisi/pengajuan ulang dan keputusan bersamaan. Ini dasar penutupan **issue API #16, #18, #20**, bukan pernyataan UI/integrasi aplikasi lengkap sudah selesai. Tes memanggil controller/API dan database langsung, **tidak membangun atau membuka AppShell/AlurDonasi yang sedang terblokir**. Adapter auth/rincian dana lanjutan tetap tercakup pada PR #85.
+
+Issue UI #19, #21, #22 dan #45 tetap terbuka sampai integrasi/review PR #85 selesai; #17 sudah ditutup sebelumnya, bukan ditutup ulang pada tahap ini.
+
 ## Reproduksi
 
 Checkout branch kode di atas, lalu dari `src/`:
@@ -59,7 +73,7 @@ Fixture menggunakan ID acak dan membersihkan data miliknya setelah tes. Jangan m
 
 ## Yang masih memerlukan keputusan manusia/tim
 
-1. Review Sahla atas lanjutan kode/dokumen, kemudian penggabungan ke develop dan main. Issue tidak ditutup otomatis oleh dokumen ini.
+1. Review Sahla atas lanjutan kode, kemudian penggabungan ke develop dan main. Dokumentasi dimasukkan langsung ke main atas arahan Bryan. Penutupan issue API memakai verifikasi khusus di atas; issue UI tidak ditutup otomatis oleh dokumen ini.
 2. UAT manusia dan kesesuaian prototipe; tidak digantikan oleh tes otomatis.
 3. Persentase kontribusi Bryan belum dikonfirmasi. Durasi **4 + 5 + 4 = 13 jam** untuk 8/9/13 November telah dikonfirmasi Bryan dan masuk logbook; bukan durasi yang diperkirakan alat.
 4. Tanggal/catatan asistensi dan rilis `v9` adalah koordinasi tim. Saat audit belum ditemukan tag/release `v9*`. Pekerjaan 13 November dilakukan setelah tenggat 11 November dan tidak dinyatakan sebagai pengumpulan tepat waktu; tidak ada tanggal yang dibackdate.
