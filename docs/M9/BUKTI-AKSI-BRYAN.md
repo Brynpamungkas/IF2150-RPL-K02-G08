@@ -4,6 +4,7 @@ Tanggal pembaruan: **13 November 2026**. PIC: Bryan Pamungkas Prahara (13525092)
 
 ## Versi dan batas atribusi
 
+- **Status setelah PR dibuat:** kode diajukan pada [PR #85](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/85) ke develop dan dokumen pada [PR #86](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/86) ke main. Keduanya belum merged. Develop kemudian bergerak ke `2b0d242`, yang mengembalikan potongan integrasi AppShell/AlurDonasi yang rusak. PR #85 terdeteksi konflik dan menunggu perbaikan tim [PR #83](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/83). Bryan memilih **menunggu #83**, bukan mengambil branch teman yang belum merged. Hasil di bawah tetap berlaku untuk basis kode `2d37202`, bukan validasi develop baru `2b0d242`. Percobaan merge basis baru dibatalkan tanpa mengganti perubahan tim; setelah #83 masuk perlu penyelarasan dan pengujian ulang.
 - Basis kode terbaru yang diintegrasikan: `develop` `2d372029948c5b57b434e4be8fce826bdd7cacc9`.
 - Kode lanjutan: [`fix/aksi-current-integration`](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/tree/fix/aksi-current-integration). Commit implementasi/pengujian terbaru: `b4438fd` (dokumen dapat diperbarui sesudahnya).
 - Laporan resmi: [K02_G08_Implementasi.md](K02_G08_Implementasi.md), bagian tambahan Bryan pada B.1–B.5. Branch `docs/bryan-m9-completion` berbasis `main` `2a832b455b5ce5360f24e8840e101e11b72d4d37`; tidak menyalin atau mengganti laporan anggota lain.
