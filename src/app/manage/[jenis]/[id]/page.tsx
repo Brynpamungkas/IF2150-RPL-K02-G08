@@ -34,6 +34,11 @@ export default async function Page({
             <p>Detail privat untuk pembuat. Bukan halaman publik.</p>
           </header>
           <DetailAksiPrivat aksi={aksi} />
+          {aksi.status === 'terpublikasi' && (
+            <Link href={`/${aksi.jenis}/${aksi.id}`} className="btn btn-light">
+              Lihat halaman publik
+            </Link>
+          )}
           <TombolPengajuan aksi={aksi} />
           {dapatDiedit(aksi.status) && (
             <section className="grid gap-5">
