@@ -7,25 +7,26 @@ HASIL IMPLEMENTASI DAN UJI PERANGKAT LUNAK (HIUPL)
 </h1>
 <br>
 
-## *Nama Perangkat Lunak*
-### *[Logo Perangkat Lunak]*
+## KlimPooL
+<p align="left">
+  <img src="./assets/logo.png" width="100%">
+</p>
 
-### Untuk: *[Nama Asisten]*
+### Untuk: Made Branenda Jordhy
 
 Dipersiapkan oleh:
 | Informasi | Keterangan |
 | --- | --- |
-| Kelas | *\[Kelas\]* |
-| Kelompok | *\[Nomor Kelompok\]*  |
-
+| Kelas | 02 |
+| Kelompok | 08  |
+ 
 | NIM | Nama |
 |---|---|
-| *[NIM 1]* | *[Nama Anggota 1]* |
-| *[NIM 2]* | *[Nama Anggota 2]* |
-| *[NIM 3]* | *[Nama Anggota 3]* |
-| *[NIM 4]* | *[Nama Anggota 4]* |
-| *[NIM 5]* | *[Nama Anggota 5]* |
-
+| 13525023 | Shaquille Nathan Kalevi |
+| 13525080 | Neysa Alya Mukhbita |
+| 13525092 | Bryan Pamungkas Prahara |
+| 13525134 | Sahla Nailah Salsabilla |
+| 13525140 | Nayla Putri Ghaisani |
 ---
 
 ## Daftar Isi
@@ -124,16 +125,41 @@ Tuliskan sistematika pembahasan dokumen ini secara ringkas dan runut bab demi ba
 
 # BAB 2: Deskripsi Umum Perangkat Lunak
 
-Bagian ini diisi dengan *System Overview*, dalam bentuk gambar dan narasi yang memberikan gambaran tentang aplikasi dan konteksnya. **Batasan dan keterkaitan** antara sistem yang dibangun dengan sistem lain di luarnya harus jelas. Deskripsi umum sistem perlu dilengkapi dengan pemodelan kasus yang dihadapi, seperti *use case diagram*. Berikan narasi yang jelas untuk setiap gambar yang ditampilkan.
+KlimPooL adalah aplikasi web yang menghubungkan masyarakat dengan kegiatan aksi iklim dan penanganan bencana di berbagai wilayah Indonesia melalui katalog dan peta interaktif. Pengguna dapat menelusuri kegiatan berdasarkan wilayah, membaca kebutuhan yang belum terpenuhi, lalu berkontribusi dengan dana (donasi dari saldo di dalam aplikasi) atau tenaga (mendaftar sebagai relawan). Setiap pengguna juga dapat mengajukan *campaign* penggalangan dana atau *project* aksi iklim. Seluruh pengajuan diverifikasi Admin Sistem sebelum dipublikasikan. Pembuat Project kemudian memperbarui progres, dokumentasi, dan penggunaan dana, sehingga Donatur dan Volunteer dapat menelusuri hasil kontribusinya.
 
-Bagian ini dapat menyalin atau meringkas dari dokumen SKPL atau DPPL.
+Sistem menerima masukan dari empat aktor melalui antarmuka web, yaitu Pembuat Project, Donatur, Volunteer, dan Admin Sistem. Seluruh data akun, *campaign*, *project*, saldo, transaksi, pendaftaran relawan, dan riwayat progres disimpan pada basis data MySQL internal. Aplikasi dibangun dengan *Layered Architecture* (View → Controller → Service → Repository → MySQL) dan *Client-Server Architecture* sesuai DPPL.
+
+**Batasan dan keterkaitan dengan sistem lain:**
+
+- KlimPooL **tidak terhubung dengan sistem eksternal**, baik lembaga keuangan maupun basis data lembaga lain.
+- Pengisian saldo (*top-up*) hanya disimulasikan di dalam aplikasi layaknya *payment gateway dummy*, sehingga tidak ada perpindahan dana nyata.
+- Donasi diproses dalam satu *database transaction* yang atomik: validasi saldo, pengurangan saldo Donatur, penambahan dana tujuan, dan pencatatan transaksi. Bila satu tahap gagal, seluruh perubahan dibatalkan.
+- Pelaksanaan kegiatan di lapangan (penanaman, distribusi logistik, pemulihan lingkungan), logistik fisik, dan penjadwalan terperinci berada di luar perangkat lunak. Perangkat lunak hanya mencatat, mengoordinasikan, dan melaporkan kegiatan tersebut.
+- Cakupan wilayah terbatas pada Indonesia. Data kegiatan yang ditampilkan adalah data tiruan susunan tim.
 
 <p align="center">
-<img alt="System Overview / Use Case Diagram" src="./assets/contoh-uc-diagram.webp" width="90%">
+<img alt="Use Case Diagram KlimPooL" src="../M5/assets/diagram/diagramUC.png" width="90%">
 </p>
 <p align="center">
-<i>Gambar 2.1. Use Case Diagram [Nama P/L]</i>
+<i>Gambar 2.1. Use Case Diagram KlimPooL</i>
 </p>
+
+Gambar 2.1 memperlihatkan sepuluh *use case* yang dilayani KlimPooL. Pengguna Umum (Pembuat Project, Donatur, dan Volunteer) melakukan pendaftaran dan autentikasi (UC01), mencari dan menelusuri project (UC05), serta melihat riwayat dan penelusuran (UC10). Pembuat Project membuat *campaign* (UC02) dan *project* (UC03), mengelola pendaftaran relawan (UC08), serta memperbarui progres (UC09). Admin Sistem meninjau dan memverifikasi pengajuan (UC04) dan juga dapat memperbarui progres (UC09). Donatur melakukan transaksi donasi (UC06), sedangkan Volunteer mendaftar pada project (UC07).
+
+Tabel 2.1. Ringkasan Use Case
+
+| ID | Nama Use Case | Aktor | KF |
+| :--- | :--- | :--- | :--- |
+| UC01 | Melakukan Pendaftaran dan Autentikasi | Pengguna Umum | KF01–KF04 |
+| UC02 | Membuat Campaign Penggalangan Donasi | Pembuat Project | KF05–KF07 |
+| UC03 | Membuat Project Aksi Iklim | Pembuat Project | KF08–KF10 |
+| UC04 | Meninjau dan Memverifikasi Project | Pembuat Project, Admin Sistem | KF11, KF12 |
+| UC05 | Mencari dan Menelusuri Project | Pengguna Umum | KF13, KF14 |
+| UC06 | Melakukan Transaksi Donasi | Donatur | KF15–KF18, KF26 |
+| UC07 | Mendaftar Sebagai Volunteer | Volunteer | KF19, KF20 |
+| UC08 | Mengelola Pendaftaran Relawan | Pembuat Project | KF21, KF22 |
+| UC09 | Memperbarui Progres Project | Pembuat Project, Admin Sistem | KF23–KF25 |
+| UC10 | Melihat Riwayat dan Penelusuran | Pengguna Umum | KF27 |
 
 <br>
 
@@ -210,11 +236,17 @@ Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 
 | ID Kelas | Nama Kelas | Tingkat | Alasan | Test Case Terkait |
 | :--- | :--- | :--- | :--- | :--- |
-| *C02* | *Pesanan* | *Mendalam* | *Memuat `hitungTotal()` dan transisi status pembayaran* | *C02-UT01 s.d. C02-UT08* |
-| *C03* | *Keranjang* | *Sedang* | *Delegasi sederhana ke Produk dan Pesanan* | *C03-UT01 s.d. C03-UT03, INT-TC02* |
-| *C01* | *Pelanggan* | *Tidak perlu* | *Hanya menyimpan data akun, tanpa logika* | *-* |
-| *[CXX]* | *[Nama kelas]* | *[Mendalam/Sedang/Tidak perlu]* | *[Alasan penentuan tingkat pengujian]* | *[ID test case atau -]* |
-| *...* | *...* | *...* | *...* | *...* |
+| C04 | Donatur | Mendalam | Memuat pemeriksaan kecukupan saldo dan pengurangan saldo secara atomik dengan `UPDATE ... WHERE saldo >= ?` serta penguncian baris (Algo-103, Algo-104). Salah logika di sini berarti uang hilang atau saldo negatif. | C04-UT01 s.d. C04-UT06 |
+| C06 | TransaksiDonasi | Mendalam | Memuat validasi nominal, deteksi duplikasi *idempotency key*, pemrosesan donasi atomik dengan *rollback*, dan perhitungan capaian (Algo-105 s.d. Algo-110; KF15–KF18, KF26) | C06-UT01 s.d. C06-UT10, INT-TC04, INT-TC05 |
+| C07 | BuktiTransaksi | Mendalam | Memuat aturan bahwa bukti hanya dibuat untuk transaksi berhasil, tidak boleh ganda, berupa *snapshot*, dan hanya dapat dibuka pemiliknya (Algo-111, Algo-112) | C07-UT01 s.d. C07-UT08 |
+| C30 | FormDonasiView | Sedang | Mengoordinasikan formulir donasi; logikanya terbatas pada validasi sisi klien dan pembangkitan *idempotency key* sebelum diteruskan ke server | C30-UT01 s.d. C30-UT04, INT-TC01, INT-TC02 |
+| C31 | DetailBuktiTransaksiView | Sedang | Hanya memformat dan menampilkan rincian bukti dari server | C31-UT01 s.d. C31-UT03 |
+| C32 | DonasiController | Sedang | Memeriksa login dan bentuk masukan, lalu mendelegasikan aturan bisnis ke `DonasiService` | C32-UT01 s.d. C32-UT04, INT-TC03 |
+| C39 | FormRiwayatView | Sedang | Mengoordinasikan tampilan riwayat; logika terbatas pada penyaringan jenis dan pengelompokan per bulan di sisi klien | C39-UT01 s.d. C39-UT04 |
+| C40 | DetailRiwayatView | Tidak perlu | Hanya menampilkan rincian transaksi/progres yang diterima dari server, tanpa logika | UC10-TC02, UC10-TC03 |
+| C41 | RiwayatController | Sedang | Membaca filter dan sesi, lalu mendelegasikan penyusunan riwayat dan pemeriksaan kepemilikan ke `riwayatService` | C41-UT01 s.d. C41-UT04, INT-TC07 s.d. INT-TC09 |
+
+<br>
 
 ## 4.2 Pengujian Unit Kelas
 
