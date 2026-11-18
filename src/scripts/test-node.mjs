@@ -22,7 +22,15 @@ async function main() {
     throw new Error('Tidak ada file node:test (*.test.ts).');
   const child = spawnSync(
     process.execPath,
-    ['--import', 'tsx', '--test', ...process.argv.slice(2), ...files],
+    [
+      // Dipakai relawanProgres.layanan.test.ts untuk mengganti repository dengan tiruan.
+      '--experimental-test-module-mocks',
+      '--import',
+      'tsx',
+      '--test',
+      ...process.argv.slice(2),
+      ...files,
+    ],
     { cwd: app, stdio: 'inherit', env: process.env },
   );
   if (child.error) throw child.error;

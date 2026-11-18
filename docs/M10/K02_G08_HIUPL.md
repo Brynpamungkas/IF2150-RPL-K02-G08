@@ -239,9 +239,17 @@ Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 | C04 | Donatur | Mendalam | Memuat pemeriksaan kecukupan saldo dan pengurangan saldo secara atomik dengan `UPDATE ... WHERE saldo >= ?` serta penguncian baris (Algo-103, Algo-104). Salah logika di sini berarti uang hilang atau saldo negatif. | C04-UT01 s.d. C04-UT06 |
 | C06 | TransaksiDonasi | Mendalam | Memuat validasi nominal, deteksi duplikasi *idempotency key*, pemrosesan donasi atomik dengan *rollback*, dan perhitungan capaian (Algo-105 s.d. Algo-110; KF15–KF18, KF26) | C06-UT01 s.d. C06-UT10, INT-TC04, INT-TC05 |
 | C07 | BuktiTransaksi | Mendalam | Memuat aturan bahwa bukti hanya dibuat untuk transaksi berhasil, tidak boleh ganda, berupa *snapshot*, dan hanya dapat dibuka pemiliknya (Algo-111, Algo-112) | C07-UT01 s.d. C07-UT08 |
+| C08 | Volunteer | Tidak perlu | Diimplementasikan sebagai peran `volunteer` pada tabel `pengguna` tanpa logika sendiri (Tugas 9, B.1 No. 8). Operasi `isiFormulir()` dan `kirimPendaftaran()` (Algo-118) diwujudkan oleh C33 dan C34 yang diuji tersendiri | UC07-TC01 |
+| C09 | PendaftaranRelawan | Mendalam | Memuat validasi kelengkapan formulir, pencegahan pendaftaran ganda, pemeriksaan kuota, dan transisi status `pending` ke `accepted`/`rejected` yang hanya boleh terjadi sekali (Algo-113 s.d. Algo-117; KF19–KF21) | C09-UT01 s.d. C09-UT18, INT-TC11 s.d. INT-TC16 |
 | C30 | FormDonasiView | Sedang | Mengoordinasikan formulir donasi; logikanya terbatas pada validasi sisi klien dan pembangkitan *idempotency key* sebelum diteruskan ke server | C30-UT01 s.d. C30-UT04, INT-TC01, INT-TC02 |
 | C31 | DetailBuktiTransaksiView | Sedang | Hanya memformat dan menampilkan rincian bukti dari server | C31-UT01 s.d. C31-UT03 |
 | C32 | DonasiController | Sedang | Memeriksa login dan bentuk masukan, lalu mendelegasikan aturan bisnis ke `DonasiService` | C32-UT01 s.d. C32-UT04, INT-TC03 |
+| C33 | FormPendaftaranRelawanView | Sedang | Mengoordinasikan formulir pendaftaran; logikanya terbatas pada penyusunan pilihan hari dari jadwal project dan validasi sisi klien yang memakai aturan yang sama dengan server | C33-UT01 s.d. C33-UT04, INT-TC21 |
+| C34 | RelawanController | Mendalam | Memuat pemeriksaan login, kepemilikan project, kuota, dan status pendaftaran sebelum data pendaftar (berisi nomor telepon) dibuka atau keputusan disimpan (Algo-123 s.d. Algo-126; keamanan dan aturan bisnis KF19–KF22) | C34-UT01 s.d. C34-UT15, INT-TC11 s.d. INT-TC16 |
+| C35 | FormVolunteerManagementView | Sedang | Mengoordinasikan peninjauan pendaftar; logikanya terbatas pada pengurutan pendaftar `pending` di atas dan penonaktifan tombol *Accept* saat kuota penuh | C35-UT01 s.d. C35-UT04 |
+| C36 | DetailStatusPendaftaranView | Tidak perlu | Hanya menampilkan status dan instruksi kegiatan yang diterima dari server. Aturan bahwa titik kumpul hanya untuk pendaftaran `accepted` (KF22) berada di server dan diuji pada C34-UT13, C34-UT14, INT-TC15 | UC08-TC01, UC08-TC02 |
+| C37 | FormProgresProjectView | Sedang | Mengoordinasikan formulir progres; logikanya terbatas pada validasi isian dan pemeriksaan berkas sisi klien sebelum dikirim sebagai `multipart/form-data` | C37-UT01 s.d. C37-UT04, INT-TC22 |
+| C38 | ProgresController | Mendalam | Memuat pemeriksaan hak akses (hanya Pembuat Project atau Admin Sistem, KF25), validasi milestone/status/berkas, penyimpanan dokumentasi, stempel waktu, dan pembatalan berkas bila penyimpanan gagal (Algo-127, Algo-128; KF23–KF25) | C38-UT01 s.d. C38-UT11, INT-TC17 s.d. INT-TC20 |
 | C39 | FormRiwayatView | Sedang | Mengoordinasikan tampilan riwayat; logika terbatas pada penyaringan jenis dan pengelompokan per bulan di sisi klien | C39-UT01 s.d. C39-UT04 |
 | C40 | DetailRiwayatView | Tidak perlu | Hanya menampilkan rincian transaksi/progres yang diterima dari server, tanpa logika | UC10-TC02, UC10-TC03 |
 | C41 | RiwayatController | Sedang | Membaca filter dan sesi, lalu mendelegasikan penyusunan riwayat dan pemeriksaan kepemilikan ke `riwayatService` | C41-UT01 s.d. C41-UT04, INT-TC07 s.d. INT-TC09 |
@@ -281,6 +289,36 @@ node --env-file-if-exists=.env --import tsx --test --experimental-test-coverage 
 ```
 
 Lokasi file test: `src/tests/` (`donasi.unit.test.ts`, `donasi.bukti.unit.test.ts`, `donasi.view.test.ts`, `donasi.integrasi.test.ts`, `topup.unit.test.ts`, `riwayat.unit.test.ts`, `riwayat.integrasi.test.ts`, `riwayat-kategori.spec.ts`).
+
+### Pengujian Unit UC07, UC08 & UC09
+
+Kelas C09, C34, dan C38 diuji di `relawanProgres.layanan.test.ts`. Basis data, sesi login, dan penyimpanan berkas pada file ini diganti tiruan (`mock.module` dari `node:test`), sehingga setiap cabang aturan bisnis dapat diuji tanpa MySQL dan *coverage*-nya terukur. Interaksi dengan MySQL sungguhan diuji terpisah sebagai pengujian integrasi (Subbab 4.3). Kelas *boundary* C33, C35, dan C37 diuji di `relawanProgres.view.spec.ts` dengan merender komponen ke HTML statis (`react-dom/server`), lalu isi dan atribut tombolnya diperiksa. Aturan validasi bersama juga diuji di `relawanProgres.unit.test.ts` dan `opsiJadwal.spec.ts`.
+
+Cara menjalankan (dari folder `src/`, tidak butuh basis data):
+
+```bash
+node --experimental-test-module-mocks --import tsx --test \
+  tests/relawanProgres.layanan.test.ts tests/relawanProgres.unit.test.ts
+npx vitest run tests/relawanProgres.view.spec.ts tests/opsiJadwal.spec.ts
+```
+
+Cara mengukur *coverage* kelas Mendalam (C09, C34, C38):
+
+```bash
+node --experimental-test-module-mocks --experimental-test-coverage --import tsx --test \
+  --test-coverage-include="models/PendaftaranRelawan.ts" \
+  --test-coverage-include="shared/relawan.ts" \
+  --test-coverage-include="shared/progres.ts" \
+  --test-coverage-include="shared/dokumentasi.ts" \
+  --test-coverage-include="server/services/relawanService.ts" \
+  --test-coverage-include="server/services/progresService.ts" \
+  --test-coverage-include="server/controllers/RelawanController.ts" \
+  --test-coverage-include="server/controllers/ProgresController.ts" \
+  --test-coverage-include="server/http.ts" \
+  tests/relawanProgres.layanan.test.ts tests/relawanProgres.unit.test.ts
+```
+
+Hasil saat dijalankan: 44 dari 44 test case `relawanProgres.layanan.test.ts` dan 12 dari 12 test case `relawanProgres.view.spec.ts` lulus. Kelas C08 (Volunteer) dan C36 (DetailStatusPendaftaranView) bertingkat Tidak perlu sehingga tidak memiliki subbab unit test.
 
 
 ### 4.2.1 Kelas [Nama Kelas 1]
@@ -401,6 +439,46 @@ Tabel 4.2.7b. Ringkasan Cakupan Kelas C07
 | ID Algoritma yang tercakup | Algo-111, Algo-112 |
 | Coverage (wajib ≥ 70%) | `models/BuktiTransaksi.ts` 100% / 85,71%; fungsi bukti di `DonasiService.ts` dan `DonasiRepository.ts` (lihat C06). Bukti pada 4.6 |
 
+### 4.2.9 Kelas PendaftaranRelawan
+
+**ID Kelas:** C09  
+**Nama Kelas:** PendaftaranRelawan  
+**Tingkat:** Mendalam
+
+Operasi DPPL diwujudkan oleh beberapa unit: `bersihkanForm()` dan `validasiFormPendaftaran()` di `shared/relawan.ts`, `keDto()` di `models/PendaftaranRelawan.ts`, serta `daftarRelawan()`, `daftarPendaftar()`, dan `putuskanPendaftaran()` di `server/services/relawanService.ts` (lihat Tugas 9, B.5).
+
+Tabel 4.2.9. Hasil Pengujian Unit Kelas C09
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C09-UT01 | `buatPendaftaran()` (`daftarRelawan()`) | Normal | Formulir lengkap untuk project terbuka (kuota 3, belum ada relawan diterima) | Objek baru berstatus `pending`, `tanggalKeputusan` kosong, ID berformat `V-xxxxxxxx` | Status `pending`, `tanggalKeputusan` null, ID `V-` diikuti 8 karakter heksadesimal | Pass |
+| C09-UT02 | `buatPendaftaran()` (`bersihkanForm()`) | Batas | 20 butir keahlian, lalu 21 butir | 20 butir diterima; 21 butir ditolak dengan pesan maksimal 20 | 20 butir tanpa galat; 21 butir ditolak "Maksimal 20 keahlian." | Pass |
+| C09-UT03 | `buatPendaftaran()` (`bersihkanForm()`) | Negatif | Masukan bukan teks: angka, `null`, larik, objek | Semua kolom dianggap kosong, tidak melempar galat | Data diri, keahlian, pengalaman, dan jadwal menjadi kosong | Pass |
+| C09-UT04 | `validasiKelengkapan()` (`validasiFormPendaftaran()`) | Normal | Formulir lengkap | Tidak ada pesan galat | Objek galat kosong | Pass |
+| C09-UT05 | `validasiKelengkapan()` | Batas | Nama 100 karakter, lalu 101 karakter | 100 karakter lolos; 101 karakter ditolak | 100 karakter lolos; 101 ditolak "Nama maksimal 100 karakter." | Pass |
+| C09-UT06 | `validasiKelengkapan()` | Negatif | Badan permintaan kosong `{}` | Ditolak 400 dengan pesan pada keenam kolom; tidak ada yang disimpan | Status 400; galat pada `nama`, `telepon`, `kota`, `keahlian`, `pengalaman`, `jadwal`; tidak ada baris tersimpan | Pass |
+| C09-UT07 | `cekPendaftaranGanda()` | Normal | Volunteer belum pernah mendaftar pada project tersebut | Pendaftaran disimpan | Satu baris tersimpan | Pass |
+| C09-UT08 | `cekPendaftaranGanda()` | Negatif | Volunteer sudah memiliki pendaftaran pada project yang sama | Ditolak 409 "Anda sudah mendaftar pada project ini."; tidak ada yang disimpan | Ditolak 409 dengan pesan tersebut; tidak ada baris baru | Pass |
+| C09-UT09 | `cekPendaftaranGanda()` | Batas | Dua kiriman bersamaan: pemeriksaan awal lolos, tetapi `INSERT` kedua gagal `ER_DUP_ENTRY` (UNIQUE KEY) | Tetap ditolak 409 dengan pesan pendaftaran ganda, bukan 500 | Ditolak 409 "Anda sudah mendaftar pada project ini." | Pass |
+| C09-UT10 | `simpanPendaftaran()` | Normal | Dua keahlian dan dua hari | Kolom tersimpan sebagai `Nama: …; Telepon: …; Kota: …`, keahlian dipisah koma, jadwal dipisah titik koma, status `pending` | Data diri, keahlian, dan jadwal tersimpan dengan format tersebut; status `pending` | Pass |
+| C09-UT11 | `simpanPendaftaran()` (pemeriksaan kuota) | Batas | Kuota 3: diterima 2 (sisa satu), lalu diterima 3 | Sisa satu kuota masih diterima; kuota penuh ditolak 409 | Pendaftaran pertama tersimpan; berikutnya ditolak 409 "Kuota relawan project ini sudah penuh." | Pass |
+| C09-UT12 | `simpanPendaftaran()` | Negatif | Pendaftaran ditutup; project milik sendiri; project belum terpublikasi; akun tidak dikenal | Berturut-turut 409, 403, 404, 401; tidak ada yang disimpan | 409, 403, 404, 401; tidak ada baris tersimpan | Pass |
+| C09-UT13 | `getDetailPendaftar()` (`keDto()`) | Normal | Pemilik membuka daftar pendaftar | Data diri, keahlian, dan jadwal diurai kembali menjadi bentuk terstruktur | `dataDiri` {Rina, 0812-1111-2222, Bandung}; keahlian dan jadwal berupa larik | Pass |
+| C09-UT14 | `getDetailPendaftar()` | Batas | Project milik pengguna tanpa pendaftar | Daftar kosong, bukan galat | `[]` | Pass |
+| C09-UT15 | `getDetailPendaftar()` | Negatif | Bukan pemilik; project tidak ada | 403; 404 | 403; 404 | Pass |
+| C09-UT16 | `perbaruiStatus()` (`putuskanPendaftaran()`) | Normal | Pemilik menerima pendaftaran `pending` (kuota tersedia) | Status `accepted` dengan tanggal keputusan | Status `accepted`; `tanggalKeputusan` terisi; satu keputusan tersimpan | Pass |
+| C09-UT17 | `perbaruiStatus()` | Batas | Kuota 3 dan sudah 3 diterima; coba *accept*, lalu *reject* | *Accept* ditolak 409; *reject* tetap boleh | *Accept* ditolak 409 "Kuota relawan sudah penuh, pendaftaran tidak dapat diterima."; *reject* berhasil | Pass |
+| C09-UT18 | `perbaruiStatus()` | Negatif | Pendaftaran sudah `rejected`; keputusan `"maybe"`; pendaftaran milik project lain; bukan pemilik | 409; 400; 404; 403; tidak ada keputusan tersimpan | 409; 400; 404; 403; tidak ada keputusan tersimpan | Pass |
+
+Tabel 4.2.9b. Ringkasan Cakupan Kelas C09
+
+| Informasi | Keterangan |
+| :--- | :--- |
+| Daftar operasi public pada DPPL | `buatPendaftaran()`, `validasiKelengkapan()`, `cekPendaftaranGanda()`, `simpanPendaftaran()`, `getDetailPendaftar()`, `perbaruiStatus()` |
+| Operasi yang diuji | Seluruhnya (6 dari 6 operasi public) |
+| ID Algoritma yang tercakup | Algo-113, Algo-114, Algo-115, Algo-116, Algo-117 |
+| Coverage (wajib ≥ 70%) | `models/PendaftaranRelawan.ts` 100% / 85,71%; `shared/relawan.ts` 95,35% / 89,02%; `server/services/relawanService.ts` 99,19% / 94,03% (baris / cabang). Alat: `node --experimental-test-coverage`; bukti pada 4.6 |
+
 ### 4.2.30 Kelas FormDonasiView
 
 **ID Kelas:** C30  
@@ -440,6 +518,117 @@ Controller ini bergantung pada sesi login, sehingga diuji lewat *route handler* 
 | C32-UT02 | `konfirmasiDonasi()` | Gagal | Kirim permintaan yang sama tanpa *cookie* sesi | Status 401, `kode: "BELUM_LOGIN"`; tidak ada transaksi tercatat | *[isi]* | *Pass/Fail* |
 | C32-UT03 | `konfirmasiDonasi()` | Gagal | Login; kirim tanpa `idempotencyKey` | Status 400, `kode: "PERMINTAAN_TIDAK_VALID"` | *[isi]* | *Pass/Fail* |
 | C32-UT04 | `bukaFormDonasi()` (`GET /api/donasi/form?jenis=project&id=mgv`) | Normal | Login sebagai `andi@klimpool.id` | Status 200; nama tujuan dan saldo Donatur dikembalikan | *[isi]* | *Pass/Fail* |
+
+### 4.2.33 Kelas FormPendaftaranRelawanView
+
+**ID Kelas:** C33  
+**Nama Kelas:** FormPendaftaranRelawanView  
+**Tingkat:** Sedang
+
+Operasi `tekanDaftar()` diwujudkan oleh `TombolRelawan` dan `tampilkanFormulir()` oleh modal `FormPendaftaranRelawanView`. Operasi `tampilkanPesanKesalahan()` memakai aturan validasi yang sama dengan server, sehingga teruji pada C09-UT04 s.d. C09-UT06 dan C34-UT05.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C33-UT01 | `tampilkanFormulir()` | Normal | Render modal untuk project berjadwal 3–4 Jan 2099 | Keenam kolom wajib tampil dan tersedia pilihan "Sat 3 Jan 2099" serta "Sun 4 Jan 2099" | Keenam label kolom dan kedua pilihan hari tampil | Pass |
+| C33-UT02 | `tampilkanFormulir()` | Gagal | Render modal untuk project berjadwal 3–4 Jan 2020 (sudah lewat) | Tidak ada pilihan hari; tampil pesan "No days are open to choose" | Pesan tersebut tampil dan tidak ada tombol hari Jan 2020 | Pass |
+| C33-UT03 | `tekanDaftar()` (`TombolRelawan`) | Normal | Project terbuka untuk relawan | Tombol "Volunteer for this" tampil | Tombol tampil; tidak ada label "Sign-up closed" | Pass |
+| C33-UT04 | `tekanDaftar()` (`TombolRelawan`) | Gagal | Kuota 4 dan sudah 4 relawan diterima | Pesan "Volunteer spots are full" dan tombol nonaktif (`aria-disabled="true"`) | Pesan dan tombol nonaktif tampil; tombol daftar tidak ada | Pass |
+
+### 4.2.34 Kelas RelawanController
+
+**ID Kelas:** C34  
+**Nama Kelas:** RelawanController  
+**Tingkat:** Mendalam
+
+Operasi DPPL diwujudkan oleh fungsi *route handler* di `server/controllers/RelawanController.ts` (`daftar()`, `lihatPendaftar()`, `putuskan()`, `lihatPendaftaranSaya()`) yang mendelegasikan aturan ke `relawanService.ts`, sedangkan `getPesanKesalahan()` diwujudkan oleh `jalankan()` di `server/http.ts` yang mengubah galat menjadi respons JSON `{ pesan, galat? }`. Pengujian memanggil fungsi tersebut dengan objek `Request` sungguhan dan memeriksa status HTTP serta isi JSON.
+
+Tabel 4.2.34. Hasil Pengujian Unit Kelas C34
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C34-UT01 | `daftarRelawan()` (`POST /api/projects/{id}/relawan`) | Normal | Pengguna login; badan JSON formulir lengkap | Status 201; `pendaftaran.status` = `pending` | Status 201; status `pending` | Pass |
+| C34-UT02 | `daftarRelawan()` | Negatif | Tanpa sesi login | Status 401; tidak ada yang disimpan | Status 401; tidak ada baris tersimpan | Pass |
+| C34-UT03 | `daftarRelawan()` | Batas | Badan bukan JSON valid (`{bukan json`) | Diperlakukan sebagai formulir kosong: 400 dengan galat pada 6 kolom | Status 400; 6 galat kolom | Pass |
+| C34-UT04 | `getPesanKesalahan()` (`jalankan()`) | Normal | Pendaftaran ke project yang kuotanya penuh | Status 409 dengan badan `{ pesan: "Kuota relawan project ini sudah penuh." }` | Status 409 dengan badan tersebut | Pass |
+| C34-UT05 | `getPesanKesalahan()` | Batas | Formulir dengan telepon `abc` | Badan menyertakan galat per kolom hanya untuk `telepon` | `galat` hanya berisi kunci `telepon` | Pass |
+| C34-UT06 | `getPesanKesalahan()` | Negatif | Basis data melempar galat tak terduga "koneksi MySQL putus di 10.0.0.5" | Status 500 dengan pesan umum; alamat server tidak bocor | Status 500 "Terjadi kesalahan pada peladen."; alamat tidak muncul di respons | Pass |
+| C34-UT07 | `getDaftarPendaftar()` (`GET /api/projects/{id}/relawan`) | Normal | Login sebagai pemilik project | Status 200 | Status 200 | Pass |
+| C34-UT08 | `getDaftarPendaftar()` | Negatif | Login sebagai pengguna lain | Status 403; nomor telepon pendaftar tidak ikut terkirim | Status 403; respons tidak memuat nomor telepon | Pass |
+| C34-UT09 | `getDaftarPendaftar()` | Batas | Tanpa sesi login | Status 401 | Status 401 | Pass |
+| C34-UT10 | `buatKeputusan()` (`PATCH …/relawan/{idPendaftaran}`) | Normal | Pemilik mengirim `{ keputusan: "accepted" }` | Status 200; pesan "Pendaftaran diterima."; status baru `accepted` | Status 200 dengan pesan dan status tersebut | Pass |
+| C34-UT11 | `buatKeputusan()` | Negatif | Pemilik mengirim badan `{}` | Status 400 | Status 400 | Pass |
+| C34-UT12 | `buatKeputusan()` | Batas | *Accept* saat kuota sudah penuh | Status 409; status pendaftaran tetap `pending` | Status 409; status tetap `pending` | Pass |
+| C34-UT13 | `getStatusPendaftaran()` (`GET /api/relawan/saya`) | Normal | Pendaftaran berstatus `accepted` | Status 200; titik kumpul "Dermaga Desa Timbulsloko" dan hari pilihan ikut dikirim | Status 200; titik kumpul dan dua hari pilihan terkirim | Pass |
+| C34-UT14 | `getStatusPendaftaran()` | Batas | Pendaftaran berstatus `pending`, lalu `rejected` | `lokasiKumpul` = `null` untuk keduanya (KF22) | `lokasiKumpul` null untuk `pending` dan `rejected` | Pass |
+| C34-UT15 | `getStatusPendaftaran()` | Negatif | Tanpa sesi login | Status 401 | Status 401 | Pass |
+
+Tabel 4.2.34b. Ringkasan Cakupan Kelas C34
+
+| Informasi | Keterangan |
+| :--- | :--- |
+| Daftar operasi public pada DPPL | `getSebaranProject()`, `bukaFormPendaftaran()`, `daftarRelawan()`, `getPesanKesalahan()`, `getDaftarPendaftar()`, `buatKeputusan()`, `getStatusPendaftaran()` |
+| Operasi yang diuji | `daftarRelawan()`, `getPesanKesalahan()`, `getDaftarPendaftar()`, `buatKeputusan()`, `getStatusPendaftaran()`, ditambah `bukaFormPendaftaran()` lewat C09-UT11, C09-UT12, dan C33-UT04 (pemeriksaan status pendaftaran dan kuota dilakukan saat kirim; tombol daftar sudah dinonaktifkan di halaman detail). `getSebaranProject()` diwujudkan modul peta (UC05) dan diuji pada bagian UC05 |
+| ID Algoritma yang tercakup | Algo-123, Algo-124, Algo-125, Algo-126 |
+| Coverage (wajib ≥ 70%) | `server/controllers/RelawanController.ts` 100% / 92,86%; `server/http.ts` 100% / 95,24%; `server/services/relawanService.ts` 99,19% / 94,03% (baris / cabang). Alat: `node --experimental-test-coverage`; bukti pada 4.6 |
+
+### 4.2.35 Kelas FormVolunteerManagementView
+
+**ID Kelas:** C35  
+**Nama Kelas:** FormVolunteerManagementView  
+**Tingkat:** Sedang
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C35-UT01 | `tampilkanDaftarPendaftar()` | Normal | Dua pendaftar: Bima (`accepted`) dan Rina (`pending`) | Rina (`pending`) tampil di atas Bima; data diri, keahlian, pengalaman, dan jadwal tampil | Rina di atas Bima; telepon, keahlian, pengalaman, dan hari tampil | Pass |
+| C35-UT02 | `tampilkanPesanBelumAdaPendaftar()` | Gagal | Daftar pendaftar kosong | Pesan "No applications yet"; tidak ada tombol keputusan | Pesan tampil; tidak ada tombol *Accept* | Pass |
+| C35-UT03 | `pilihKeputusan()` | Normal | Kuota 10, satu pendaftar `pending` | Tombol "Accept Rina" dan "Reject Rina" aktif | Kedua tombol tanpa atribut `disabled` | Pass |
+| C35-UT04 | `pilihKeputusan()` | Gagal | Kuota 1 dan sudah 1 diterima; satu pendaftar `pending` | "Accept Rina" nonaktif, "Reject Rina" tetap aktif, tampil "All 1 spots are filled" | *Accept* nonaktif, *Reject* aktif, pesan kuota penuh tampil | Pass |
+
+### 4.2.37 Kelas FormProgresProjectView
+
+**ID Kelas:** C37  
+**Nama Kelas:** FormProgresProjectView  
+**Tingkat:** Sedang
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C37-UT01 | `tampilkanFormulir()` | Normal | Render modal dengan status awal `berjalan` | Kolom unggahan berkas dan keempat pilihan status (Preparing, In progress, On hold, Completed) tampil | Kolom `type="file"` dan keempat status tampil | Pass |
+| C37-UT02 | `isiPembaruanMilestone()` (`validasiProgres()`) | Normal | Milestone "Tahap 1", status `selesai`, persentase 100 | Valid; persentase menjadi angka 100 | Valid; persentase 100 | Pass |
+| C37-UT03 | `isiPembaruanMilestone()` | Gagal | Persentase 101 | Ditolak hanya pada kolom persentase | Galat hanya pada `persentase` | Pass |
+| C37-UT04 | `unggahDokumentasi()` (`periksaBerkasProgres()`) | Gagal | `video.mp4`, `arsip.zip`, `program.exe` | Ketiganya ditolak dengan pesan yang menyebut nama berkas | Ketiganya ditolak dengan nama berkas di pesan (lihat KNF07-TC02) | Pass |
+
+### 4.2.38 Kelas ProgresController
+
+**ID Kelas:** C38  
+**Nama Kelas:** ProgresController  
+**Tingkat:** Mendalam
+
+Operasi DPPL diwujudkan oleh `perbarui()` dan `lihatRiwayat()` di `server/controllers/ProgresController.ts` yang mendelegasikan aturan ke `server/services/progresService.ts`. Pemeriksaan hak akses `bukaHalamanProgres()` dilakukan server pada setiap pengiriman (KF25); tombol "Post a progress update" hanya tampil untuk pemilik project dan Admin Sistem.
+
+Tabel 4.2.38. Hasil Pengujian Unit Kelas C38
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C38-UT01 | `perbaruiProgres()` (`POST /api/projects/{id}/progres`) | Normal | Pemilik mengirim milestone, status `berjalan`, persentase 40, dan satu berkas PNG | Status 201; progres tersimpan dengan status, persentase, URL dokumentasi, dan stempel waktu saat itu | Status 201; status `berjalan`, persentase 40, URL `/api/dokumentasi/P-1/…`, stempel waktu tidak lebih awal dari waktu kirim | Pass |
+| C38-UT02 | `perbaruiProgres()` | Batas | 5 berkas, lalu 6 berkas | 5 berkas diterima (201); 6 berkas ditolak 400 | 201 untuk 5 berkas; 400 "Maksimal 5 berkas dokumentasi per pembaruan." untuk 6 berkas | Pass |
+| C38-UT03 | `perbaruiProgres()` (`periksaBerkasProgres()`) | Batas | PDF berukuran tepat 50 MB, lalu 50 MB + 1 byte | 50 MB diterima; 50 MB + 1 byte ditolak | 50 MB lolos; 50 MB + 1 byte ditolak dengan nama berkas di pesan | Pass |
+| C38-UT04 | `perbaruiProgres()` | Negatif | Milestone kosong dan status `hampir` | Status 400 dengan galat pada `milestone` dan `statusPelaksanaan`; tidak ada yang disimpan | Status 400 dengan kedua galat; tidak ada progres tersimpan | Pass |
+| C38-UT05 | `perbaruiProgres()` | Negatif | Badan dikirim sebagai JSON, bukan `multipart/form-data` | Status 400 dengan pesan format permintaan | Status 400 "Format permintaan tidak valid. Kirim sebagai multipart/form-data." | Pass |
+| C38-UT06 | `perbaruiProgres()` | Negatif | Dua berkas tersimpan, lalu penulisan basis data gagal | Status 500; kedua berkas yang sudah tersimpan dihapus kembali | Status 500; dua berkas dihapus | Pass |
+| C38-UT07 | `bukaHalamanProgres()` (hak akses) | Normal | Admin Sistem yang bukan pembuat project mengirim progres | Diizinkan (201) | Status 201 | Pass |
+| C38-UT08 | `bukaHalamanProgres()` | Negatif | Volunteer (bukan pembuat) mengirim progres dengan berkas | Status 403; tidak ada progres maupun berkas yang tersimpan | Status 403; tidak ada progres atau berkas tersimpan | Pass |
+| C38-UT09 | `bukaHalamanProgres()` | Batas | Tamu; akun yang sudah dihapus; project belum terpublikasi; project tidak ada | 401; 401; 409; 404; tidak ada yang disimpan | 401; 401; 409; 404; tidak ada progres tersimpan | Pass |
+| C38-UT10 | `getPesanKesalahan()` / riwayat (`GET …/progres`) | Normal | Project terbuka dengan satu pembaruan | Status 200; stempel waktu dikirim dalam format ISO | Status 200; `2026-11-10T03:00:00.000Z` | Pass |
+| C38-UT11 | `getPesanKesalahan()` / riwayat | Negatif | Project tertutup untuk pengguna tersebut | Status 403 dengan pesan hak lihat | Status 403 "Progres project ini hanya dapat dilihat pembuat project dan Admin Sistem." | Pass |
+
+Tabel 4.2.38b. Ringkasan Cakupan Kelas C38
+
+| Informasi | Keterangan |
+| :--- | :--- |
+| Daftar operasi public pada DPPL | `bukaHalamanProgres()`, `perbaruiProgres()`, `getPesanKesalahan()` |
+| Operasi yang diuji | Seluruhnya (3 dari 3 operasi public), ditambah riwayat progres (`lihatRiwayat()`, tambahan implementasi) |
+| ID Algoritma yang tercakup | Algo-127, Algo-128 |
+| Coverage (wajib ≥ 70%) | `server/controllers/ProgresController.ts` 98,11% / 95,45%; `server/services/progresService.ts` 98,70% / 93,75%; `shared/progres.ts` 97,91% / 82,61%; `shared/dokumentasi.ts` 93,48% / 79,17% (baris / cabang). Alat: `node --experimental-test-coverage`; bukti pada 4.6 |
 
 ### 4.2.39 Kelas FormRiwayatView
 
@@ -483,6 +672,11 @@ Tabel 4.3.1. Daftar Antarmuka Antarkomponen
 | IK-04 | DonasiService | CampaignProjectRepository (dana terkumpul tujuan) | Model - Model lintas modul | INT-TC05 |
 | IK-05 | RiwayatController / riwayatService | MySQL (transaksi, progres, pendaftaran relawan) | Controller - Model - Basis data | INT-TC07, INT-TC08, INT-TC09 |
 | IK-06 | TopupService (tambahan di luar DPPL) | MySQL (`donatur`, `topup_saldo`) | Aplikasi - Basis data | INT-TC06, INT-TC10 |
+| IK-07 | RelawanController / relawanService (pendaftaran) | MySQL (`pendaftaran_relawan`, `project`) | Controller - Model - Basis data | INT-TC11, INT-TC12 |
+| IK-08 | RelawanController / relawanService (pengelolaan dan status) | MySQL (`pendaftaran_relawan`, `project`) | Controller - Model - Basis data | INT-TC13 s.d. INT-TC16 |
+| IK-09 | ProgresController / progresService | MySQL (`progres_project`, `project`) | Controller - Model - Basis data | INT-TC17 s.d. INT-TC20 |
+| IK-10 | RelawanView, ProgresView (`FormPendaftaranRelawanView`, `FormVolunteerManagementView`, `FormProgresProjectView`) | RelawanController, ProgresController (`/api/projects/{id}/relawan`, `/api/projects/{id}/progres`) | View - Controller (HTTP API) | INT-TC21 |
+| IK-11 | dokumentasiService | Penyimpanan berkas lokal (`src/uploads/progres/`) dan `/api/dokumentasi/{idProject}/{nama}` | Aplikasi - Sistem berkas | INT-TC22 |
 
 Tabel 4.3.2. Hasil Pengujian Integrasi
 
@@ -498,6 +692,18 @@ Tabel 4.3.2. Hasil Pengujian Integrasi
 | INT-TC08 | IK-05 | Gagal: data milik pengguna lain | Pengguna B membuka rincian transaksi milik pengguna A | Diperlakukan sebagai tidak ditemukan (404), sama seperti ID yang tidak ada | Transaksi milik orang lain diperlakukan sebagai tidak ditemukan | Pass |
 | INT-TC09 | IK-05 | Batas: hak lihat progres | Relawan berstatus *pending* dan donatur dengan donasi gagal membuka progres project | Keduanya tidak melihat progres; relawan *accepted* dan donatur berhasil dapat melihatnya | Relawan pending dan donasi gagal tidak melihat progres; relawan accepted dan donatur berhasil dapat melihatnya | Pass |
 | INT-TC10 | IK-06 | Batas: top-up bersamaan | Beberapa top-up dikirim bersamaan untuk donatur yang sama | Seluruh nominal terjumlah tanpa kehilangan pembaruan | *[isi]* | *Pass/Fail* |
+| INT-TC11 | IK-07 | Normal: pendaftaran tersimpan dan tidak bisa ganda | `relawanProgres.integrasi.test.ts` "KF19/KF20: pendaftaran tersimpan pending dan tidak bisa ganda": relawan uji mendaftar ke project uji, lalu mendaftar lagi | Baris baru berstatus `pending`; pendaftaran kedua ditolak 409; `SELECT COUNT(*)` untuk pasangan relawan-project tetap 1 | Baris baru berstatus `pending`; pendaftaran kedua ditolak 409; jumlah baris pasangan relawan-project tetap 1 | Pass |
+| INT-TC12 | IK-07 | Gagal: masukan dan project tidak sah | Tes "menolak pendaftaran tanpa login, formulir kosong, dan project draft" | Tanpa login 401; formulir kosong 400; project draft 404; project tidak ada 404 | Tanpa login 401; formulir kosong 400; project draft 404; project tidak ada 404 | Pass |
+| INT-TC13 | IK-08 | Gagal: daftar pendaftar hanya untuk pemilik | Tes "KF20: hanya pemilik yang melihat daftar pendaftar" | Pemilik mendapat minimal satu pendaftar; pengguna lain 403; tamu 401 | Pemilik menerima daftar berisi pendaftar; pengguna lain 403; tamu 401 | Pass |
+| INT-TC14 | IK-08 | Normal: keputusan hanya sekali dan hanya oleh pemilik | Tes "KF21: hanya pemilik yang memutuskan, dan sekali saja" | Pengguna lain 403; keputusan tidak sah 400; pemilik menerima menjadi `accepted` dengan `tanggal_keputusan`; keputusan kedua 409 | Pengguna lain 403; keputusan tidak sah 400; pemilik menerima menjadi `accepted` dengan `tanggal_keputusan` terisi; keputusan kedua 409 | Pass |
+| INT-TC15 | IK-08 | Batas: titik kumpul hanya untuk yang diterima | Tes "KF22: titik kumpul hanya terlihat setelah diterima" | Relawan `accepted` melihat titik kumpul "Pos Mangrove Tugu"; relawan `pending` mendapat `null`; tamu 401 | Relawan `accepted` melihat "Pos Mangrove Tugu"; relawan `pending` mendapat `null`; tamu 401 | Pass |
+| INT-TC16 | IK-08 | Batas: penerimaan bersamaan tidak melewati kuota | Tes "KF21: penerimaan bersamaan tidak melewati kuota": kuota 2, satu sudah diterima, dua pendaftar diterima bersamaan | Tepat satu berhasil dan satu ditolak 409; jumlah `accepted` di basis data tepat 2 | Satu berhasil dan satu ditolak 409; jumlah `accepted` di basis data tepat 2 | Pass |
+| INT-TC17 | IK-09 | Normal: progres tersimpan dan project ikut diperbarui | Tes "KF23: pemilik menyimpan pembaruan dan keadaan project ikut berubah" | Baris `progres_project` berisi milestone, status `berjalan`, persentase 35, dana 24.500.000; kolom `milestone`, `status_pelaksanaan`, dan `timestamp_pembaruan` tabel `project` ikut berubah | Baris progres berisi milestone, status `berjalan`, persentase 35, dana 24.500.000; `milestone`, `status_pelaksanaan`, dan `timestamp_pembaruan` project ikut berubah | Pass |
+| INT-TC18 | IK-09 | Gagal: hak ubah progres | Tes "KF25: orang lain ditolak, Admin Sistem diizinkan" | Pengguna lain 403; tamu 401; Admin Sistem berhasil | Pengguna lain 403; tamu 401; Admin Sistem berhasil menyimpan | Pass |
+| INT-TC19 | IK-09 | Gagal: isian tidak valid dan project belum terpublikasi | Tes "menolak isian tidak valid dan project yang belum terpublikasi" | Isian tidak valid 400; project draft 409; tidak ada baris progres baru | Isian tidak valid 400; project draft 409; tidak ada baris progres baru | Pass |
+| INT-TC20 | IK-09 | Normal: urutan riwayat dan hak lihat | Tes "KF14: riwayat terbaru lebih dulu; project draft hanya untuk pemiliknya" | Riwayat terurut dari yang terbaru; riwayat project draft hanya dapat dibaca pemiliknya | Riwayat terurut dari yang terbaru; riwayat project draft hanya terbaca oleh pemiliknya | Pass |
+| INT-TC21 | IK-10 | Normal: formulir terhubung ke API | Jalankan aplikasi; login `nadia@klimpool.id`, kirim formulir relawan pada "Clean Water for Upper Citarum Villages"; login `sari@klimpool.id`, kirim progres pada "Sayung Coastal Mangrove Restoration"; amati tab Network | `POST /api/projects/air/relawan` berstatus 201 dengan `Content-Type: application/json`; `POST /api/projects/mgv/progres` berstatus 201 dengan `multipart/form-data`; modal tertutup dan notifikasi berhasil tampil | `POST /api/projects/air/relawan` berstatus 201 Created dengan respons `application/json`, lalu tampil "Application sent". `POST /api/projects/air/progres` berstatus 201 Created dengan *request header* `Content-Type: multipart/form-data; boundary=…`, lalu pembaruan tampil di timeline. | Pass |
+| INT-TC22 | IK-11 | Normal: dokumentasi tersimpan dan dapat diambil | Lanjut dari INT-TC21 dengan satu berkas PNG; buka folder `src/uploads/progres/mgv/` dan URL dokumentasi pada timeline | Berkas baru bernama `<uuid>.png` ada di folder; `GET /api/dokumentasi/mgv/<nama>` berstatus 200 dengan `Content-Type: image/png` | Berkas `bc443ab8-43b8-47d4-a7f4-60c852f9665a.png` (1.454 byte) tersimpan di `src/uploads/progres/mgv/`; log server mencatat `GET /api/dokumentasi/mgv/bc443ab8-….png 200` dan gambar tampil di peramban. | Pass |
 
 <br>
 
@@ -540,6 +746,48 @@ Tabel 4.4.6. Hasil Pengujian Use Case UC06
 | UC06-TC07 | KF15 | Alternatif 4: Nominal 0 | 1. Login dan buka formulir donasi.<br>2. Kosongkan nominal atau isi 0.<br>3. Konfirmasi. | Nominal: 0 | Donasi ditolak; muncul pesan "The donation amount must be more than Rp0…". | *[isi]* | *Pass/Fail* |
 | UC06-TC08 | KF15 | Alternatif 4: Nominal negatif | Kolom nominal hanya menerima digit, sehingga uji dilakukan dengan mengirim `POST /api/donasi` langsung. | Nominal: -10.000 | Respons 422 `NOMINAL_TIDAK_VALID`; saldo tetap. | *[isi]* | *Pass/Fail* |
 
+### 4.4.7 Use Case Mendaftar Sebagai Volunteer
+
+**ID Use Case:** UC07  
+**Nama Use Case:** Mendaftar Sebagai Volunteer
+
+Tabel 4.4.7. Hasil Pengujian Use Case UC07
+
+| ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| UC07-TC01 | KF19, KF20 | Normal | 1. Login.<br>2. Buka Explore dan pilih project melalui peta.<br>3. Tekan "Volunteer for this".<br>4. Isi data diri, pilih keahlian, isi pengalaman, pilih hari.<br>5. Tekan "Send application".<br>6. Buka Account, tab "Volunteer applications". | User: andi@klimpool.id<br>Pass: klimpool123<br>Project: Clean Water for Upper Citarum Villages<br>Nama: Andi Rahman, Telepon: 0812-3344-5566, Kota: Semarang, Keahlian: Pipe installation, Pengalaman: Pernah memasang pipa air desa, Hari: hari pertama yang tersedia | Formulir tampil dengan pilihan hari sesuai jadwal project. Setelah kirim, modal tertutup dan tampil "Application sent". Tab "Volunteer applications" menampilkan project tersebut berstatus "Waiting for a decision". | Formulir tampil dengan 14 pilihan hari mulai Wed 18 Nov 2026 dan catatan "Only the first 14 days from today are shown". Setelah kirim, modal tertutup dan tampil "Application sent". Tab "Volunteer applications" menampilkan "Clean Water for Upper Citarum Villages" berstatus "Waiting for a decision" (applied 18 Nov 2026). | Pass |
+| UC07-TC02 | KF19 | Alternatif 1: Formulir tidak lengkap | 1. Login dan buka formulir relawan.<br>2. Kosongkan pengalaman dan jangan pilih hari.<br>3. Tekan "Send application". | User: andi@klimpool.id<br>Project: Jatiluwih Subak Water Conservation | Pengiriman ditolak; pesan "Pengalaman wajib diisi." dan "Pilih minimal satu jadwal yang tersedia." tampil di bawah kolomnya; fokus pindah ke kolom pertama yang salah; tidak ada pendaftaran baru. | Pengiriman ditolak; pesan "Pengalaman wajib diisi." dan "Pilih minimal satu jadwal yang tersedia." tampil di bawah kolomnya, dan kolom pengalaman ditandai merah serta mendapat fokus. | Pass |
+| UC07-TC03 | KF19 | Alternatif 2: Pendaftaran ganda | 1. Login.<br>2. Buka project yang sudah pernah didaftari.<br>3. Isi formulir lengkap dan kirim. | User: andi@klimpool.id<br>Project: Sayung Coastal Mangrove Restoration (sudah terdaftar, `V-1021`) | Pendaftaran ditolak dengan pesan "Anda sudah mendaftar pada project ini."; status pendaftaran lama (`accepted`) tetap berlaku. | Muncul "Application not sent" dengan pesan "Anda sudah mendaftar pada project ini."; di tab "Volunteer applications" pendaftaran Sayung tetap "Accepted" (decided 11 Oct 2026). | Pass |
+| UC07-TC04 | KF19 | Alternatif 3: Pendaftaran ditutup | 1. Login.<br>2. Buka detail project yang pendaftarannya ditutup dan periodenya berakhir. | User: andi@klimpool.id<br>Project: Leuser Forest Replanting (`ditutup`, berakhir 31 Agu 2026) | Tombol daftar tidak tersedia; tampil "Volunteer sign-up is closed" dan tombol "Sign-up closed" nonaktif. Kondisi kuota penuh diuji otomatis pada C09-UT11, C33-UT04, dan INT-TC16. | Tidak ada tombol daftar; tampil "Volunteer sign-up is closed" dan teks "Sign-up closed" nonaktif, serta keterangan bahwa aksi telah selesai (periode berakhir 31 Aug 2026). | Pass |
+
+### 4.4.8 Use Case Mengelola Pendaftaran Relawan
+
+**ID Use Case:** UC08  
+**Nama Use Case:** Mengelola Pendaftaran Relawan
+
+Tabel 4.4.8. Hasil Pengujian Use Case UC08
+
+| ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| UC08-TC01 | KF21, KF22 | Normal: terima | 1. Login sebagai Pembuat Project.<br>2. Buka detail project miliknya, tekan "Manage volunteers".<br>3. Tinjau data pendaftar, tekan "Accept" pada Nadia Putri.<br>4. Logout, login sebagai Nadia, buka Account tab "Volunteer applications". | User: sari@klimpool.id<br>Pass: klimpool123<br>Project: Sayung Coastal Mangrove Restoration<br>Pendaftar: Nadia Putri (`V-1030`)<br>Lalu user: nadia@klimpool.id | Daftar pendaftar menampilkan data diri, keahlian, pengalaman, dan hari; pendaftar `pending` di atas. Setelah *Accept*, status menjadi "Accepted" dan toast "Volunteer accepted." tampil. Di akun Nadia tampil "Accepted" dengan titik kumpul "Bedono Village Hall, Sayung. Meet at 06:30 WIB.", periode kegiatan, dan hari pilihannya. | Daftar pendaftar menampilkan data diri, keahlian, pengalaman, dan hari; Nadia dan Fajar (Pending) di atas. Setelah *Accept*, Nadia menjadi "Accepted" dan kuota menjadi "2 of 40 spots filled". Di akun Nadia tampil "Accepted" (decided 18 Nov 2026) dengan "Meeting point: Bedono Village Hall, Sayung. Meet at 06:30 WIB.", "Activity period: 1 Oct 2026 – 15 Dec 2026", dan hari pilihannya. | Pass |
+| UC08-TC02 | KF21, KF22 | Normal: tolak | 1. Login sebagai Pembuat Project dan buka "Manage volunteers".<br>2. Tekan "Reject" pada Fajar Nugroho, lalu "Yes, reject".<br>3. Login sebagai Fajar, buka tab "Volunteer applications". | User: sari@klimpool.id<br>Pendaftar: Fajar Nugroho (`V-1033`)<br>Lalu user: fajar@klimpool.id | Penolakan meminta konfirmasi lebih dulu. Status menjadi "Rejected". Di akun Fajar tampil "Not selected" tanpa titik kumpul. | Tombol *Reject* memunculkan konfirmasi "Reject Fajar Nugroho? This cannot be undone." Setelah "Yes, reject", status menjadi "Rejected". Di akun Fajar tampil "Not selected" (decided 18 Nov 2026) tanpa titik kumpul, dengan saran untuk tetap mendukung lewat donasi. | Pass |
+| UC08-TC03 | KF21 | Alternatif 1: Belum ada pendaftar | 1. Login sebagai Pembuat Project.<br>2. Buka project miliknya yang belum memiliki pendaftar, tekan "Manage volunteers". | User: sari@klimpool.id<br>Project: Lempongsari Biopore Drive | Tampil pesan "No applications yet". | Modal "Manage volunteers" untuk Lempongsari Biopore Drive (0 of 10 spots filled) menampilkan "No applications yet" tanpa tombol keputusan. | Pass |
+
+### 4.4.9 Use Case Memperbarui Progres Project
+
+**ID Use Case:** UC09  
+**Nama Use Case:** Memperbarui Progres Project
+
+Tabel 4.4.9. Hasil Pengujian Use Case UC09
+
+| ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| UC09-TC01 | KF23, KF24 | Normal: Pembuat Project | 1. Login sebagai Pembuat Project.<br>2. Buka detail project miliknya, tekan "Post a progress update".<br>3. Isi milestone, pilih status, isi persentase dan dana terpakai.<br>4. Unggah satu foto.<br>5. Tekan kirim, lalu buka tab Progress. | User: sari@klimpool.id<br>Project: Sayung Coastal Mangrove Restoration<br>Milestone: Penanaman tahap 2, Status: In progress, Persentase: 55, Dana: 5.000.000, Berkas: foto PNG < 5 MB | Modal tertutup dan toast "Progress update posted." tampil. Timeline Progress menampilkan pembaruan teratas dengan waktu saat itu, status, persentase, dan tautan dokumentasi yang dapat dibuka. | Toast "Progress update posted." tampil. Timeline Progress menampilkan "Penanaman tahap 2" di posisi teratas pada 18 Nov 2026 22:56 WIB dengan status In progress, "55% complete · Rp5,000,000 spent", dan tautan berkas PNG yang terbuka menampilkan gambar. | Pass |
+| UC09-TC02 | KF23, KF25 | Normal: Admin Sistem | 1. Login sebagai Admin Sistem.<br>2. Buka detail project mana pun, tekan "Post a progress update".<br>3. Isi milestone dan status, kirim. | User: admin@klimpool.id<br>Project: Clean Water for Upper Citarum Villages | Tombol progres tampil (tanpa tombol "Manage volunteers"); pembaruan tersimpan dan tampil di timeline. | Admin Sistem melihat tombol "Post a progress update" tanpa tombol "Manage volunteers". Pembaruan "Pemeriksaan admin" berstatus In progress dengan berkas PNG tersimpan dan tampil paling atas pada timeline (18 Nov 2026 23:19 WIB). | Pass |
+| UC09-TC03 | KF25 | Alternatif 1: Akses ditolak | 1. Login sebagai pengguna yang bukan pembuat.<br>2. Buka detail project; pastikan tombol progres tidak ada.<br>3. Kirim `POST /api/projects/mgv/progres` langsung dari Console DevTools dengan `FormData` berisi milestone dan status. | User: andi@klimpool.id<br>Project: Sayung Coastal Mangrove Restoration | Tombol progres tidak tampil. Permintaan langsung dijawab 403 "Hanya pembuat project atau Admin Sistem yang dapat memperbarui progres."; timeline tidak berubah. | Tombol "Post a progress update" dan "Manage volunteers" tidak tampil. Permintaan langsung dari Console dijawab `403 {pesan: "Hanya pembuat project atau Admin Sistem yang dapat memperbarui progres."}`; tidak ada pembaruan "Uji akses bukan pemilik" pada riwayat progres. | Pass |
+| UC09-TC04 | KF24 | Alternatif 2: Format/ukuran berkas tidak valid | 1. Login sebagai Pembuat Project dan buka formulir progres.<br>2. Isi milestone dan status.<br>3. Pilih berkas ZIP, lalu PDF berukuran di atas 50 MB.<br>4. Tekan kirim. | User: sari@klimpool.id<br>Berkas: `dokumen.zip`, lalu `besar.pdf` (± 51 MB) | Pembaruan dibatalkan; pesan "Format berkas tidak didukung…" lalu "Ukuran berkas … melebihi batas 50 MB." tampil di bawah kolom unggahan; tidak ada pembaruan baru di timeline. | Memilih `dokumen.zip` memunculkan "dokumen.zip: Format berkas tidak didukung. Unggah gambar (JPG, PNG, WebP) atau PDF."; memilih `besar-51MB.pdf` memunculkan "besar-51MB.pdf: Ukuran berkas 51 MB melebihi batas 50 MB."; formulir tidak terkirim dan timeline tidak bertambah. | Pass |
+| UC09-TC05 | KF24 | Alternatif 2: Kesalahan jaringan | 1. Buka formulir progres dan isi lengkap dengan satu foto.<br>2. Set DevTools Network ke *Offline*.<br>3. Tekan kirim.<br>4. Kembalikan *Online* dan muat ulang tab Progress. | User: sari@klimpool.id | Tampil "Connection lost. Check your network and try again."; modal tetap terbuka dengan isian utuh; setelah dimuat ulang tidak ada pembaruan baru. | Muncul "Update not saved" dengan pesan "Connection lost. Check your network and try again."; modal tetap terbuka dengan isian dan berkas utuh. Setelah online dan dimuat ulang, jumlah Progress tetap 5 dan tidak ada "Uji jaringan putus". | Pass |
+
 ### 4.4.10 Use Case Melihat Riwayat dan Penelusuran
 
 **ID Use Case:** UC10  
@@ -570,7 +818,12 @@ Tabel 4.5. Hasil Pengujian KNF
 | *KNF01-TC01* | *KNF01* | *Reliability* | *Tidak ada data hilang/ganda saat jaringan putus di tengah transaksi* | *Simulasi putus koneksi saat bayar, lalu cek status di DB* | *[Hasil aktual]* | *Pass/Fail* |
 | *KNF02-TC01* | *KNF02* | *Security* | *Password tersimpan sebagai hash, bukan plain-text* | *Inspeksi tabel pengguna di DB* | *[...]* | *Pass/Fail* |
 | *KNFXX-TC01* | *KNFXX* | *Response time* | *Halaman tampil ≤ 4 detik* | *Chrome DevTools, 5 kali ukur, ambil rata-rata* | *[Rata-rata ... detik, maks ... detik]* | *Pass/Fail* |
+| KNF07-TC01 | KNF07 | *Performance efficiency* (kapasitas unggah) | Berkas dokumentasi berukuran 50 MB per berkas diproses dan tersimpan; berkas di atas 50 MB ditolak | Unggah PDF ± 49,9 MB lewat formulir progres (UC09), 3 kali; catat status dan durasi `POST /api/projects/mgv/progres` di Chrome DevTools tab Network, lalu cek berkas di `src/uploads/progres/mgv/` (durasi juga tercatat pada log server `npm run dev`). Batas tepat 50 MB juga diuji otomatis pada C38-UT03 | Ketiga unggahan PDF 49,9 MB (52.323.942 byte) berstatus 201 dan tersimpan utuh di `src/uploads/progres/mgv/` dengan ukuran sama. Waktu proses server (log `npm run dev`): 900 ms, 1.186 ms, 592 ms; rata-rata 0,89 detik, maksimum 1,19 detik | Pass |
+| KNF07-TC02 | KNF07 | *Performance efficiency* (format berkas) | Kelima format pada SKPL (JPG, PNG, PDF, MP4, ZIP) dapat diunggah | Unggah satu berkas kecil untuk setiap format lewat formulir progres; diperiksa juga otomatis pada C37-UT04 | JPG, PNG, dan PDF diterima. MP4 dan ZIP ditolak dengan pesan "Format berkas tidak didukung. Unggah gambar (JPG, PNG, WebP) atau PDF." karena implementasi hanya menerima gambar dan PDF (`shared/dokumentasi.ts`) | Fail. Perbaikan: tambahkan `video/mp4` dan `application/zip` ke `DOKUMENTASI_TIPE_DIIZINKAN` beserta penyajiannya, atau perbarui KNF07 pada SKPL bila format tersebut memang tidak dibutuhkan |
+| KNF08-TC01 | KNF08 | *Performance efficiency* (waktu tampil status) | Status pendaftaran yang baru diputuskan tampil di antarmuka Volunteer ≤ 2 detik setelah halaman status dibuka | Pembuat Project menerima pendaftaran (UC08-TC01); Volunteer membuka tab "Volunteer applications"; ukur waktu `GET /api/relawan/saya` sampai daftar tampil dengan Chrome DevTools tab Performance/Network, 10 kali, ambil rata-rata dan maksimum | 10 pengukuran `GET /api/relawan/saya`: 63, 131, 244, 545, 105, 187, 104, 259, 243, dan 380 ms; rata-rata 0,23 detik, maksimum 0,55 detik. Status "Accepted" beserta titik kumpul langsung tampil setelah halaman dibuka | Pass |
 | *...* | *...* | *...* | *...* | *...* | *...* | *...* |
+
+Catatan KNF08: rumusan KNF08 pada SKPL menyebut pesan *chat* dan notifikasi status pesanan, padahal KlimPooL tidak memiliki fitur *chat* maupun pesanan. Notifikasi yang ada pada aplikasi adalah perubahan status pendaftaran relawan (KF22), sehingga KNF08 diuji pada tampilan status tersebut. Status dibaca ketika Volunteer membuka atau memuat ulang halamannya, bukan didorong secara *real-time*.
 
 <br>
 
@@ -588,6 +841,27 @@ Tabel 4.6. Bukti Hasil Pengujian
 | *UC01-TC01* | *[Sisipkan tangkapan layar UC01-TC01 sesuai prosedur pengujian]* |
 | *UC01-TC02* | *[Sisipkan tangkapan layar UC01-TC02 sesuai prosedur pengujian]* |
 | *KNF01-TC01* | *[Sisipkan bukti pengukuran parameter KNF01-TC01]* |
+| C09-UT01 – C09-UT18, C34-UT01 – C34-UT15, C38-UT01 – C38-UT11 | <img alt="Keluaran unit test C09, C34, C38: 44 pass" src="./assets/pengujian/UT-C09-C34-C38.png" width="70%"> |
+| C09, C34, C38 (coverage) | <img alt="Laporan coverage C09, C34, C38" src="./assets/pengujian/COVERAGE-C09-C34-C38.png" width="70%"> |
+| C33-UT01 – C33-UT04, C35-UT01 – C35-UT04, C37-UT01 – C37-UT04 | <img alt="Keluaran unit test C33, C35, C37: 12 passed" src="./assets/pengujian/UT-C33-C35-C37.png" width="70%"> |
+| INT-TC11 – INT-TC20 | <img alt="Keluaran integrasi MySQL: 10 pass, skipped 0" src="./assets/pengujian/INT-TC11-TC20.png" width="70%"> |
+| INT-TC21 | <img alt="INT-TC21 POST relawan 201" src="./assets/pengujian/INT-TC21-a.png" width="70%"><br><img alt="INT-TC21 POST progres 201" src="./assets/pengujian/INT-TC21-b.png" width="70%"><br><img alt="INT-TC21 header multipart" src="./assets/pengujian/INT-TC21-c.png" width="70%"> |
+| INT-TC22 | <img alt="INT-TC22 berkas tersimpan dan log GET dokumentasi 200" src="./assets/pengujian/INT-TC22.png" width="70%"><br><img alt="INT-TC22 dokumentasi terbuka" src="./assets/pengujian/UC09-TC01-c.png" width="70%"> |
+| UC07-TC01 | <img alt="UC07-TC01 formulir kosong" src="./assets/pengujian/UC07-TC01-a.png" width="70%"><br><img alt="UC07-TC01 formulir terisi" src="./assets/pengujian/UC07-TC01-b.png" width="70%"><br><img alt="UC07-TC01 Application sent" src="./assets/pengujian/UC07-TC01-c.png" width="70%"><br><img alt="UC07-TC01 status Waiting for a decision" src="./assets/pengujian/UC07-TC01-d.png" width="70%"> |
+| UC07-TC02 | <img alt="UC07-TC02 pesan kolom wajib" src="./assets/pengujian/UC07-TC02.png" width="70%"> |
+| UC07-TC03 | <img alt="UC07-TC03 pendaftaran ganda ditolak" src="./assets/pengujian/UC07-TC03-a.png" width="70%"><br><img alt="UC07-TC03 status lama tetap Accepted" src="./assets/pengujian/UC07-TC03-b.png" width="70%"> |
+| UC07-TC04 | <img alt="UC07-TC04 pendaftaran ditutup" src="./assets/pengujian/UC07-TC04.png" width="70%"> |
+| UC08-TC01 | <img alt="UC08-TC01 tombol pemilik" src="./assets/pengujian/UC08-TC01-a.png" width="70%"><br><img alt="UC08-TC01 daftar pendaftar" src="./assets/pengujian/UC08-TC01-b.png" width="70%"><br><img alt="UC08-TC01 Nadia diterima" src="./assets/pengujian/UC08-TC01-c.png" width="70%"><br><img alt="UC08-TC01 status Nadia Accepted" src="./assets/pengujian/UC08-TC01-d.png" width="70%"> |
+| UC08-TC02 | <img alt="UC08-TC02 konfirmasi tolak" src="./assets/pengujian/UC08-TC02-a.png" width="70%"><br><img alt="UC08-TC02 Fajar ditolak" src="./assets/pengujian/UC08-TC02-b.png" width="70%"><br><img alt="UC08-TC02 status Fajar Not selected" src="./assets/pengujian/UC08-TC02-c.png" width="70%"> |
+| UC08-TC03 | <img alt="UC08-TC03 belum ada pendaftar" src="./assets/pengujian/UC08-TC03.png" width="70%"> |
+| UC09-TC01 | <img alt="UC09-TC01 formulir terisi" src="./assets/pengujian/UC09-TC01-a.png" width="70%"><br><img alt="UC09-TC01 notifikasi berhasil" src="./assets/pengujian/UC09-TC01-d.png" width="70%"><br><img alt="UC09-TC01 timeline progres" src="./assets/pengujian/UC09-TC01-b.png" width="70%"><br><img alt="UC09-TC01 dokumentasi terbuka" src="./assets/pengujian/UC09-TC01-c.png" width="70%"> |
+| UC09-TC02 | <img alt="UC09-TC02 tombol Admin" src="./assets/pengujian/UC09-TC02-a.png" width="70%"><br><img alt="UC09-TC02 timeline Pemeriksaan admin" src="./assets/pengujian/UC09-TC02-b.png" width="70%"> |
+| UC09-TC04 | <img alt="UC09-TC04 ZIP ditolak" src="./assets/pengujian/UC09-TC04-a.png" width="70%"><br><img alt="UC09-TC04 PDF 51 MB ditolak" src="./assets/pengujian/UC09-TC04-b.png" width="70%"> |
+| UC09-TC05 | <img alt="UC09-TC05 koneksi terputus" src="./assets/pengujian/UC09-TC05-a.png" width="70%"><br><img alt="UC09-TC05 progres tidak bertambah" src="./assets/pengujian/UC09-TC05-b.png" width="70%"> |
+| UC09-TC03 | <img alt="UC09-TC03 tombol progres tidak tampil" src="./assets/pengujian/UC09-TC03-a.png" width="70%"><br><img alt="UC09-TC03 respons 403 di Console" src="./assets/pengujian/UC09-TC03-b.png" width="70%"><br><img alt="UC09-TC03 riwayat progres tidak berubah" src="./assets/pengujian/UC09-TC03-c.png" width="70%"> |
+| KNF07-TC01 | <img alt="KNF07-TC01 tiga pembaruan dengan PDF 49,9 MB" src="./assets/pengujian/KNF07-TC01-a.png" width="70%"><br><img alt="KNF07-TC01 tiga PDF tersimpan" src="./assets/pengujian/KNF07-TC01-b.png" width="70%"><br><img alt="KNF07-TC01 durasi tiga unggahan" src="./assets/pengujian/KNF07-TC01-c.png" width="70%"> |
+| KNF07-TC02 | <img alt="KNF07-TC02 ZIP ditolak" src="./assets/pengujian/UC09-TC04-a.png" width="70%"> |
+| KNF08-TC01 | <img alt="KNF08-TC01 sepuluh pengukuran" src="./assets/pengujian/KNF08-TC01.png" width="70%"> |
 | *...* | *...* |
 
 <br>
@@ -606,6 +880,13 @@ Tabel 5.1. Matriks Kerunutan KF terhadap Implementasi dan Pengujian
 | *KF01* | *-* | *UC01<br>UC02* | *[C01 - Nama kelas]<br>[C02 - Nama kelas]* | *[path/ke/file1]<br>[path/ke/file2]* | *UC01-TC01, UC01-TC02<br>UC02-TC01* | *-* |
 | *KF02* | *[KNFXX atau -]* | *[UCXX]* | *[CXX - Nama kelas]* | *[path/ke/file]* | *[UCXX-TCYY]* | *[CXX-UTYY, INT-TCYY, KNFXX-TCYY atau -]* |
 | *KFXX* | *-* | *[UCXX atau -]* | *[CXX - Nama kelas atau -]* | *Tidak diimplementasikan: [alasan]* | *-* | *-* |
+| KF19 | - | UC07 | C08 - Volunteer<br>C09 - PendaftaranRelawan<br>C33 - FormPendaftaranRelawanView<br>C34 - RelawanController | `src/shared/relawan.ts`<br>`src/server/services/relawanService.ts`<br>`src/server/controllers/RelawanController.ts`<br>`src/components/views/RelawanView/FormPendaftaranRelawanView.tsx`<br>`src/components/detail/aksi/TombolRelawan.tsx` | UC07-TC01, UC07-TC02, UC07-TC03, UC07-TC04 | C09-UT01 – C09-UT12, C33-UT01 – C33-UT04, C34-UT01 – C34-UT06, INT-TC11, INT-TC12, INT-TC21 |
+| KF20 | - | UC07 | C09 - PendaftaranRelawan<br>C34 - RelawanController | `src/server/repositories/pendaftaranRelawanRepository.ts`<br>`src/models/PendaftaranRelawan.ts`<br>`src/server/services/relawanService.ts` | UC07-TC01 | C09-UT07, C09-UT10, C34-UT01, INT-TC11, INT-TC13 |
+| KF21 | - | UC08 | C09 - PendaftaranRelawan<br>C34 - RelawanController<br>C35 - FormVolunteerManagementView | `src/server/services/relawanService.ts`<br>`src/server/controllers/RelawanController.ts`<br>`src/components/views/RelawanView/FormVolunteerManagementView.tsx`<br>`src/components/detail/aksi/AksiPemilik.tsx` | UC08-TC01, UC08-TC02, UC08-TC03 | C09-UT13 – C09-UT18, C34-UT07 – C34-UT12, C35-UT01 – C35-UT04, INT-TC13, INT-TC14, INT-TC16 |
+| KF22 | KNF08 | UC08 | C34 - RelawanController<br>C36 - DetailStatusPendaftaranView | `src/shared/relawan.ts` (`lokasiKumpulUntuk`)<br>`src/server/services/relawanService.ts` (`pendaftaranSaya`)<br>`src/components/views/RelawanView/DetailStatusPendaftaranView.tsx` | UC08-TC01, UC08-TC02 | C34-UT13 – C34-UT15, INT-TC15, KNF08-TC01 |
+| KF23 | - | UC09 | C37 - FormProgresProjectView<br>C38 - ProgresController | `src/shared/progres.ts`<br>`src/server/services/progresService.ts`<br>`src/server/controllers/ProgresController.ts`<br>`src/server/repositories/progresRepository.ts`<br>`src/components/views/ProgresView/FormProgresProjectView.tsx` | UC09-TC01, UC09-TC02 | C37-UT01 – C37-UT03, C38-UT01, C38-UT04 – C38-UT06, C38-UT10, INT-TC17, INT-TC19, INT-TC20, INT-TC21 |
+| KF24 | KNF07 | UC09 | C37 - FormProgresProjectView<br>C38 - ProgresController | `src/shared/dokumentasi.ts`<br>`src/server/services/dokumentasiService.ts`<br>`src/server/storage/dokumentasiStorage.ts`<br>`src/app/api/dokumentasi/[idProject]/[nama]/route.ts` | UC09-TC01, UC09-TC04, UC09-TC05 | C37-UT04, C38-UT01 – C38-UT03, C38-UT06, INT-TC22, KNF07-TC01, KNF07-TC02 |
+| KF25 | - | UC09 | C38 - ProgresController | `src/server/services/progresService.ts`<br>`src/server/controllers/ProgresController.ts`<br>`src/components/detail/aksi/AksiPemilik.tsx` | UC09-TC02, UC09-TC03 | C38-UT07 – C38-UT09, INT-TC18 |
 | *...* | *...* | *...* | *...* | *...* | *...* | *...* |
 
 Tabel 5.2. Matriks Kerunutan KNF terhadap Pengujian
@@ -614,4 +895,6 @@ Tabel 5.2. Matriks Kerunutan KNF terhadap Pengujian
 | :--- | :--- | :--- | :--- |
 | *KNF01* | *Reliability* | *KF05 / UC03* | *KNF01-TC01* |
 | *KNFXX* | *[Parameter]* | *[KFXX / UCXX atau -]* | *[KNFXX-TCYY]* |
+| KNF07 | *Performance efficiency* (kapasitas dan format unggah) | KF24 / UC09 | KNF07-TC01, KNF07-TC02 |
+| KNF08 | *Performance efficiency* (waktu tampil notifikasi status) | KF22 / UC08 | KNF08-TC01 |
 | *...* | *...* | *...* | *...* |
