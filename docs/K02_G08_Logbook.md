@@ -30,6 +30,7 @@
 * [Milestone 7](#milestone-7)
 * [Milestone 8](#milestone-8)
 * [Milestone 9](#milestone-9)
+* [Milestone 10](#milestone-10)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -210,9 +211,32 @@
 | 9-11-2026 | Bryan | Menghubungkan My Actions ke halaman Akun, memperbaiki build, dan melakukan pengujian | 5 | Done | Menunggu integrasi modul tim |
 | 10-11-2026 | Sahla | Mengerjakan issue [FEAT] Implementasi fitur top-up saldo (di luar use case) #30 | 5 | Done | - |
 | 13-11-2026 | Bryan | Menyelesaikan integrasi fitur aksi, melakukan pengujian, melengkapi dokumentasi M9, dan review PR #84 | 4 | Done | - |
+| 5-11-2026 | Nathan | Mengerjakan issue [FEAT] penyimpanan berkas dokumentasi progres dengan endpoint ber-cek akses #12 | 2 | Done | - |
+| 5-11-2026 | Nathan | Mengerjakan issue [FEAT] API pendaftaran relawan #31 dan API keputusan pendaftar #33 | 3 | Done | Sesi login belum tersedia, memakai sesi sementara |
+| 7-11-2026 | Nathan | Mengerjakan issue [FEAT] API pembaruan dan riwayat progres project #36 | 4 | Done | - |
+| 9-11-2026 | Nathan | Mengerjakan issue [FEAT] UI modal pendaftaran relawan #32, modal kelola relawan #34, modal pembaruan progres #37, dan tab status pendaftaran #35 | 5 | Done | Menunggu review dan PR login (#57) |
+| 9-11-2026 | Nathan | Menulis tes integrasi MySQL untuk alur relawan dan progres | 1 | Done | Laptop belum ada MySQL/Docker, tes integrasi belum bisa dijalankan |
+| 11-11-2026 | Nathan | Review PR #65 (UI riwayat) dan #82 (performa bukti transaksi) | 1 | Done | PR #65 konflik dengan develop |
+| 12-11-2026 | Nathan | Memperbaiki hasil review PR #76–#79, menyelesaikan konflik PR #79 dan #80 dengan develop, lalu merge #76–#80 | 3 | Done | - |
+| 12-11-2026 | Nathan | Memperbaiki `AppShell` dan `AlurDonasi` yang rusak setelah merge login dan top-up, serta menampilkan tombol progres untuk Admin | 1,5 | Done | develop sempat tidak bisa di-build |
 
 
 **Catatan/Evaluasi Milestone 9:**
+* *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
+
+---
+
+### Milestone 10
+**Periode:** 13 November 2026 - 20 November 2026
+
+| Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker | 
+| :--- | :--- | :--- | :--- | :--- | :--- | 
+| 18-11-2026 | Nathan | Mengerjakan HIUPL UC07–UC09: unit test C09, C34, C38 (dengan tiruan basis data) dan C33, C35, C37 (render), laporan coverage, serta subbab 4.1–4.6 dan baris KF19–KF25 pada Tabel 5.1 | 3 | Done | - |
+| 18-11-2026 | Nathan | Memasang MySQL 8.4 lokal, memuat skema dan seed, lalu menjalankan pengujian integrasi INT-TC11 s.d. INT-TC20 | 0,5 | Done | Laptop belum memiliki Docker |
+| 18-11-2026 | Nathan | Pengujian manual UC07–UC09, INT-TC21–INT-TC22, KNF07, dan KNF08 beserta tangkapan layar bukti pada Subbab 4.6 | 1,5 | Done | KNF07-TC02 Fail: format MP4 dan ZIP belum didukung |
+
+
+**Catatan/Evaluasi Milestone 10:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 
 ---
