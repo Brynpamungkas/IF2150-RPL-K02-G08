@@ -31,6 +31,7 @@
 * [Milestone 7](#milestone-7)
 * [Milestone 8](#milestone-8)
 * [Milestone 9](#milestone-9)
+* [Milestone 10](#milestone-10)
 * Notes: Copy bagian Daftar Isi seperti Milestone 1 untuk Milestone berikutnya, contoh ``* [Milestone 2](#milestone-2)``. Ketika Daftar isi diklik maka akan langsung diarahkan ke bagian bawah sesuai dengan Milestone tujuan.
 
 ---
@@ -94,6 +95,12 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | Claude | Melengkapi tabel traceability (B.5) dan perubahan dari DPPL (B.1) untuk modul katalog, Explore, detail, dan peta | "Ini daftar kelas C01, C05, C18, C21, C27, C28, C29 di DPPL dan file yang aku buat, bantu rapikan jadi tabel traceability dan catat bagian yang beda dari rancangan" | Pemetaan kelas ke file dan daftar perbedaan dicocokkan lagi dengan kode di `develop` dan DPPL. Bagian yang tidak sesuai atau terlalu panjang diubah dan dipersingkat sendiri |
 | OpenAI melalui OpenCode (Bryan) | Pendamping pemrograman untuk implementasi, pemeriksaan kode, pengujian fitur aksi, dan perapian dokumentasi | Ringkasan prompt: membantu melanjutkan fitur aksi serta memeriksa pengujian dan dokumentasinya | Perubahan disesuaikan dengan struktur proyek, diuji otomatis, dan direview melalui PR #67 dan #85. Hasil pengujian dicatat pada B.2 laporan implementasi |
 
+---
+
+### Milestone 10
+| Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
+| :--- | :--- | :--- | :--- |
+| Claude | Membantu melengkapi skema testing | "Saya ingin melakukan testing untuk UC06, UC10 (KF15–KF18, KF26, KF27), C04, C06, C07, C30–C32, dan C39–C41 sesuai DDPL, selain melalui website dan file testing yang berupa typescript apa lagi yang harus saya lakukan" | Tinjau skema testing & hasil testing |
 ---
 
 ### Pernyataan Integritas dan Persetujuan

@@ -848,12 +848,30 @@ Tabel 4.6. Bukti Hasil Pengujian
 | *UC01-TC01* | *[Sisipkan tangkapan layar UC01-TC01 sesuai prosedur pengujian]* |
 | *UC01-TC02* | *[Sisipkan tangkapan layar UC01-TC02 sesuai prosedur pengujian]* |
 | *KNF01-TC01* | *[Sisipkan bukti pengukuran parameter KNF01-TC01]* |
+| C04-UT01 – C04-UT06, C06-UT01 – C06-UT10, C07-UT01 – C07-UT08, C30-UT01 – C30-UT04, C31-UT01 – C31-UT03, C39-UT01 – C39-UT04, C41-UT01 – C41-UT04, INT-TC05, INT-TC07 – INT-TC09, KNF04-TC01 | <img src="./assets/pengujian/unit-donasi-riwayat.png" width="100%"><br><img src="./assets/pengujian/unit-riwayat-kategori.png" width="100%"> |
+| Coverage C04, C06, C07 | <img src="./assets/pengujian/coverage-donasi.png" width="100%"> |
 | C09-UT01 – C09-UT18, C34-UT01 – C34-UT15, C38-UT01 – C38-UT11 | <img alt="Keluaran unit test C09, C34, C38: 44 pass" src="./assets/pengujian/UT-C09-C34-C38.png" width="70%"> |
 | C09, C34, C38 (coverage) | <img alt="Laporan coverage C09, C34, C38" src="./assets/pengujian/COVERAGE-C09-C34-C38.png" width="70%"> |
+| C32-UT01, INT-TC01 | <img src="./assets/pengujian/INT-TC01-network-201.png" width="100%"><br><img src="./assets/pengujian/INT-TC01-response.png" width="100%"> |
+| C32-UT02 | <img src="./assets/pengujian/C32-UT02-401.png" width="100%"> |
+| C32-UT03 | <img src="./assets/pengujian/C32-UT03-400.png" width="100%"> |
+| C32-UT04 | <img src="./assets/pengujian/C32-UT04-form.png" width="100%"> |
 | C33-UT01 – C33-UT04, C35-UT01 – C35-UT04, C37-UT01 – C37-UT04 | <img alt="Keluaran unit test C33, C35, C37: 12 passed" src="./assets/pengujian/UT-C33-C35-C37.png" width="70%"> |
+| INT-TC02, KNF04-TC02 | <img src="./assets/pengujian/KNF04-TC02-query.png" width="100%"> |
+| INT-TC03 | <img src="./assets/pengujian/INT-TC03-saldo-kurang.png" width="100%"> |
+| INT-TC04 | <img src="./assets/pengujian/INT-TC04-query-db.png" width="100%"> |
+| INT-TC06, INT-TC10 | <img src="./assets/pengujian/topup-integrasi.png" width="100%"> |
 | INT-TC11 – INT-TC20 | <img alt="Keluaran integrasi MySQL: 10 pass, skipped 0" src="./assets/pengujian/INT-TC11-TC20.png" width="70%"> |
 | INT-TC21 | <img alt="INT-TC21 POST relawan 201" src="./assets/pengujian/INT-TC21-a.png" width="70%"><br><img alt="INT-TC21 POST progres 201" src="./assets/pengujian/INT-TC21-b.png" width="70%"><br><img alt="INT-TC21 header multipart" src="./assets/pengujian/INT-TC21-c.png" width="70%"> |
 | INT-TC22 | <img alt="INT-TC22 berkas tersimpan dan log GET dokumentasi 200" src="./assets/pengujian/INT-TC22.png" width="70%"><br><img alt="INT-TC22 dokumentasi terbuka" src="./assets/pengujian/UC09-TC01-c.png" width="70%"> |
+| UC06-TC01 | <img src="./assets/pengujian/UC06-TC01-bukti.png" width="100%"> |
+| UC06-TC02 | <img src="./assets/pengujian/UC06-TC02-login.png" width="100%"> |
+| UC06-TC03 | <img src="./assets/pengujian/UC06-TC03-saldo-kurang.png" width="100%"> |
+| UC06-TC04, KNF04-TC03 | <img src="./assets/pengujian/UC06-TC04-query-sebelum.png" width="100%"><br><img src="./assets/pengujian/UC06-TC04-db-mati.png" width="100%"><br><img src="./assets/pengujian/UC06-TC04-query-sesudah.png" width="100%"> |
+| UC06-TC05 | <img src="./assets/pengujian/UC06-TC05-resend-409.png" width="100%"><br><img src="./assets/pengujian/UC06-TC05-preview.png" width="100%"><br><img src="./assets/pengujian/UC06-TC05-riwayat.png" width="100%"> |
+| UC06-TC06 | <img src="./assets/pengujian/UC06-TC06-luwu.png" width="100%"><br><img src="./assets/pengujian/UC06-TC06-console.png" width="100%"> |
+| UC06-TC07 | <img src="./assets/pengujian/UC06-TC07-nominal-0.png" width="100%"> |
+| UC06-TC08 | <img src="./assets/pengujian/UC06-TC08-negatif.png" width="100%"> |
 | UC07-TC01 | <img alt="UC07-TC01 formulir kosong" src="./assets/pengujian/UC07-TC01-a.png" width="70%"><br><img alt="UC07-TC01 formulir terisi" src="./assets/pengujian/UC07-TC01-b.png" width="70%"><br><img alt="UC07-TC01 Application sent" src="./assets/pengujian/UC07-TC01-c.png" width="70%"><br><img alt="UC07-TC01 status Waiting for a decision" src="./assets/pengujian/UC07-TC01-d.png" width="70%"> |
 | UC07-TC02 | <img alt="UC07-TC02 pesan kolom wajib" src="./assets/pengujian/UC07-TC02.png" width="70%"> |
 | UC07-TC03 | <img alt="UC07-TC03 pendaftaran ganda ditolak" src="./assets/pengujian/UC07-TC03-a.png" width="70%"><br><img alt="UC07-TC03 status lama tetap Accepted" src="./assets/pengujian/UC07-TC03-b.png" width="70%"> |
@@ -866,6 +884,15 @@ Tabel 4.6. Bukti Hasil Pengujian
 | UC09-TC04 | <img alt="UC09-TC04 ZIP ditolak" src="./assets/pengujian/UC09-TC04-a.png" width="70%"><br><img alt="UC09-TC04 PDF 51 MB ditolak" src="./assets/pengujian/UC09-TC04-b.png" width="70%"> |
 | UC09-TC05 | <img alt="UC09-TC05 koneksi terputus" src="./assets/pengujian/UC09-TC05-a.png" width="70%"><br><img alt="UC09-TC05 progres tidak bertambah" src="./assets/pengujian/UC09-TC05-b.png" width="70%"> |
 | UC09-TC03 | <img alt="UC09-TC03 tombol progres tidak tampil" src="./assets/pengujian/UC09-TC03-a.png" width="70%"><br><img alt="UC09-TC03 respons 403 di Console" src="./assets/pengujian/UC09-TC03-b.png" width="70%"><br><img alt="UC09-TC03 riwayat progres tidak berubah" src="./assets/pengujian/UC09-TC03-c.png" width="70%"> |
+| UC10-TC01 | <img src="./assets/pengujian/UC10-TC01-riwayat.png" width="100%"> |
+| UC10-TC02 | <img src="./assets/pengujian/UC10-TC02-detail-transaksi.png" width="100%"> |
+| UC10-TC03 | <img src="./assets/pengujian/UC10-TC03-detail-progres.png" width="100%"> |
+| UC10-TC04 | <img src="./assets/pengujian/UC10-TC04-filter-donations.png" width="100%"><br><img src="./assets/pengujian/UC10-TC04-filter-progress.png" width="100%"> |
+| UC10-TC05 | <img src="./assets/pengujian/UC10-TC05-kosong.png" width="100%"> |
+| UC10-TC06 | <img src="./assets/pengujian/UC10-TC06-kategori-kosong.png" width="100%"> |
+| UC10-TC07 | <img src="./assets/pengujian/UC10-TC07-belum-login.png" width="100%"> |
+| KNF06-TC01 | <img src="./assets/pengujian/KNF06-TC01-uptime.png" width="100%"> |
+| KNF06-TC02 | <img src="./assets/pengujian/KNF06-TC02-pulih.png" width="100%"> |
 | KNF07-TC01 | <img alt="KNF07-TC01 tiga pembaruan dengan PDF 49,9 MB" src="./assets/pengujian/KNF07-TC01-a.png" width="70%"><br><img alt="KNF07-TC01 tiga PDF tersimpan" src="./assets/pengujian/KNF07-TC01-b.png" width="70%"><br><img alt="KNF07-TC01 durasi tiga unggahan" src="./assets/pengujian/KNF07-TC01-c.png" width="70%"> |
 | KNF07-TC02 | <img alt="KNF07-TC02 ZIP ditolak" src="./assets/pengujian/UC09-TC04-a.png" width="70%"> |
 | KNF08-TC01 | <img alt="KNF08-TC01 sepuluh pengukuran" src="./assets/pengujian/KNF08-TC01.png" width="70%"> |

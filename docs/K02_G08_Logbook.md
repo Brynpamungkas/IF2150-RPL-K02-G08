@@ -234,7 +234,8 @@
 | 18-11-2026 | Nathan | Mengerjakan HIUPL UC07–UC09: unit test C09, C34, C38 (dengan tiruan basis data) dan C33, C35, C37 (render), laporan coverage, serta subbab 4.1–4.6 dan baris KF19–KF25 pada Tabel 5.1 | 3 | Done | - |
 | 18-11-2026 | Nathan | Memasang MySQL 8.4 lokal, memuat skema dan seed, lalu menjalankan pengujian integrasi INT-TC11 s.d. INT-TC20 | 0,5 | Done | Laptop belum memiliki Docker |
 | 18-11-2026 | Nathan | Pengujian manual UC07–UC09, INT-TC21–INT-TC22, KNF07, dan KNF08 beserta tangkapan layar bukti pada Subbab 4.6 | 1,5 | Done | KNF07-TC02 Fail: format MP4 dan ZIP belum didukung |
-
+| 18-11-2026 | Sahla | Bab 2, Bab 4.1 untuk C04-C07, C30-C32, C39-C41, Bab 4.2 untuk Kelas-kelas UC06 dan UC10, Bab 4.3 untuk IK-01 -IK-016, dan Bab 4.4 untuk UC06 dan UC10 | 2,5 | Done | - |
+| 19-11-2026 | Sahla | Bab 4.5 untuk KNF04 dan KNF06, Bab 4.6 dan Bab 5 untuk UC06 dan UC10 | 2,5 | Done | - |
 
 **Catatan/Evaluasi Milestone 10:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
