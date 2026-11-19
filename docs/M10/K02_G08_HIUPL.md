@@ -59,7 +59,7 @@ Dipersiapkan oleh:
 
 | Revisi | Deskripsi |
 | :--- | :--- |
-| A | Melengkapi Bab 1 berdasarkan SKPL, APL, DPPL, dan laporan Implementasi Tugas 9; menetapkan release `v9.0` sebagai acuan pengujian. |
+| A | Melengkapi Bab 1 berdasarkan SKPL, APL, DPPL, dan laporan Implementasi Tugas 9; menggunakan kode `main` terbaru sebagai acuan pengujian UC02–UC04. |
 
 ---
 
@@ -69,7 +69,7 @@ Dipersiapkan oleh:
 Dokumen Hasil Implementasi dan Uji Perangkat Lunak (HIUPL) ini menjelaskan implementasi KlimPooL serta hasil pengujiannya terhadap kebutuhan pada SKPL dan rancangan pada DPPL. Dokumen memuat pemetaan kelas dan antarmuka ke file implementasi, strategi dan hasil pengujian unit, integrasi, use case, serta kebutuhan non-fungsional. Matriks kerunutan menghubungkan setiap kebutuhan dengan implementasi dan bukti pengujiannya. Dokumen ditujukan kepada tim pengembang dan asisten mata kuliah IF2150 sebagai dasar pemeriksaan hasil Tugas 10.
 
 ## 1.2 Lingkup Masalah
-KlimPooL merupakan aplikasi web untuk mengoordinasikan dukungan terhadap aksi iklim di Indonesia melalui campaign penggalangan donasi dan project kegiatan. Cakupannya meliputi autentikasi pengguna, pembuatan dan verifikasi pengajuan oleh admin, penelusuran katalog dan peta, donasi dari saldo internal, pendaftaran dan pengelolaan relawan, pembaruan progres beserta dokumentasi, serta penelusuran riwayat. Data disimpan pada MySQL; top-up merupakan simulasi dan tidak terhubung dengan layanan pembayaran nyata. HIUPL menguji implementasi pada release Tugas 9, yaitu tag `v9.0` (`c44a1e0`), terhadap kebutuhan dan rancangan tersebut.
+KlimPooL merupakan aplikasi web untuk mengoordinasikan dukungan terhadap aksi iklim di Indonesia melalui campaign penggalangan donasi dan project kegiatan. Cakupannya meliputi autentikasi pengguna, pembuatan dan verifikasi pengajuan oleh admin, penelusuran katalog dan peta, donasi dari saldo internal, pendaftaran dan pengelolaan relawan, pembaruan progres beserta dokumentasi, serta penelusuran riwayat. Data disimpan pada MySQL; top-up merupakan simulasi dan tidak terhubung dengan layanan pembayaran nyata. Pengujian UC02–UC04 mengacu pada kode `main` terbaru saat pengujian dimulai, yaitu commit `b35ab49` pada 19 November 2026, dengan tambahan kasus uji tanpa perubahan kode fitur.
 
 ## 1.3 Definisi, Istilah, dan Singkatan
 Istilah berikut digunakan dalam pembahasan implementasi dan pengujian KlimPooL.
@@ -93,7 +93,7 @@ Tabel 1.3. Definisi Istilah dan Singkatan
 | *Coverage* | *Persentase baris/cabang kode yang dieksekusi oleh pengujian.* |
 | *Campaign* | *Kegiatan penggalangan dana dengan target nominal dan periode penggalangan.* |
 | *Project* | *Kegiatan aksi iklim yang mencatat lokasi, jadwal, kebutuhan dana/logistik, dan kebutuhan relawan.* |
-| *Release/tag* | *Penanda versi kode yang menjadi objek pengujian; laporan ini mengacu pada `v9.0`.* |
+| *Commit acuan* | *Identitas versi kode yang diuji. Pengujian UC02–UC04 menggunakan commit `b35ab49` dari `main` beserta tambahan kasus ujinya.* |
 | *Pass / Fail* | *Kesimpulan berdasarkan kesesuaian hasil aktual dengan hasil yang diharapkan; kegagalan disertai penyebab dan usulan perbaikan.* |
 
 ## 1.4 Aturan Penomoran
@@ -118,7 +118,7 @@ Tabel 1.4. Aturan Penomoran
 2. Kelompok 08 Kelas 02. [Arsitektur Perangkat Lunak KlimPooL (Tugas 6)](../M6/K02_G08_APL.md).
 3. Kelompok 08 Kelas 02. [Deskripsi Perancangan Perangkat Lunak KlimPooL (Tugas 8)](../M8/K02_G08_DPPL2.md).
 4. Kelompok 08 Kelas 02. [Laporan Implementasi KlimPooL (Tugas 9)](../M9/K02_G08_Implementasi.md), terutama B.1 dan B.5.
-5. Kelompok 08 Kelas 02. [Release Milestone 9 — `v9.0`](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/releases/tag/v9.0).
+5. Kelompok 08 Kelas 02. [Kode KlimPooL pada commit `b35ab49`](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/commit/b35ab49), acuan pengujian UC02–UC04.
 6. [Dokumentasi Next.js](https://nextjs.org/docs), [Node.js test runner](https://nodejs.org/docs/latest-v20.x/api/test.html), [Vitest](https://vitest.dev/guide/), dan [MySQL 8.4](https://dev.mysql.com/doc/refman/8.4/en/).
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
@@ -231,7 +231,7 @@ Tabel 3.4. File Lain
 
 # BAB 4: Hasil Pengujian
 
-Bab ini melaporkan hasil pengujian P/L pada level unit, integrasi, dan sistem. Pengujian dilakukan pada tag release terakhir Tugas 9. Hasil aktual diisi berdasarkan pengamatan saat pengujian. Kesimpulan diisi `Pass` atau `Fail`, dan untuk `Fail` dilengkapi penyebab serta usulan perbaikan.
+Bab ini melaporkan hasil pengujian P/L pada level unit, integrasi, dan sistem. Pengujian UC02–UC04 menggunakan kode `main` pada commit `b35ab49` beserta tambahan kasus uji; kode fitur tidak diubah selama pengujian. Hasil aktual diisi berdasarkan pengamatan saat pengujian. Kesimpulan diisi `Pass` atau `Fail`, dan untuk `Fail` dilengkapi penyebab serta usulan perbaikan.
 
 ## 4.1 Strategi dan Kedalaman Pengujian Kelas
 
