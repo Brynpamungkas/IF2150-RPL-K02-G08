@@ -59,23 +59,20 @@ Dipersiapkan oleh:
 
 | Revisi | Deskripsi |
 | :--- | :--- |
-| *A* | *Deskripsikan perubahan yang dilakukan dari dokumen sebelumnya pada dokumen ini. Jika tidak terdapat perubahan, harap kosongkan tabel.* |
-| *B* |  |
-| *C* |  |
-| ... |  |
+| A | Melengkapi Bab 1 berdasarkan SKPL, APL, DPPL, dan laporan Implementasi Tugas 9; menetapkan release `v9.0` sebagai acuan pengujian. |
 
 ---
 
 # BAB 1: Pendahuluan
 
 ## 1.1 Tujuan Penulisan Dokumen
-Tuliskan uraian ringkas mengenai isi dokumen, tujuan pembuatan dokumen HIUPL ini, dan siapa saja target pembacanya.
+Dokumen Hasil Implementasi dan Uji Perangkat Lunak (HIUPL) ini menjelaskan implementasi KlimPooL serta hasil pengujiannya terhadap kebutuhan pada SKPL dan rancangan pada DPPL. Dokumen memuat pemetaan kelas dan antarmuka ke file implementasi, strategi dan hasil pengujian unit, integrasi, use case, serta kebutuhan non-fungsional. Matriks kerunutan menghubungkan setiap kebutuhan dengan implementasi dan bukti pengujiannya. Dokumen ditujukan kepada tim pengembang dan asisten mata kuliah IF2150 sebagai dasar pemeriksaan hasil Tugas 10.
 
 ## 1.2 Lingkup Masalah
-Tuliskan lingkup masalah, yaitu membangun perangkat lunak *[nama perangkat lunak]*. Jelaskan dengan singkat dan jelas deskripsi aplikasi serta keterkaitannya dengan perangkat lunak atau sistem lain (jika ada). Bagian ini maksimal berisi satu paragraf, dapat diambil dari SKPL/DPPL.
+KlimPooL merupakan aplikasi web untuk mengoordinasikan dukungan terhadap aksi iklim di Indonesia melalui campaign penggalangan donasi dan project kegiatan. Cakupannya meliputi autentikasi pengguna, pembuatan dan verifikasi pengajuan oleh admin, penelusuran katalog dan peta, donasi dari saldo internal, pendaftaran dan pengelolaan relawan, pembaruan progres beserta dokumentasi, serta penelusuran riwayat. Data disimpan pada MySQL; top-up merupakan simulasi dan tidak terhubung dengan layanan pembayaran nyata. HIUPL menguji implementasi pada release Tugas 9, yaitu tag `v9.0` (`c44a1e0`), terhadap kebutuhan dan rancangan tersebut.
 
 ## 1.3 Definisi, Istilah, dan Singkatan
-Semua definisi dan singkatan yang digunakan dalam dokumen ini beserta penjelasannya.
+Istilah berikut digunakan dalam pembahasan implementasi dan pengujian KlimPooL.
 
 Tabel 1.3. Definisi Istilah dan Singkatan
 
@@ -91,12 +88,16 @@ Tabel 1.3. Definisi Istilah dan Singkatan
 | *TC* | *Singkatan dari Test Case, yaitu satu kasus uji untuk skenario tertentu.* |
 | *UT* | *Singkatan dari Unit Test, yaitu test case tingkat kelas/operasi.* |
 | *INT* | *Singkatan dari Integration Test, yaitu test case yang menguji interaksi antarkomponen.* |
-| *Boundary* | *Kasus uji pada nilai batas masukan, misalnya nilai minimum, maksimum, atau tepat di ambang aturan.* |
+| *APL* | *Arsitektur Perangkat Lunak, dokumen yang menjelaskan susunan komponen dan lapisan sistem.* |
+| *Boundary (kasus uji)* | *Nilai batas masukan, misalnya minimum, maksimum, atau tepat di ambang aturan. Berbeda dari kelas boundary pada DPPL yang merupakan kelas antarmuka.* |
 | *Coverage* | *Persentase baris/cabang kode yang dieksekusi oleh pengujian.* |
-| *...* | *...* |
+| *Campaign* | *Kegiatan penggalangan dana dengan target nominal dan periode penggalangan.* |
+| *Project* | *Kegiatan aksi iklim yang mencatat lokasi, jadwal, kebutuhan dana/logistik, dan kebutuhan relawan.* |
+| *Release/tag* | *Penanda versi kode yang menjadi objek pengujian; laporan ini mengacu pada `v9.0`.* |
+| *Pass / Fail* | *Kesimpulan berdasarkan kesesuaian hasil aktual dengan hasil yang diharapkan; kegagalan disertai penyebab dan usulan perbaikan.* |
 
 ## 1.4 Aturan Penomoran
-Tuliskan aturan penomoran (ID) yang digunakan dalam dokumen ini. Gunakan pola ID yang **sama** dengan yang sudah dipakai pada dokumen-dokumen sebelumnya (SKPL, APL, DPPL), kecuali untuk ID pengujian yang baru diperkenalkan pada dokumen ini.
+ID kebutuhan, use case, kelas, dan antarmuka mengikuti SKPL dan DPPL. ID pengujian dibedakan menurut tingkat pengujiannya agar tabel hasil, bukti, dan matriks kerunutan dapat saling dirujuk.
 
 Tabel 1.4. Aturan Penomoran
 
@@ -111,13 +112,17 @@ Tabel 1.4. Aturan Penomoran
 | *Test Case Integrasi* | *INT-TCYY* | *YY adalah nomor urut test case integrasi* |
 | *Test Case Use Case* | *UCXX-TCYY* | *XX adalah nomor use case, YY adalah nomor urut test case pada use case tersebut* |
 | *Test Case KNF* | *KNFXX-TCYY* | *XX adalah nomor KNF, YY adalah nomor urut test case pada KNF tersebut* |
-| *...* | *...* | *...* |
 
 ## 1.5 Referensi
-Cantumkan daftar buku, panduan, atau dokumentasi lain yang dirujuk dalam pembuatan dokumen dan pengembangan P/L, **minimal dokumen SKPL, APL, DPPL, dan Implementasi (Tugas 9)**. Tambahkan dokumentasi *framework*/*library*/*testing tool* atau referensi lain apabila digunakan.
+1. Kelompok 08 Kelas 02. [Spesifikasi Kebutuhan Perangkat Lunak KlimPooL (Tugas 5)](../M5/K02_G08_SKPL.md).
+2. Kelompok 08 Kelas 02. [Arsitektur Perangkat Lunak KlimPooL (Tugas 6)](../M6/K02_G08_APL.md).
+3. Kelompok 08 Kelas 02. [Deskripsi Perancangan Perangkat Lunak KlimPooL (Tugas 8)](../M8/K02_G08_DPPL2.md).
+4. Kelompok 08 Kelas 02. [Laporan Implementasi KlimPooL (Tugas 9)](../M9/K02_G08_Implementasi.md), terutama B.1 dan B.5.
+5. Kelompok 08 Kelas 02. [Release Milestone 9 — `v9.0`](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/releases/tag/v9.0).
+6. [Dokumentasi Next.js](https://nextjs.org/docs), [Node.js test runner](https://nodejs.org/docs/latest-v20.x/api/test.html), [Vitest](https://vitest.dev/guide/), dan [MySQL 8.4](https://dev.mysql.com/doc/refman/8.4/en/).
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
-Tuliskan sistematika pembahasan dokumen ini secara ringkas dan runut bab demi bab, dengan maksimal 1 paragraf.
+Bab 1 memuat tujuan, lingkup, istilah, aturan penomoran, dan referensi. Bab 2 menjelaskan perangkat lunak serta use case yang dilayani. Bab 3 memetakan lingkungan, modul, antarmuka, dan file pendukung implementasi. Bab 4 menyajikan strategi, kasus uji, hasil aktual, kesimpulan, serta bukti pengujian unit, integrasi, use case, dan kebutuhan non-fungsional. Bab 5 menghubungkan kebutuhan dengan use case, kelas, file implementasi, dan kasus uji melalui matriks kerunutan.
 
 <br>
 
