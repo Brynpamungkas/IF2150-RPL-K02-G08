@@ -60,16 +60,17 @@ Dipersiapkan oleh:
 | Revisi | Deskripsi |
 | :--- | :--- |
 | A | Melengkapi Bab 1 berdasarkan SKPL, APL, DPPL, dan laporan Implementasi Tugas 9; menggunakan kode `main` terbaru sebagai acuan pengujian UC02–UC04. |
+| B | Menambahkan pemetaan implementasi dan strategi pengujian 12 kelas UC02–UC04. |
 
 ---
 
 # BAB 1: Pendahuluan
 
 ## 1.1 Tujuan Penulisan Dokumen
-Dokumen Hasil Implementasi dan Uji Perangkat Lunak (HIUPL) ini menjelaskan implementasi KlimPooL serta hasil pengujiannya terhadap kebutuhan pada SKPL dan rancangan pada DPPL. Dokumen memuat pemetaan kelas dan antarmuka ke file implementasi, strategi dan hasil pengujian unit, integrasi, use case, serta kebutuhan non-fungsional. Matriks kerunutan menghubungkan setiap kebutuhan dengan implementasi dan bukti pengujiannya. Dokumen ditujukan kepada tim pengembang dan asisten mata kuliah IF2150 sebagai dasar pemeriksaan hasil Tugas 10.
+Dokumen HIUPL melaporkan implementasi dan hasil uji KlimPooL terhadap SKPL dan DPPL. Isinya mencakup pemetaan file, pengujian, bukti, dan traceability sebagai bahan pemeriksaan tim dan asisten IF2150.
 
 ## 1.2 Lingkup Masalah
-KlimPooL merupakan aplikasi web untuk mengoordinasikan dukungan terhadap aksi iklim di Indonesia melalui campaign penggalangan donasi dan project kegiatan. Cakupannya meliputi autentikasi pengguna, pembuatan dan verifikasi pengajuan oleh admin, penelusuran katalog dan peta, donasi dari saldo internal, pendaftaran dan pengelolaan relawan, pembaruan progres beserta dokumentasi, serta penelusuran riwayat. Data disimpan pada MySQL; top-up merupakan simulasi dan tidak terhubung dengan layanan pembayaran nyata. Pengujian UC02–UC04 mengacu pada kode `main` terbaru saat pengujian dimulai, yaitu commit `b35ab49` pada 19 November 2026, dengan tambahan kasus uji tanpa perubahan kode fitur.
+KlimPooL adalah aplikasi web untuk penggalangan dana dan kegiatan aksi iklim di Indonesia. Fitur utamanya meliputi autentikasi, pengajuan dan verifikasi aksi, katalog/peta, donasi, relawan, progres, serta riwayat. Data disimpan di MySQL; top-up hanya simulasi tanpa pembayaran nyata. Pengujian UC02–UC04 memakai kode `main` commit `b35ab49` beserta tambahan tes, tanpa mengubah fitur.
 
 ## 1.3 Definisi, Istilah, dan Singkatan
 Istilah berikut digunakan dalam pembahasan implementasi dan pengujian KlimPooL.
@@ -122,7 +123,7 @@ Tabel 1.4. Aturan Penomoran
 6. [Dokumentasi Next.js](https://nextjs.org/docs), [Node.js test runner](https://nodejs.org/docs/latest-v20.x/api/test.html), [Vitest](https://vitest.dev/guide/), dan [MySQL 8.4](https://dev.mysql.com/doc/refman/8.4/en/).
 
 ## 1.6 Deskripsi Umum Dokumen (Ikhtisar)
-Bab 1 memuat tujuan, lingkup, istilah, aturan penomoran, dan referensi. Bab 2 menjelaskan perangkat lunak serta use case yang dilayani. Bab 3 memetakan lingkungan, modul, antarmuka, dan file pendukung implementasi. Bab 4 menyajikan strategi, kasus uji, hasil aktual, kesimpulan, serta bukti pengujian unit, integrasi, use case, dan kebutuhan non-fungsional. Bab 5 menghubungkan kebutuhan dengan use case, kelas, file implementasi, dan kasus uji melalui matriks kerunutan.
+Bab 1 berisi pendahuluan; Bab 2 menjelaskan aplikasi; Bab 3 memetakan implementasi; Bab 4 memuat hasil dan bukti pengujian; Bab 5 menyajikan traceability.
 
 <br>
 
@@ -199,7 +200,18 @@ Tabel 3.2. Implementasi Modul
 | No | ID Kelas | Nama Modul/Kelas | Nama File Fisik | Nama File Executable |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | *[C01]* | *[Nama modul/kelas]* | *[path/ke/file]* | *[Nama file executable, atau - jika tidak ada]* |
-| 2 | *[C02]* | *[Nama modul/kelas]* | *[path/ke/file]* | *[...]* |
+| 2 | C02 | Project | `src/shared/validasiAksi.ts`, `src/server/services/AksiService.ts`, `src/server/repositories/AksiRepository.ts` | Server Next.js |
+| 3 | C03 | Campaign | `src/shared/validasiAksi.ts`, `src/server/services/AksiService.ts`, `src/server/repositories/AksiRepository.ts` | Server Next.js |
+| 4 | C10 | PembuatProject | `src/server/auth/aksesAksi.ts`, `src/server/services/AksiService.ts`, `src/components/aksi/MyActions.tsx` | Server/klien Next.js |
+| 5 | C11 | AdminSistem | `src/server/auth/aksesAksi.ts`, `src/server/services/AksiService.ts` | Server Next.js |
+| 6 | C17 | FormCampaignView | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start?type=campaign` |
+| 7 | C19 | CampaignController | `src/server/controllers/CampaignController.ts`, `AksiController.ts` | `/api/campaigns`, `/api/aksi/campaign/[id]` |
+| 8 | C20 | FormProjectView | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start?type=project` |
+| 9 | C22 | ProjectController | `src/server/controllers/ProjectController.ts`, `AksiController.ts` | `/api/projects`, `/api/aksi/project/[id]` |
+| 10 | C23 | PengajuanView | `src/components/aksi/TombolPengajuan.tsx` | Account/My Actions dan `/manage/[jenis]/[id]` |
+| 11 | C24 | DaftarPengajuanView | `src/components/aksi/DaftarPengajuan.tsx`, `src/app/admin/page.tsx` | `/admin` |
+| 12 | C25 | DetailPengajuanView | `src/components/aksi/DetailAksiPrivat.tsx`, `KeputusanPengajuan.tsx`, `src/app/admin/pengajuan/[jenis]/[id]/page.tsx` | `/admin/pengajuan/[jenis]/[id]` |
+| 13 | C26 | VerifikasiController | `src/server/controllers/VerifikasiController.ts`, `src/server/services/AksiService.ts` | `/api/aksi/[jenis]/[id]/pengajuan`, `/api/verifikasi` |
 | ... | *...* | *...* | *...* | *...* |
 
 ## 3.3 Implementasi Antarmuka
@@ -212,6 +224,9 @@ Tabel 3.3. Implementasi Antarmuka
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | *[I-01]* | *[Nama layar]* | *[path/ke/file]* | *[Nama file executable, atau - jika tidak ada]* |
 | 2 | *[I-02]* | *[Nama layar]* | *[path/ke/file]* | *[...]* |
+| 3 | I-09 | Pengajuan campaign/project | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start` |
+| 4 | I-10, I-11 | Account — My Actions | `src/components/aksi/TabMyActions.tsx`, `MyActions.tsx`, `TombolPengajuan.tsx` | `/account`, alias `/my-actions` |
+| 5 | I-14 | Peninjauan pengajuan admin | `src/components/aksi/DaftarPengajuan.tsx`, `DetailAksiPrivat.tsx`, `KeputusanPengajuan.tsx` | `/admin`, `/admin/pengajuan/[jenis]/[id]` |
 | ... | *...* | *...* | *...* | *...* |
 
 ## 3.4 File Lain
@@ -223,6 +238,12 @@ Tabel 3.4. File Lain
 | No | Nama File | Keterangan |
 | :--- | :--- | :--- |
 | 1 | *[Nama file]* | *[Fungsi file]* |
+| 2 | `src/shared/aksi.ts`, `src/components/aksi/apiAksi.ts` | Kontrak data/status aksi dan adapter HTTP formulir. |
+| 3 | `src/tests/aksi.m10-*.spec.ts`, `src/tests/fixtures/aksi.ts` | 68 kasus unit UC02–UC04 dan data uji. |
+| 4 | `src/vitest.aksi.config.ts` | Pengukuran coverage tujuh modul aksi, ambang 70% per file. |
+| 5 | `src/tests/aksi.integrasi.test.ts`, `aksi.akses.test.ts`, `aksi.validasi.test.ts` | Integrasi MySQL, sesi, kepemilikan, transisi dan konkurensi. |
+| 6 | `src/scripts/aksi.m10.browser.mjs` | Pengujian browser dan pengambilan bukti UC02–UC04/KNF03. |
+| 7 | `docs/M10/assets/pengujian/aksi/` | Tangkapan hasil tes, coverage, dan layar pengujian aksi. |
 | ... | *...* | *...* |
 
 <br>
@@ -241,6 +262,18 @@ Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 
 | ID Kelas | Nama Kelas | Tingkat | Alasan | Test Case Terkait |
 | :--- | :--- | :--- | :--- | :--- |
+| C02 | Project | Mendalam | Validasi kebutuhan, penyimpanan dua tahap, kepemilikan dan status. | C02-UT01–UT13, UC03-TC01–TC04 |
+| C03 | Campaign | Mendalam | Validasi target/periode, penyimpanan dan perubahan status. | C03-UT01–UT12, UC02-TC01–TC05 |
+| C10 | PembuatProject | Mendalam | Operasi membuat/mengubah/mengajukan dibatasi peran dan pemilik sesi. | C10-UT01–UT06 |
+| C11 | AdminSistem | Mendalam | Antrean dan keputusan hanya untuk admin; penolakan wajib alasan. | C11-UT01–UT04 |
+| C17 | FormCampaignView | Sedang | Menyusun form dan meneruskan hasil/galat HTTP. | C17-UT01–UT04 |
+| C19 | CampaignController | Sedang | Membaca sesi/JSON dan mendelegasikan pembuatan serta detail. | C19-UT01–UT04 |
+| C20 | FormProjectView | Sedang | Menyusun dua tahap formulir dan mengisi ulang draft. | C20-UT01–UT03, UC03-TC03 |
+| C22 | ProjectController | Sedang | Meneruskan informasi dasar, kebutuhan, dan ID project. | C22-UT01–UT04 |
+| C23 | PengajuanView | Sedang | Tombol pengajuan mengikuti status aksi. | C23-UT01–UT02, UC04-TC04 |
+| C24 | DaftarPengajuanView | Sedang | Menampilkan daftar/keadaan kosong dan tautan detail. | C24-UT01–UT02 |
+| C25 | DetailPengajuanView | Sedang | Menampilkan detail, pilihan keputusan dan status terbaru. | C25-UT01–UT03, UC04-TC01–TC03 |
+| C26 | VerifikasiController | Mendalam | Mengendalikan pengajuan/keputusan, status dan penanganan konflik. | C26-UT01–UT11 |
 | C04 | Donatur | Mendalam | Memuat pemeriksaan kecukupan saldo dan pengurangan saldo secara atomik dengan `UPDATE ... WHERE saldo >= ?` serta penguncian baris (Algo-103, Algo-104). Salah logika di sini berarti uang hilang atau saldo negatif. | C04-UT01 s.d. C04-UT06 |
 | C06 | TransaksiDonasi | Mendalam | Memuat validasi nominal, deteksi duplikasi *idempotency key*, pemrosesan donasi atomik dengan *rollback*, dan perhitungan capaian (Algo-105 s.d. Algo-110; KF15–KF18, KF26) | C06-UT01 s.d. C06-UT10, INT-TC04, INT-TC05 |
 | C07 | BuktiTransaksi | Mendalam | Memuat aturan bahwa bukti hanya dibuat untuk transaksi berhasil, tidak boleh ganda, berupa *snapshot*, dan hanya dapat dibuka pemiliknya (Algo-111, Algo-112) | C07-UT01 s.d. C07-UT08 |
