@@ -19,6 +19,7 @@
     "test:aksi:unit": "vitest run --config vitest.aksi.config.ts",
     "test:aksi:coverage": "vitest run --config vitest.aksi.config.ts --coverage",
     "test:aksi:browser": "node scripts/aksi.browser.mjs",
+    "test:aksi:m10:browser": "node scripts/aksi.m10.browser.mjs",
     "test:account:browser": "node scripts/account.browser.mjs",
     "perf:bukti": "node --env-file-if-exists=.env --import tsx scripts/ukur-performa-bukti.ts",
     "db:up": "docker compose up -d",
