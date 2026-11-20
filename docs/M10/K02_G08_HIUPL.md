@@ -236,11 +236,18 @@ Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 
 | ID Kelas | Nama Kelas | Tingkat | Alasan | Test Case Terkait |
 | :--- | :--- | :--- | :--- | :--- |
+| C01 | Katalog | Mendalam | Memuat penyusunan query pencarian dinamis dari kombinasi kata kunci dan filter, aturan bahwa hanya data `terpublikasi` yang diambil, aturan status terbuka donasi, perhitungan periode dan paginasi, serta perlindungan dari *SQL injection* (Algo-014; KF13, KF14). Salah logika di sini berarti aksi yang belum diverifikasi ikut tampil ke publik | C01-UT01 s.d. C01-UT17, INT-TC25, INT-TC26 |
 | C04 | Donatur | Mendalam | Memuat pemeriksaan kecukupan saldo dan pengurangan saldo secara atomik dengan `UPDATE ... WHERE saldo >= ?` serta penguncian baris (Algo-103, Algo-104). Salah logika di sini berarti uang hilang atau saldo negatif. | C04-UT01 s.d. C04-UT06 |
+| C05 | PetaWilayah | Mendalam | Memuat pembacaan dan validasi koordinat pusat, konversi radius (km) untuk `ST_Distance_Sphere`, pemilihan query dengan atau tanpa wilayah, dan aturan bahwa campaign yang periodenya sudah lewat tidak dipetakan berdasarkan tanggal WIB (Algo-101, Algo-102) | C05-UT01 s.d. C05-UT10, INT-TC27, INT-TC28 |
 | C06 | TransaksiDonasi | Mendalam | Memuat validasi nominal, deteksi duplikasi *idempotency key*, pemrosesan donasi atomik dengan *rollback*, dan perhitungan capaian (Algo-105 s.d. Algo-110; KF15–KF18, KF26) | C06-UT01 s.d. C06-UT10, INT-TC04, INT-TC05 |
 | C07 | BuktiTransaksi | Mendalam | Memuat aturan bahwa bukti hanya dibuat untuk transaksi berhasil, tidak boleh ganda, berupa *snapshot*, dan hanya dapat dibuka pemiliknya (Algo-111, Algo-112) | C07-UT01 s.d. C07-UT08 |
 | C08 | Volunteer | Tidak perlu | Diimplementasikan sebagai peran `volunteer` pada tabel `pengguna` tanpa logika sendiri (Tugas 9, B.1 No. 8). Operasi `isiFormulir()` dan `kirimPendaftaran()` (Algo-118) diwujudkan oleh C33 dan C34 yang diuji tersendiri | UC07-TC01 |
 | C09 | PendaftaranRelawan | Mendalam | Memuat validasi kelengkapan formulir, pencegahan pendaftaran ganda, pemeriksaan kuota, dan transisi status `pending` ke `accepted`/`rejected` yang hanya boleh terjadi sekali (Algo-113 s.d. Algo-117; KF19–KF21) | C09-UT01 s.d. C09-UT18, INT-TC11 s.d. INT-TC16 |
+| C18 | DetailCampaignView | Sedang | Mengoordinasikan halaman detail campaign; logikanya terbatas pada penentuan status tombol donasi dari periode campaign (belum mulai, berjalan, berakhir) yang memakai aturan yang sama dengan API donasi (Algo-132), lalu menampilkan data dari server | C18-UT01 s.d. C18-UT04, INT-TC29, INT-TC30 |
+| C21 | DetailProjectView | Sedang | Mengoordinasikan halaman detail project; logikanya terbatas pada penentuan tab awal, status tombol donasi dan relawan, penyaringan tautan dokumentasi progres, dan penyembunyian titik kumpul bagi selain relawan yang diterima | C21-UT01 s.d. C21-UT08, INT-TC29, INT-TC30 |
+| C27 | FormPencarianView | Sedang | Mengoordinasikan kolom cari dan filter; logikanya terbatas pada penerjemahan filter antara URL, tampilan, dan parameter API serta penanganan gagal muat halaman berikutnya ("Show more") | C27-UT01 s.d. C27-UT07, INT-TC23 |
+| C28 | PencarianController | Sedang | Membaca parameter permintaan, lalu mendelegasikan pencarian ke `KatalogService`. Validasi parameter (`bacaFilter()`) diuji pada C01 karena mewujudkan `terimaKataKunci()` dan `terapkanFilter()` | C28-UT01 s.d. C28-UT04, INT-TC23, INT-TC24 |
+| C29 | FormPetaWilayahView | Sedang | Mengoordinasikan peta sebaran; logikanya terbatas pada proyeksi koordinat ke peta SVG, penggeseran pin yang bertumpuk, dan pemilihan pin berdasarkan pasangan tipe dan ID | C29-UT01 s.d. C29-UT08, UC05-TC08 |
 | C30 | FormDonasiView | Sedang | Mengoordinasikan formulir donasi; logikanya terbatas pada validasi sisi klien dan pembangkitan *idempotency key* sebelum diteruskan ke server | C30-UT01 s.d. C30-UT04, INT-TC01, INT-TC02 |
 | C31 | DetailBuktiTransaksiView | Sedang | Hanya memformat dan menampilkan rincian bukti dari server | C31-UT01 s.d. C31-UT03 |
 | C32 | DonasiController | Sedang | Memeriksa login dan bentuk masukan, lalu mendelegasikan aturan bisnis ke `DonasiService` | C32-UT01 s.d. C32-UT04, INT-TC03 |
@@ -259,6 +266,71 @@ Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 ## 4.2 Pengujian Unit Kelas
 
 Pengujian unit dilakukan pada kelas bertingkat Mendalam dan Sedang. Kelas Mendalam diuji pada seluruh operasi public dengan kasus normal, batas, dan negatif, serta mencapai *coverage* minimal 70%. Kelas Sedang diuji minimal dengan satu kasus normal dan satu kasus gagal pada operasi public utama.
+
+### Kerangka Pengujian
+
+Seluruh file test berada di folder `src/tests/`. Proyek memakai dua *test runner*:
+
+- **Vitest 3.2.7** untuk file `*.spec.ts`. Konfigurasinya ada di `src/vitest.config.ts` (lingkungan `node`, alias `@` ke folder `src/`, pola `tests/**/*.spec.ts`). Vitest dipakai untuk logika murni, *service* dengan sumber data tiruan, dan komponen React yang dirender ke HTML statis.
+- ***Test runner* bawaan Node.js** (`node:test` dengan `tsx`) untuk file `*.test.ts`. Daftar file dicari secara rekursif oleh `src/scripts/test-node.mjs`. Test yang menyentuh MySQL sungguhan **dilewati (skip) bila basis data tidak berjalan**.
+
+Cara menjalankan seluruh pengujian (dari folder `src/`):
+
+```bash
+npm ci                 # sekali saja, memasang dependensi sesuai package-lock.json
+npm test               # npm run test:node lalu npm run test:vitest
+npx vitest run peta    # contoh menjalankan sebagian file: nama file yang memuat "peta"
+```
+
+Hasil `npm test` pada `main` commit `b35ab49` (20 November 2026, Node v24.13.0, Windows 11, **tanpa basis data**): node:test 166 test, 127 lulus, 39 dilewati karena basis data tidak berjalan, 0 gagal. Vitest 195 test, 194 lulus, 1 gagal. Test yang gagal adalah `node-runner.spec.ts` "tidak mengikuti symlink direktori…", yang membuat *symlink* sementara dan ditolak Windows (`EPERM: operation not permitted, symlink`) bila *Developer Mode* tidak aktif. Kegagalan ini berasal dari izin sistem operasi, bukan dari kode aplikasi. Test yang memerlukan basis data dijalankan terpisah per modul seperti dijelaskan pada subbab di bawah.
+
+*Coverage* diukur per modul dengan alat yang sesuai *test runner*-nya: `node --experimental-test-coverage` untuk file `*.test.ts` dan `@vitest/coverage-v8` untuk file `*.spec.ts`. Ringkasan *coverage* seluruh kelas Mendalam ada pada Tabel 4.2.0, sedangkan rinciannya ada pada tabel ringkasan cakupan tiap kelas.
+
+Tabel 4.2.0. Ringkasan *Coverage* Kelas Mendalam
+
+| ID Kelas | Nama Kelas | File yang Diukur | Coverage (baris / cabang) | Alat |
+| :--- | :--- | :--- | :--- | :--- |
+| C01 | Katalog | `server/services/katalog.service.ts`, `server/repositories/katalog.repository.ts`, `shared/katalog.ts`, `server/controllers/pencarian.controller.ts` | *[isi]* | `@vitest/coverage-v8` |
+| C04 | Donatur | `models/Donatur.ts`; `server/repositories/DonasiRepository.ts` | 97,37% / 93,75%; 99,21% / 81,25% | `node --experimental-test-coverage` |
+| C05 | PetaWilayah | `server/services/peta.service.ts`, `server/repositories/peta.repository.ts`, `server/controllers/peta.controller.ts` | *[isi]* | `@vitest/coverage-v8` |
+| C06 | TransaksiDonasi | `models/TransaksiDonasi.ts`; `server/services/DonasiService.ts`; `server/repositories/DonasiRepository.ts` | 98,65% / 85,71%; 87,78% / 83,33%; 99,21% / 81,25% | `node --experimental-test-coverage` |
+| C07 | BuktiTransaksi | `models/BuktiTransaksi.ts` | 100% / 85,71% | `node --experimental-test-coverage` |
+| C09 | PendaftaranRelawan | `models/PendaftaranRelawan.ts`; `shared/relawan.ts`; `server/services/relawanService.ts` | 100% / 85,71%; 95,35% / 89,02%; 99,19% / 94,03% | `node --experimental-test-coverage` |
+| C34 | RelawanController | `server/controllers/RelawanController.ts`; `server/http.ts` | 100% / 92,86%; 100% / 95,24% | `node --experimental-test-coverage` |
+| C38 | ProgresController | `server/controllers/ProgresController.ts`; `server/services/progresService.ts`; `shared/progres.ts`; `shared/dokumentasi.ts` | 98,11% / 95,45%; 98,70% / 93,75%; 97,91% / 82,61%; 93,48% / 79,17% | `node --experimental-test-coverage` |
+| *[CXX]* | *[Kelas Mendalam UC01–UC04]* | *[...]* | *[...]* | *[...]* |
+
+### Pengujian Unit UC05
+
+Kelas C01, C05, C18, C21, C27, C28, dan C29 diuji dengan Vitest. Basis data diganti sumber data tiruan (objek yang memenuhi antarmuka `SumberKatalog`, `SumberSebaran`, dan sumber detail), sehingga setiap cabang aturan dapat diuji tanpa MySQL. Teks SQL yang disusun `bangunKueri()` diperiksa langsung, termasuk jumlah parameter dan ketiadaan masukan pengguna di dalam teks SQL. Kelas *boundary* C21 dan C29 dirender ke HTML statis (`react-dom/server`), lalu isi dan atributnya diperiksa. Interaksi dengan MySQL sungguhan diuji sebagai pengujian integrasi (Subbab 4.3).
+
+Cara menjalankan (dari folder `src/`, tidak butuh basis data):
+
+```bash
+npx vitest run tests/katalog.repository.spec.ts tests/katalog.service.spec.ts \
+  tests/katalog.route.spec.ts tests/pencarian.controller.spec.ts \
+  tests/peta.spec.ts tests/peta.identitas.spec.ts \
+  tests/explore.spec.ts tests/explore.regression.spec.ts \
+  tests/detail.service.spec.ts tests/detail.repository.spec.ts tests/detail.komponen.spec.ts
+```
+
+Cara mengukur *coverage* kelas Mendalam (C01, C05). Paket `@vitest/coverage-v8` tidak tercantum di `package.json`, sehingga dipasang sementara dengan `--no-save` agar `package.json` dan `package-lock.json` tidak berubah:
+
+```bash
+npm install --no-save @vitest/coverage-v8@3.2.7
+npx vitest run katalog pencarian peta --coverage.enabled --coverage.reporter=text \
+  --coverage.include=server/services/katalog.service.ts \
+  --coverage.include=server/repositories/katalog.repository.ts \
+  --coverage.include=shared/katalog.ts \
+  --coverage.include=server/controllers/pencarian.controller.ts \
+  --coverage.include=server/services/peta.service.ts \
+  --coverage.include=server/repositories/peta.repository.ts \
+  --coverage.include=server/controllers/peta.controller.ts
+```
+
+Lokasi file test: `src/tests/` (`katalog.repository.spec.ts`, `katalog.service.spec.ts`, `katalog.route.spec.ts`, `pencarian.controller.spec.ts`, `peta.spec.ts`, `peta.identitas.spec.ts`, `explore.spec.ts`, `explore.regression.spec.ts`, `detail.service.spec.ts`, `detail.repository.spec.ts`, `detail.komponen.spec.ts`).
+
+Hasil saat dijalankan (20 November 2026, `main` commit `b35ab49`): 11 file, 145 dari 145 test case lulus.
 
 ### Pengujian Unit UC06 & UC10
 
@@ -347,6 +419,45 @@ Tabel 4.2.1b. Ringkasan Cakupan Kelas [C02]
 | ID Algoritma yang tercakup | *[Algo-001, ...]* |
 | Coverage (wajib ≥ 70%) | *[% baris / % cabang, alat dan bukti pada 4.6]* |
 
+### 4.2.1 Kelas Katalog
+
+**ID Kelas:** C01  
+**Nama Kelas:** Katalog  
+**Tingkat:** Mendalam
+
+Operasi DPPL diwujudkan oleh beberapa unit (lihat Tugas 9, B.1 No. 20 dan B.5): `terimaKataKunci()` dan `terapkanFilter()` oleh `bacaFilter()` di `server/controllers/pencarian.controller.ts`, `cari()` oleh `KatalogService.cari()` yang menyusun query lewat `bangunKueri()` di `server/repositories/katalog.repository.ts`, dan `tampilkanHasil()` oleh `keItem()` di `server/services/katalog.service.ts`.
+
+Tabel 4.2.1. Hasil Pengujian Unit Kelas C01
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C01-UT01 | `terimaKataKunci()`, `terapkanFilter()` (`bacaFilter()`) | Normal | `q=mangrove&tipe=project&kategori=Clean water&lokasi=Jawa Tengah&status=donasi&periode=berjalan&halaman=2&batas=10` | Kata kunci dan keenam filter terbaca bersamaan | `FilterKatalog` berisi `mangrove`, `project`, `Clean water`, `Jawa Tengah`, `donasi`, `berjalan`, halaman 2, batas 10 | Pass |
+| C01-UT02 | `terimaKataKunci()`, `terapkanFilter()` | Batas | Tanpa parameter; lalu `q=%20%20&kategori=&status=&periode=&tipe=` (pilihan "Any" di Explore) | Tanpa parameter memakai nilai bawaan; parameter kosong atau hanya spasi dianggap tidak diisi | Bawaan `tipe: semua`, halaman 1, batas 20; kata kunci, kategori, status, dan periode bernilai `undefined`, tipe `semua` | Pass |
+| C01-UT03 | `terimaKataKunci()`, `terapkanFilter()` | Negatif | `tipe=lain`, `status=terbuka`, `periode=besok`, `halaman=0`, `halaman=abc`, `batas=0`, `batas=51`, `batas=-1`, dan `q` sepanjang 101 karakter | Kesembilan masukan ditolak dengan `GalatValidasi` | Kesembilan masukan melempar `GalatValidasi` | Pass |
+| C01-UT04 | `cari()` (`bangunKueri()`, Q-014, Q-015) | Normal | Filter kosong | Query data dan query jumlah mengambil dari `project` dan `campaign`, masing-masing dengan syarat `status = 'terpublikasi'` (KF14) | Kedua query memuat `FROM project p`, `FROM campaign c`, dan tepat dua syarat `status = 'terpublikasi'` | Pass |
+| C01-UT05 | `cari()` | Normal | `tipe: project`, `kategori: Clean water`, `lokasi: Jawa Barat` | Ketiga filter digabung dengan `AND`; lokasi dicocokkan ke provinsi atau kota | Query memuat `k.tipe = ?`, `k.kategori = ?`, dan `(k.provinsi = ? OR k.kota = ?)` yang digabung `AND` | Pass |
+| C01-UT06 | `cari()` | Batas | Delapan kombinasi filter, dari tanpa filter sampai seluruh filter terisi | Jumlah tanda `?` pada query selalu sama dengan jumlah parameter | Jumlah `?` sama dengan jumlah parameter pada kedelapan kombinasi, untuk query data maupun jumlah | Pass |
+| C01-UT07 | `cari()` | Negatif | Kata kunci, kategori, dan lokasi diisi `x'; DROP TABLE project; --` | Masukan tidak masuk ke teks SQL, hanya ke daftar parameter (anti *SQL injection*) | Teks SQL tidak memuat `DROP TABLE`; masukan hanya muncul pada daftar parameter | Pass |
+| C01-UT08 | `cari()` | Batas | Halaman 3 dengan batas 10; lalu periode `segera` dengan tanggal acuan 6 Nov 2026 | `LIMIT 10 OFFSET 20`; periode `segera` memakai rentang 90 hari | Dua parameter terakhir `[10, 20]`; parameter periode `['2026-11-06', '2027-02-04']` | Pass |
+| C01-UT09 | `cari()` (aturan terbuka donasi) | Normal | Filter kosong, status `donasi`, status `selesai`, dan status `relawan` | Campaign hanya terbuka donasi bila periodenya sudah mulai; status `selesai` tidak memasukkan campaign yang belum mulai; status `relawan` tidak terpengaruh aturan campaign | Query memuat `(k.tipe <> 'campaign' OR k.mulai <= ?)` untuk bawaan dan `donasi`, `NOT (k.tipe = 'campaign' AND k.mulai > ?)` untuk `selesai`, dan tidak memuat `k.mulai > ?` untuk `relawan` | Pass |
+| C01-UT10 | `cari()` (`escapeLike()`) | Batas | `100%_air\|`; lalu `mangrove Demak` | Karakter khusus `LIKE` diloloskan agar dicari apa adanya; teks biasa tidak berubah | `100\|%\|_air\|\|`; `mangrove Demak` tidak berubah | Pass |
+| C01-UT11 | `cari()` (`KatalogService.cari()`) | Normal | Halaman 2, batas 5, waktu sistem 6 Nov 2026 18.00 UTC, sumber data berisi 1 baris dari total 11 | Filter diteruskan apa adanya; tanggal acuan memakai zona WIB; total dan paginasi dikembalikan | Filter diteruskan; `hariIni` 2026-11-07 dan `batasSegera` 2027-02-05; total 11, halaman 2, batas 5, 1 data | Pass |
+| C01-UT12 | `cari()` | Negatif | Sumber data tidak mengembalikan baris | Daftar kosong, bukan galat | `data: []`, `total: 0` | Pass |
+| C01-UT13 | `tampilkanHasil()` (`keItem()`) | Normal | Baris project Sayung: target 100.000.000, terkumpul 35.000.000, kuota 40, diterima 31 | Angka, koordinat, dan status donasi/relawan terbentuk dengan tipe yang benar | Latitude -6,9, longitude 110,5, persentase capaian 35, `terbukaDonasi` dan `terbukaRelawan` `true`, kuota 40, diterima 31 | Pass |
+| C01-UT14 | `tampilkanHasil()` | Batas | Baris campaign tanpa status pelaksanaan dan kuota; baris tanpa koordinat | Campaign tidak memiliki status pelaksanaan, kuota, atau relawan; koordinat kosong tetap `null` | `statusPelaksanaan` dan `kuotaRelawan` `null`, `terbukaRelawan` `false`; latitude dan longitude `null` | Pass |
+| C01-UT15 | `tampilkanHasil()` (`hitungPersen()`) | Batas | 35.000.000 dari 100.000.000; 1 dari 3; 10 dari target 0 | Dibulatkan; target 0 menghasilkan 0, bukan pembagian dengan nol | 35; 33; 0 | Pass |
+| C01-UT16 | `cari()` (`tanggalWib()`, `tambahHari()`) | Batas | 6 Nov 2026 18.00 UTC dan 16.59 UTC; 31 Des 2026 + 1 hari; 6 Nov 2026 + 90 hari | 18.00 UTC sudah hari berikutnya di WIB; penambahan hari melewati batas bulan dan tahun | 2026-11-07 dan 2026-11-06; 2027-01-01; 2027-02-04 | Pass |
+| C01-UT17 | Opsi filter lokasi (`SQL_PROVINSI`, tambahan implementasi) | Normal | Query daftar provinsi untuk filter Explore | Provinsi hanya diambil dari project dan campaign `terpublikasi` | Query memuat `UNION` dan tepat dua syarat `status = 'terpublikasi'` | Pass |
+
+Tabel 4.2.1b. Ringkasan Cakupan Kelas C01
+
+| Informasi | Keterangan |
+| :--- | :--- |
+| Daftar operasi public pada DPPL | `terimaKataKunci()`, `terapkanFilter()`, `cari()`, `tampilkanHasil()` |
+| Operasi yang diuji | Seluruhnya (4 dari 4 operasi public), ditambah opsi filter provinsi (`SQL_PROVINSI`, tambahan implementasi) |
+| ID Algoritma yang tercakup | Algo-014 |
+| Coverage (wajib ≥ 70%) | *[isi: `katalog.service.ts` …% / …%; `katalog.repository.ts` …% / …%; `shared/katalog.ts` …% / …%; `pencarian.controller.ts` …% / …% (baris / cabang)]*. Alat: `@vitest/coverage-v8`; bukti pada 4.6 |
+
 ### 4.2.2 Kelas [Nama Kelas 2]
 
 ### 4.2.3 Kelas [Nama Kelas 3]
@@ -377,7 +488,37 @@ Tabel 4.2.4b. Ringkasan Cakupan Kelas C04
 | ID Algoritma yang tercakup | Algo-103, Algo-104 |
 | Coverage (wajib ≥ 70%) | Baris 97,37% / cabang 93,75% (`models/Donatur.ts`); `DonasiRepository.ts` 99,21% / 81,25%. Alat: `node --experimental-test-coverage`; bukti pada 4.6 |
 
-### 4.2.5 Kelas [Nama Kelas 5]
+### 4.2.5 Kelas PetaWilayah
+
+**ID Kelas:** C05  
+**Nama Kelas:** PetaWilayah  
+**Tingkat:** Mendalam
+
+`koordinatPusat` dan `radius` menjadi parameter konstruktor `PetaWilayah` di `server/services/peta.service.ts`, sedangkan query Q-101 s.d. Q-104 berada di `server/repositories/peta.repository.ts` (lihat Tugas 9, B.1 No. 23). Kelas ini dipanggil oleh `PetaController.getSebaran()` (`GET /api/peta`), yang juga mewujudkan `getSebaranProject()` pada C34 RelawanController (lihat Tabel 4.2.34b), sehingga pembacaan permintaannya ikut diuji di sini.
+
+Tabel 4.2.5. Hasil Pengujian Unit Kelas C05
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C05-UT01 | `koordinatPusat` (`pecahKoordinat()`) | Normal | `-6.9, 110.5` | Terurai menjadi lintang dan bujur | `{ lat: -6.9, lng: 110.5 }` | Pass |
+| C05-UT02 | `koordinatPusat` (`pecahKoordinat()`) | Negatif | `abc`; `95,10` (lintang > 90); `10,190` (bujur > 180); teks kosong | Keempatnya ditolak | Keempatnya mengembalikan `null` | Pass |
+| C05-UT03 | `tampilkanSebaranProject()` (Q-102) | Normal | Radius 0 tanpa titik pusat; sumber data berisi baris dengan angka bertipe teks | Sumber dipanggil tanpa wilayah; angka diubah menjadi bilangan | Sumber dipanggil dengan `undefined`; latitude -6,9, longitude 110,5, target 1.000, terkumpul 250 | Pass |
+| C05-UT04 | `tampilkanSebaranProject()` (Q-101) | Batas | Radius 25 dengan pusat `-6.9,110.5` | Wilayah diteruskan ke query dalam kilometer | Sumber dipanggil dengan `{ lat: -6.9, lng: 110.5, radiusKm: 25 }` | Pass |
+| C05-UT05 | `tampilkanSebaranProject()` | Negatif | Radius 5 dengan pusat `xx` | Ditolak karena titik pusat tidak valid | Melempar galat yang menyebut `koordinatPusat` | Pass |
+| C05-UT06 | `tampilkanSebaranCampaign()` (Q-104) | Batas | Waktu sistem 7 Nov 2026 20.00 UTC (8 Nov 2026 03.00 WIB) | Batas periode campaign memakai tanggal hari ini zona WIB, sehingga campaign yang berakhir 7 Nov tidak dipetakan | Sumber dipanggil dengan tanggal `2026-11-08` | Pass |
+| C05-UT07 | `PetaController.getSebaran()` (`bacaPermintaan()`, tambahan implementasi) | Normal | Tanpa parameter; lalu `jenis=project&pusat=-6.9,110.5&radius=30` | Tanpa parameter memakai bawaan; parameter terisi terbaca | Bawaan `{ jenis: semua, koordinatPusat: '', radius: 0 }`; lalu `{ jenis: project, koordinatPusat: '-6.9,110.5', radius: 30 }` | Pass |
+| C05-UT08 | `PetaController.getSebaran()` (`bacaPermintaan()`) | Negatif | `jenis=lain`, `radius=-1`, `radius=abc`, `radius=99999` (di atas 20.000 km), `radius=10` tanpa pusat, `radius=10&pusat=salah` | Keenam masukan ditolak dengan `GalatValidasi` | Keenam masukan melempar `GalatValidasi` | Pass |
+| C05-UT09 | `PetaController.getSebaran()` | Normal | Tanpa parameter | Titik project dan campaign digabung | Tipe hasil berurutan `project`, `campaign` | Pass |
+| C05-UT10 | `PetaController.getSebaran()` | Batas | `jenis=project` | Hanya project yang diambil; sumber campaign tidak dipanggil | 1 titik; sumber campaign tidak dipanggil | Pass |
+
+Tabel 4.2.5b. Ringkasan Cakupan Kelas C05
+
+| Informasi | Keterangan |
+| :--- | :--- |
+| Daftar operasi public pada DPPL | `tampilkanSebaranProject()`, `tampilkanSebaranCampaign()` |
+| Operasi yang diuji | Seluruhnya (2 dari 2 operasi public), ditambah `pecahKoordinat()` dan `PetaController.getSebaran()` (tambahan implementasi) |
+| ID Algoritma yang tercakup | Algo-101, Algo-102 |
+| Coverage (wajib ≥ 70%) | *[isi: `peta.service.ts` …% / …%; `peta.repository.ts` …% / …%; `peta.controller.ts` …% / …% (baris / cabang)]*. Alat: `@vitest/coverage-v8`; bukti pada 4.6 |
 
 ### 4.2.6 Kelas TransaksiDonasi
 
@@ -478,6 +619,92 @@ Tabel 4.2.9b. Ringkasan Cakupan Kelas C09
 | Operasi yang diuji | Seluruhnya (6 dari 6 operasi public) |
 | ID Algoritma yang tercakup | Algo-113, Algo-114, Algo-115, Algo-116, Algo-117 |
 | Coverage (wajib ≥ 70%) | `models/PendaftaranRelawan.ts` 100% / 85,71%; `shared/relawan.ts` 95,35% / 89,02%; `server/services/relawanService.ts` 99,19% / 94,03% (baris / cabang). Alat: `node --experimental-test-coverage`; bukti pada 4.6 |
+
+### 4.2.18 Kelas DetailCampaignView
+
+**ID Kelas:** C18  
+**Nama Kelas:** DetailCampaignView  
+**Tingkat:** Sedang
+
+`bukaHalamanCampaign()` diwujudkan oleh route `/campaign/[id]`, yang mengambil data lewat `DetailService.ambil('campaign', id)` di `server/services/detail.service.ts`. `tampilkanDetail()` diwujudkan oleh komponen di `components/detail/` (lihat Tugas 9, B.1 No. 22 dan B.5).
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C18-UT01 | `bukaHalamanCampaign()` (`DetailService.ambil()`) | Gagal | ID campaign yang tidak ada atau belum terpublikasi (sumber data mengembalikan kosong) | Tidak ada detail yang dikembalikan, sehingga route menampilkan 404 | `ambil('campaign', 'x')` dan `ambil('project', 'x')` mengembalikan `null` | Pass |
+| C18-UT02 | `tampilkanDetail()` | Normal | Baris campaign `c1` | Campaign tidak memiliki progres, relawan, maupun instruksi relawan | Progres dan relawan kosong; `instruksiRelawan` `null` dan query titik kumpul tidak dijalankan | Pass |
+| C18-UT03 | `tampilkanDetail()` (status donasi, Algo-132) | Batas | Waktu 8 Nov 2026 10.00 WIB: mulai 9 Nov; mulai 8 Nov; mulai 1 Okt dan selesai 8 Nov; selesai 7 Nov. Lalu mulai 8 Nov pada 8 Nov 00.30 WIB (DB masih 7 Nov UTC) | Belum mulai: tertutup dan ditandai belum mulai; tepat tanggal mulai, tengah periode, dan hari terakhir: terbuka; setelah selesai: tertutup tetapi bukan belum mulai; sebelum hari mulai di DB: belum dibuka | Berturut-turut `terbukaDonasi` `false` (`belumMulai` `true`), `true`, `true`, `false` (`belumMulai` `false`); pukul 00.30 WIB `false` dan 07.30 WIB `true` | Pass |
+| C18-UT04 | `tampilkanDetail()` (`TombolDonasi`, `HeroDetail`) | Gagal | Render campaign yang mulai 9 Nov 2026; lalu campaign yang sudah berakhir; lalu campaign yang terbuka | Campaign belum mulai tidak menawarkan donasi dan menjelaskan kapan dibuka; campaign berakhir tetap bertuliskan "period ended"; campaign terbuka menampilkan "Donate now" | Belum mulai: tanpa "Donate now", tampil "Fundraising has not started yet", "starts on 9 Nov 2026", chip "Opens 9 Nov 2026", tombol `aria-disabled="true"`. Berakhir: "period ended". Terbuka: "Donate now" | Pass |
+
+### 4.2.21 Kelas DetailProjectView
+
+**ID Kelas:** C21  
+**Nama Kelas:** DetailProjectView  
+**Tingkat:** Sedang
+
+Sama dengan C18 untuk project: `bukaHalamanProject()` diwujudkan oleh route `/project/[id]` dan `tampilkanDetail()` oleh `HeroDetail`, `KerangkaDetail`, `PanelSamping`, `PanelTentang`, `PanelKebutuhan`, `PanelProgres`, dan `PanelDana`.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C21-UT01 | `tampilkanDetail()` (`DetailService.ambil()`) | Normal | Baris project `p1` beserta riwayat progres | Detail project terbentuk dengan angka, progres, dan dokumen yang benar | Detail terbentuk; dokumen progres menjadi tautan ke endpoint dokumentasi | Pass |
+| C21-UT02 | `tampilkanDetail()` (status donasi dan relawan) | Gagal | Periode project lewat 6 hari; kuota penuh; pendaftaran `ditutup`; status pelaksanaan `selesai` | Donasi dan relawan tertutup sesuai kondisinya | Periode lewat: donasi dan relawan tertutup, `sisaHari` -6; kuota penuh dan pendaftaran ditutup: `terbukaRelawan` `false`; project selesai: `terbukaDonasi` `false` | Pass |
+| C21-UT03 | `tampilkanDetail()` (Algo-131) | Batas | Project dengan jadwal mulai 9 Nov 2026, dibuka 8 Nov 2026 | Donasi project tidak dibatasi tanggal mulai | `terbukaDonasi` `true`, `belumMulai` `true` | Pass |
+| C21-UT04 | `bukaHalamanProject()` (tab awal) | Normal | `?tab=` berisi tab yang dikenal, termasuk parameter berulang; lalu kosong dan tidak dikenal | Tab yang dikenal dibuka; nilai lain kembali ke About | Tab yang dikenal diterima; nilai kosong atau tidak dikenal menjadi About | Pass |
+| C21-UT05 | `tampilkanDetail()` (titik kumpul, KF22) | Normal | Relawan yang diterima membuka detail project | Titik kumpul tampil | `instruksiRelawan` berisi `Balai desa 06:30` dan tampil pada `PanelTentang` | Pass |
+| C21-UT06 | `tampilkanDetail()` (titik kumpul, KF22) | Gagal | Pengunjung tanpa login; pengguna `pending`, `rejected`, dan pengguna lain | Titik kumpul tidak dikirim maupun ditampilkan; jadwal dan wilayah tetap tampil | Tanpa login query titik kumpul tidak dijalankan; ketiga pengguna mendapat `null`; panel menampilkan "Tabanan, Bali", "9 Nov 2026", dan "shared with accepted volunteers". Query detail tidak memilih kolom `lokasi_kumpul` | Pass |
+| C21-UT07 | `tampilkanDetail()` (`PanelProgres`, `bentukDokumen()`) | Normal | Alamat berkas dari penyimpanan, nama berkas polos, dan alamat yang sudah ter-*encode* | Ketiganya menjadi tautan ke `/api/dokumentasi/{idProject}/{nama}` tanpa *encoding* ganda; tautan dibuka di tab baru dengan aman | Tautan terbentuk; atribut `target="_blank"` dan `rel="noopener noreferrer"` ada | Pass |
+| C21-UT08 | `tampilkanDetail()` (`bentukDokumen()`) | Gagal | Situs luar, skema berbahaya, berkas project lain, *path traversal* (biasa dan ter-*encode*), segmen berlebih, *path* di luar endpoint, *encoding* rusak, ID project tidak valid, nilai kosong | Tidak satu pun dijadikan tautan | Seluruh masukan tidak menghasilkan tautan; nilai kosong menjadi daftar kosong; dokumen tanpa tautan dirender sebagai teks `<span class="doc">` | Pass |
+
+### 4.2.27 Kelas FormPencarianView
+
+**ID Kelas:** C27  
+**Nama Kelas:** FormPencarianView  
+**Tingkat:** Sedang
+
+`bukaKatalog()` diwujudkan oleh route `/explore`, `masukkanKriteria()` oleh kolom cari dan filter yang menyimpan filter di URL (`bacaFilterUrl()`, `keQueryUrl()`) lalu memanggil `GET /api/katalog` (`keQueryApi()`), dan `tampilkanHasil()` oleh daftar `KartuHasil` beserta tombol "Show more". Fungsinya berada di `shared/explore.ts` dan `shared/explorePaging.ts`.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C27-UT01 | `masukkanKriteria()` (`bacaFilterUrl()`) | Normal | `q=" bakau "`, `type=campaign`, `status=volunteer` | Filter terbaca dari URL dan spasi di tepi kata kunci dibuang | `{ q: 'bakau', type: 'campaign', status: 'volunteer' }` | Pass |
+| C27-UT02 | `masukkanKriteria()` (`bacaFilterUrl()`) | Gagal | `type=x&status=y&period=z`; parameter berulang `cat=A&cat=B` | Nilai tidak dikenal kembali ke bawaan; parameter berulang memakai nilai pertama | Filter kosong untuk nilai tidak dikenal; `cat` = `A` | Pass |
+| C27-UT03 | `masukkanKriteria()` (`keQueryApi()`, `keQueryUrl()`) | Normal | Filter tampilan (kata kunci `air`, tipe project, Clean water, Bali, status *closed*, periode *soon*); lalu filter kosong | Kosakata tampilan diterjemahkan ke parameter API; filter kosong hanya mengirim halaman dan batas; URL kosong dapat dibaca balik | `q=air`, `tipe=project`, `kategori=Clean water`, `lokasi=Bali`, `status=selesai`, `periode=segera`, `batas=50`; filter kosong hanya `halaman` dan `batas`; `keQueryUrl()` mengembalikan teks kosong dan hasil baca baliknya sama | Pass |
+| C27-UT04 | `bukaKatalog()` (sinkronisasi URL) | Normal | Dari `/explore`, buka tautan footer "Donate to a campaign" dan "Find volunteer work", pindah antartautan, lalu kembali ke `/explore` | Filter mengikuti URL; kembali tanpa parameter mengosongkan filter; URL hasil `replaceState` milik komponen sendiri tidak mengubah filter | `?type=campaign` dan `?status=volunteer` terbaca; kembali ke `/explore` mengosongkan filter; `replaceState` tidak mengubah filter; parameter tidak valid menjadi filter kosong | Pass |
+| C27-UT05 | `tampilkanHasil()` ("Show more") | Gagal | Halaman kedua dijawab HTTP 500, lalu galat tanpa pesan | Kegagalan dilaporkan, tidak dilempar; galat tanpa pesan memakai pesan umum; pesan dan tombol coba lagi tampil di samping hasil yang sudah ada; tombol nonaktif saat mencoba lagi | Kegagalan dilaporkan sebagai hasil gagal; pesan umum dipakai; hasil lama tetap tampil bersama pesan dan tombol; tombol nonaktif selama permintaan berjalan | Pass |
+| C27-UT06 | `tampilkanHasil()` ("Show more") | Normal | Coba lagi setelah gagal; filter diganti saat respons halaman lama belum tiba | Halaman yang diminta adalah halaman setelah yang sudah termuat; hasil baru ditambahkan tanpa menghapus halaman pertama; respons untuk filter lama diabaikan | Halaman berikutnya diminta; hasil bertambah tanpa menghapus halaman pertama; respons lama diabaikan | Pass |
+| C27-UT07 | `tampilkanHasil()` (`KartuHasil`) | Normal | Dana 61.250.000, 1.000.000.000, dan 9.500; persentase 150 dari 100 dan 1 dari 0; kuota 10 dengan 3 relawan; campaign `luwu` | Format ringkas rupiah, batang capaian dibatasi 0–100, teks relawan hanya untuk project berkuota, dan tautan detail sesuai tipe | `Rp61.3M`, `Rp1B`, `Rp9,500`; 100 dan 0; `3/10 volunteers`; tautan ke `/campaign/luwu` | Pass |
+
+### 4.2.28 Kelas PencarianController
+
+**ID Kelas:** C28  
+**Nama Kelas:** PencarianController  
+**Tingkat:** Sedang
+
+`getDetailProject()` dan `getDetailCampaign()` diwujudkan oleh `DetailService` (lihat Tugas 9, B.1 No. 22) dan diuji pada C18 dan C21. Atribut `pesanKesalahan` diganti respons JSON `{ pesan }` berstatus 400 (Tugas 9, B.1 No. 21).
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C28-UT01 | `cari()` | Normal | `q=tidakada&tipe=campaign`, sumber data tidak mengembalikan baris | Filter hasil bacaan diteruskan ke `KatalogService`; hasil kosong menjadi `data: []` | Filter `{ kataKunci: 'tidakada', tipe: 'campaign' }` diteruskan; `data` = `[]` | Pass |
+| C28-UT02 | `getDaftarDipublikasikan()` | Normal | Dipanggil tanpa argumen | Pencarian tanpa kata kunci maupun filter | Filter yang diteruskan tepat `{ tipe: 'semua', halaman: 1, batas: 20 }` | Pass |
+| C28-UT03 | `getPesanKesalahan()` (`GET /api/katalog`) | Gagal | `GET /api/katalog?status=ngawur` | Status 400 dengan pesan yang menyebut parameter salah, tanpa menyentuh basis data | Status 400; `pesan` memuat `status`; test lulus tanpa basis data berjalan | Pass |
+| C28-UT04 | `getOpsi()` (tambahan implementasi) | Normal | Sumber data mengembalikan provinsi `['Bali']` | Kategori baku dan provinsi dari data terpublikasi dikembalikan | `provinsi` = `['Bali']`; `kategori` memuat `Clean water` | Pass |
+
+### 4.2.29 Kelas FormPetaWilayahView
+
+**ID Kelas:** C29  
+**Nama Kelas:** FormPetaWilayahView  
+**Tingkat:** Sedang
+
+`bukaPeta()` diwujudkan oleh peta pada halaman Explore dan `tampilkanPeta(sebaran)` oleh `PetaSebaran` (peta Indonesia SVG dengan pin dan popup). Titik peta diambil dari hasil katalog yang sama dengan daftar kartu (lihat Tugas 9, B.1 No. 24).
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C29-UT01 | `tampilkanPeta()` (`proyeksi()`) | Normal | Bujur 94,5 dan lintang 6,4 (sudut barat laut Indonesia) | Titik berada di pojok kiri atas peta | `[0, 0]` | Pass |
+| C29-UT02 | `tampilkanPeta()` (`aturPin()`) | Batas | Dua titik pada koordinat yang sama | Pin digeser agar dapat diklik masing-masing | Jarak kedua pin ≥ 20 piksel | Pass |
+| C29-UT03 | `tampilkanPeta()` (`letakPopup()`) | Batas | Pin di bagian atas peta (y 50), di tengah (y 300), dan di tepi kanan (x 2000) | Popup diletakkan di bawah pin bila pin di bagian atas, dan tidak keluar dari peta | Di bawah untuk y 50, di atas untuk y 300, posisi kiri dibatasi 62 | Pass |
+| C29-UT04 | `tampilkanPeta()` (`kunciTitik()`, `aturPin()`) | Batas | Project dan campaign dengan ID yang sama | Identitas titik memakai pasangan tipe dan ID, sehingga keduanya tidak saling menimpa | Kunci berbeda; masing-masing memiliki satu posisi pin | Pass |
+| C29-UT05 | `tampilkanPeta()` (`PetaSebaran`) | Normal | Render project dan campaign ber-ID sama; pilih marker campaign, lalu marker project | Kedua marker dirender; popup yang terbuka sesuai jenis marker | Kedua marker ada; popup campaign dan popup project terbuka sesuai pilihan | Pass |
+| C29-UT06 | `tampilkanPeta()` | Gagal | Kunci terpilih yang tidak cocok dengan titik mana pun; sorotan pada satu jenis | Popup tidak terbuka; sorotan tidak ikut menyala pada jenis lain yang ID-nya sama | Tidak ada popup; hanya marker jenis yang disorot yang menyala | Pass |
+| C29-UT07 | `bukaPeta()` (`FormPetaWilayahView`) | Normal | Hasil filter "Closed / completed" dengan 1 aksi berkoordinat; hasil campuran terbuka dan tutup | Peta mengikuti hasil filter, termasuk aksi yang sudah tutup, dan markernya tetap dapat dipilih | 1 marker untuk 1 hasil; semua hasil berkoordinat dipetakan; popup aksi yang sudah tutup tetap terbuka | Pass |
+| C29-UT08 | `bukaPeta()` | Gagal | Hasil katalog yang tidak memiliki koordinat | Item tidak dipetakan dan tidak membuat galat | Item tanpa koordinat tidak memiliki marker | Pass |
 
 ### 4.2.30 Kelas FormDonasiView
 
@@ -677,6 +904,10 @@ Tabel 4.3.1. Daftar Antarmuka Antarkomponen
 | IK-09 | ProgresController / progresService | MySQL (`progres_project`, `project`) | Controller - Model - Basis data | INT-TC17 s.d. INT-TC20 |
 | IK-10 | RelawanView, ProgresView (`FormPendaftaranRelawanView`, `FormVolunteerManagementView`, `FormProgresProjectView`) | RelawanController, ProgresController (`/api/projects/{id}/relawan`, `/api/projects/{id}/progres`) | View - Controller (HTTP API) | INT-TC21 |
 | IK-11 | dokumentasiService | Penyimpanan berkas lokal (`src/uploads/progres/`) dan `/api/dokumentasi/{idProject}/{nama}` | Aplikasi - Sistem berkas | INT-TC22 |
+| IK-12 | FormPencarianView (`ExploreView`) | PencarianController (`/api/katalog`, `/api/katalog/opsi`) | View - Controller (HTTP API) | INT-TC23, INT-TC24 |
+| IK-13 | PencarianController / KatalogService / KatalogRepository | MySQL (`project`, `campaign`) | Controller - Model - Basis data | INT-TC25, INT-TC26 |
+| IK-14 | PetaController / PetaWilayah / PetaRepository (tambahan di luar DPPL, `GET /api/peta`) | MySQL (`project`, `campaign`, `ST_Distance_Sphere`) | Controller - Model - Basis data | INT-TC27, INT-TC28 |
+| IK-15 | DetailProjectView, DetailCampaignView (`MuatDetail`) / DetailService / DetailRepository | MySQL (`project`, `campaign`, `progres_project`) | View - Model - Basis data | INT-TC29, INT-TC30 |
 
 Tabel 4.3.2. Hasil Pengujian Integrasi
 
@@ -704,6 +935,14 @@ Tabel 4.3.2. Hasil Pengujian Integrasi
 | INT-TC20 | IK-09 | Normal: urutan riwayat dan hak lihat | Tes "KF14: riwayat terbaru lebih dulu; project draft hanya untuk pemiliknya" | Riwayat terurut dari yang terbaru; riwayat project draft hanya dapat dibaca pemiliknya | Riwayat terurut dari yang terbaru; riwayat project draft hanya terbaca oleh pemiliknya | Pass |
 | INT-TC21 | IK-10 | Normal: formulir terhubung ke API | Jalankan aplikasi; login `nadia@klimpool.id`, kirim formulir relawan pada "Clean Water for Upper Citarum Villages"; login `sari@klimpool.id`, kirim progres pada "Sayung Coastal Mangrove Restoration"; amati tab Network | `POST /api/projects/air/relawan` berstatus 201 dengan `Content-Type: application/json`; `POST /api/projects/mgv/progres` berstatus 201 dengan `multipart/form-data`; modal tertutup dan notifikasi berhasil tampil | `POST /api/projects/air/relawan` berstatus 201 Created dengan respons `application/json`, lalu tampil "Application sent". `POST /api/projects/air/progres` berstatus 201 Created dengan *request header* `Content-Type: multipart/form-data; boundary=…`, lalu pembaruan tampil di timeline. | Pass |
 | INT-TC22 | IK-11 | Normal: dokumentasi tersimpan dan dapat diambil | Lanjut dari INT-TC21 dengan satu berkas PNG; buka folder `src/uploads/progres/mgv/` dan URL dokumentasi pada timeline | Berkas baru bernama `<uuid>.png` ada di folder; `GET /api/dokumentasi/mgv/<nama>` berstatus 200 dengan `Content-Type: image/png` | Berkas `bc443ab8-43b8-47d4-a7f4-60c852f9665a.png` (1.454 byte) tersimpan di `src/uploads/progres/mgv/`; log server mencatat `GET /api/dokumentasi/mgv/bc443ab8-….png 200` dan gambar tampil di peramban. | Pass |
+| INT-TC23 | IK-12 | Normal: filter Explore terhubung ke API | Jalankan aplikasi; buka `/explore` tanpa login; pilih "Action projects", kategori "Clean water", dan provinsi "Jawa Barat"; amati tab Network | `GET /api/katalog?tipe=project&kategori=Clean+water&lokasi=Jawa+Barat…` berstatus 200 dengan badan `{ data, total, halaman, batas }`; kartu dan pin peta hanya menampilkan hasil tersebut, termasuk "Clean Water for Upper Citarum Villages"; URL halaman ikut berisi filter | *[isi]* | *Pass/Fail* |
+| INT-TC24 | IK-12 | Gagal: parameter tidak valid | Kirim `GET /api/katalog?status=ngawur` langsung dari peramban atau PowerShell | Status 400 `{ pesan: "Parameter status harus salah satu dari: donasi, relawan, selesai." }`; tidak ada galat 500 | *[isi]* | *Pass/Fail* |
+| INT-TC25 | IK-13 | Normal: hanya data terpublikasi yang diambil (KF14) | Kirim `GET /api/katalog?batas=50`; bandingkan dengan `SELECT id_project, status FROM project;` dan `SELECT id_campaign, status FROM campaign;` | `total` sama dengan jumlah baris berstatus `terpublikasi` pada kedua tabel; `rusun` dan `lewotobi` (`menunggu_verifikasi`) serta `tamankali` (`ditolak`) tidak ada di `data` | *[isi]* | *Pass/Fail* |
+| INT-TC26 | IK-13 | Gagal: kata kunci berisi SQL | Kirim `GET /api/katalog?q=x'; DROP TABLE project; --`, lalu jalankan `SELECT COUNT(*) FROM project;` | Status 200 dengan `data: []`; tabel `project` tetap ada dan jumlah barisnya sama dengan sebelum uji | *[isi]* | *Pass/Fail* |
+| INT-TC27 | IK-14 | Normal: sebaran seluruh wilayah | Kirim `GET /api/peta` | Status 200; `data` berisi project dan campaign `terpublikasi` yang memiliki koordinat; campaign `luwu` (berakhir 30 Sep 2026) dan aksi yang belum terpublikasi tidak ada | *[isi]* | *Pass/Fail* |
+| INT-TC28 | IK-14 | Batas: sebaran dalam radius | Kirim `GET /api/peta?jenis=project&pusat=-6.9,110.5&radius=30`; lalu `GET /api/peta?radius=10` tanpa pusat | Permintaan pertama berstatus 200 dan hanya berisi project yang berjarak ≤ 30 km dari Demak, termasuk `mgv` (Sayung, Demak); permintaan kedua berstatus 400 `{ pesan: "Parameter pusat harus berformat \"lat,lng\"." }` | *[isi]* | *Pass/Fail* |
+| INT-TC29 | IK-15 | Normal: detail diambil dari basis data | Tanpa login, buka `/project/mgv` dan `/campaign/surya`; bandingkan dengan `SELECT nama, kebutuhan_dana, dana_terkumpul FROM project WHERE id_project = 'mgv';` dan query setara pada `campaign` | Kedua halaman tampil; nama, target, dan dana terkumpul sama dengan isi basis data | *[isi]* | *Pass/Fail* |
+| INT-TC30 | IK-15 | Gagal: detail yang belum terpublikasi | Tanpa login, buka `/project/rusun`, `/campaign/lewotobi`, `/campaign/tamankali`, dan `/project/tidakada` | Keempatnya menampilkan halaman tidak ditemukan (404); data aksi tidak tampil | *[isi]* | *Pass/Fail* |
 
 <br>
 
@@ -727,6 +966,27 @@ Tabel 4.4.1. Hasil Pengujian Use Case [UC01]
 ### 4.4.2 Use Case [Nama Use Case 2]
 
 *[Lanjutkan untuk seluruh use case dengan pola yang sama, hingga 4.4.N.]*
+
+### 4.4.5 Use Case Mencari dan Menelusuri Project
+
+**ID Use Case:** UC05  
+**Nama Use Case:** Mencari dan Menelusuri Project
+
+UC05 dapat diakses tanpa login (Tugas 9, B.5 C28). Data uji memakai `002_seed.sql`, yang memuat aksi berstatus `terpublikasi` dan tiga aksi yang belum terpublikasi: `rusun` dan `lewotobi` (`menunggu_verifikasi`) serta `tamankali` (`ditolak`).
+
+Tabel 4.4.5. Hasil Pengujian Use Case UC05
+
+| ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| UC05-TC01 | KF14 | Normal: daftar terpublikasi | 1. Tanpa login, buka menu Explore.<br>2. Amati daftar kartu dan jumlah hasil. | - | Daftar campaign dan project yang telah dipublikasikan tampil beserta jumlahnya ("… actions found"). "Marunda Rooftop Food Gardens", "Water and Masks for Lewotobi Evacuees", dan "Semarang Riverside Pocket Park" tidak tampil. | *[isi]* | *Pass/Fail* |
+| UC05-TC02 | KF13 | Normal: kata kunci | 1. Buka Explore.<br>2. Ketik kata kunci pada kolom cari.<br>3. Tekan "Search". | Kata kunci: mangrove | Hasil memuat "Sayung Coastal Mangrove Restoration"; URL berubah menjadi `/explore?q=mangrove`. | *[isi]* | *Pass/Fail* |
+| UC05-TC03 | KF13 | Normal: kombinasi filter | 1. Buka Explore.<br>2. Pilih tipe, kategori, dan provinsi. | Tipe: Action projects<br>Kategori: Clean water<br>Provinsi: Jawa Barat | Hanya project kategori Clean water di Jawa Barat yang tampil, termasuk "Clean Water for Upper Citarum Villages"; pin peta mengikuti hasil; tombol "Clear all filters" tampil. | *[isi]* | *Pass/Fail* |
+| UC05-TC04 | KF13 | Normal: filter status dan periode | 1. Buka Explore.<br>2. Pilih status "Closed / completed".<br>3. Ganti ke status "Open for donations" dan periode "Happening now". | - | "Closed / completed" menampilkan aksi yang sudah ditutup atau berakhir, termasuk "Luwu Flash Flood Response" dan "Leuser Forest Replanting". "Open for donations" + "Happening now" hanya menampilkan aksi yang sedang berjalan dan masih menerima donasi. | *[isi]* | *Pass/Fail* |
+| UC05-TC05 | KF14 | Normal: detail project | 1. Lanjut dari UC05-TC02.<br>2. Pilih kartu "Sayung Coastal Mangrove Restoration". | - | Halaman `/project/mgv` menampilkan deskripsi, kebutuhan, target donasi, lokasi (Sayung, Demak, Jawa Tengah), dan status project. | *[isi]* | *Pass/Fail* |
+| UC05-TC06 | KF14 | Normal: detail campaign | 1. Buka Explore, pilih "Fundraising campaigns".<br>2. Pilih kartu "Solar Power for Kambera Health Center". | - | Halaman `/campaign/surya` menampilkan deskripsi, kebutuhan, target donasi, lokasi (Kambera, East Sumba, Nusa Tenggara Timur), periode, dan status campaign. | *[isi]* | *Pass/Fail* |
+| UC05-TC07 | KF13 | Alternatif 1: Project tidak ditemukan | 1. Buka Explore.<br>2. Cari kata kunci yang tidak ada.<br>3. Tekan "Clear all filters". | Kata kunci: xyzabc | Muncul "No matching actions yet" dengan pesan "Nothing matches xyzabc. Try another keyword, or remove some filters."; setelah "Clear all filters", seluruh daftar terpublikasi tampil kembali. | *[isi]* | *Pass/Fail* |
+| UC05-TC08 | KF13, KF14 | Normal: menelusuri lewat peta | 1. Buka Explore.<br>2. Pilih salah satu pin pada peta.<br>3. Tekan tautan pada popup. | Pin: Sayung Coastal Mangrove Restoration | Popup ringkasan aksi tampil; tautan membuka halaman detail aksi tersebut. | *[isi]* | *Pass/Fail* |
+| UC05-TC09 | KF14 | Alternatif: akses langsung aksi belum terpublikasi | 1. Tanpa login, buka alamat detail aksi yang belum terpublikasi secara langsung. | `/project/rusun`, `/campaign/lewotobi` | Halaman tidak ditemukan (404) tampil; rincian aksi tidak ditampilkan. | *[isi]* | *Pass/Fail* |
 
 ### 4.4.6 Use Case Melakukan Transaksi Donasi
 
@@ -820,6 +1080,8 @@ Tabel 4.5. Hasil Pengujian KNF
 | *KNF01-TC01* | *KNF01* | *Reliability* | *Tidak ada data hilang/ganda saat jaringan putus di tengah transaksi* | *Simulasi putus koneksi saat bayar, lalu cek status di DB* | *[Hasil aktual]* | *Pass/Fail* |
 | *KNF02-TC01* | *KNF02* | *Security* | *Password tersimpan sebagai hash, bukan plain-text* | *Inspeksi tabel pengguna di DB* | *[...]* | *Pass/Fail* |
 | *KNFXX-TC01* | *KNFXX* | *Response time* | *Halaman tampil ≤ 4 detik* | *Chrome DevTools, 5 kali ukur, ambil rata-rata* | *[Rata-rata ... detik, maks ... detik]* | *Pass/Fail* |
+| KNF02-TC01 | KNF02 | *Performance efficiency* (waktu tampil hasil filter) | Hasil akhir pencarian tampil ≤ 3 detik setelah filter diterapkan, pada jaringan stabil | Build produksi lokal (`npm run build` lalu `npm run start`). Chrome DevTools tab Network (*Disable cache*, tanpa *throttling*): terapkan 10 kombinasi filter pada Explore, catat waktu dari permintaan `GET /api/katalog` dimulai sampai kartu hasil selesai dirender (kolom *Time* dan *Finish* atau tab Performance); ambil rata-rata dan maksimum | *[Rata-rata … detik, maks … detik]* | *Pass/Fail* |
+| KNF02-TC02 | KNF02 | *Performance efficiency* (waktu tanggap API filter) | Respons `GET /api/katalog` dengan filter ≤ 3 detik | Script PowerShell `Measure-Command` + `Invoke-WebRequest` ke `GET /api/katalog?tipe=project&kategori=Clean%20water&status=donasi&periode=berjalan`, 30 kali berturut-turut pada build produksi lokal; ambil rata-rata, maksimum, dan jumlah respons selain 200 | *[Rata-rata … ms, maks … ms, … dari 30 berstatus 200]* | *Pass/Fail* |
 | KNF04-TC01 | KNF04 | Reliability | Bila satu tahap donasi gagal, seluruh perubahan di-*rollback*: saldo kembali utuh dan tidak ada baris transaksi tertinggal | Uji integrasi `donasi.integrasi.test.ts` (kasus KF16) terhadap MySQL; cek saldo dan jumlah transaksi sebelum/sesudah | Saldo sebelum 100.000 / sesudah 100.000; jumlah transaksi tidak bertambah; uji KF16 lulus (`donasi.integrasi.test.ts`) | Pass |
 | KNF04-TC02 | KNF04 | Reliability | Saat jaringan klien putus di tengah transaksi, tidak ada donasi hilang atau ganda | Chrome DevTools: Network *Offline* saat menekan "Donate now", lalu *Online* dan "Try again"; hitung baris `transaksi_donasi` milik donatur | Jumlah transaksi u1: 6 → 7 (bertambah 1); saldo Rp975.000 → Rp950.000 (berkurang satu kali Rp25.000); tidak ada transaksi ganda maupun hilang | Pass |
 | KNF04-TC03 | KNF04 | Reliability | Saat koneksi ke basis data terputus, transaksi dibatalkan dan aplikasi tidak *crash* | `docker stop klimpool-db` sebelum konfirmasi, lalu `docker start klimpool-db`; bandingkan saldo dan jumlah transaksi | Tampil "Donation not processed. Something went wrong on the server. Please try again later."; aplikasi tidak *crash*. Saldo u1 Rp890.000 dan jumlah transaksi 10, sama persis sebelum dan sesudah | Pass |
@@ -828,9 +1090,15 @@ Tabel 4.5. Hasil Pengujian KNF
 | KNF07-TC01 | KNF07 | *Performance efficiency* (kapasitas unggah) | Berkas dokumentasi berukuran 50 MB per berkas diproses dan tersimpan; berkas di atas 50 MB ditolak | Unggah PDF ± 49,9 MB lewat formulir progres (UC09), 3 kali; catat status dan durasi `POST /api/projects/mgv/progres` di Chrome DevTools tab Network, lalu cek berkas di `src/uploads/progres/mgv/` (durasi juga tercatat pada log server `npm run dev`). Batas tepat 50 MB juga diuji otomatis pada C38-UT03 | Ketiga unggahan PDF 49,9 MB (52.323.942 byte) berstatus 201 dan tersimpan utuh di `src/uploads/progres/mgv/` dengan ukuran sama. Waktu proses server (log `npm run dev`): 900 ms, 1.186 ms, 592 ms; rata-rata 0,89 detik, maksimum 1,19 detik | Pass |
 | KNF07-TC02 | KNF07 | *Performance efficiency* (format berkas) | Kelima format pada SKPL (JPG, PNG, PDF, MP4, ZIP) dapat diunggah | Unggah satu berkas kecil untuk setiap format lewat formulir progres; diperiksa juga otomatis pada C37-UT04 | JPG, PNG, dan PDF diterima. MP4 dan ZIP ditolak dengan pesan "Format berkas tidak didukung. Unggah gambar (JPG, PNG, WebP) atau PDF." karena implementasi hanya menerima gambar dan PDF (`shared/dokumentasi.ts`) | Fail. Perbaikan: tambahkan `video/mp4` dan `application/zip` ke `DOKUMENTASI_TIPE_DIIZINKAN` beserta penyajiannya, atau perbarui KNF07 pada SKPL bila format tersebut memang tidak dibutuhkan |
 | KNF08-TC01 | KNF08 | *Performance efficiency* (waktu tampil status) | Status pendaftaran yang baru diputuskan tampil di antarmuka Volunteer ≤ 2 detik setelah halaman status dibuka | Pembuat Project menerima pendaftaran (UC08-TC01); Volunteer membuka tab "Volunteer applications"; ukur waktu `GET /api/relawan/saya` sampai daftar tampil dengan Chrome DevTools tab Performance/Network, 10 kali, ambil rata-rata dan maksimum | 10 pengukuran `GET /api/relawan/saya`: 63, 131, 244, 545, 105, 187, 104, 259, 243, dan 380 ms; rata-rata 0,23 detik, maksimum 0,55 detik. Status "Accepted" beserta titik kumpul langsung tampil setelah halaman dibuka | Pass |
+| KNF09-TC01 | KNF09 | *Performance efficiency* (beban pengguna) | Dengan 1.000 koneksi bersamaan, waktu tanggap tiap permintaan ≤ 3 detik dan tidak ada permintaan gagal | Uji beban `autocannon` (dijalankan lewat `npx`, tidak ditambahkan ke `package.json`): `-c 1000 -d 30` ke `GET /api/katalog` pada build produksi lokal (`npm run start`) dengan basis data berisi data seed; catat latensi rata-rata, p99, maksimum, jumlah permintaan, dan jumlah galat/*timeout* | *[Rata-rata … ms, p99 … ms, maks … ms; … permintaan, … galat]* | *Pass/Fail* |
+| KNF11-TC01 | KNF11 | Maintainability (modularitas) | Menambah satu kategori aksi baru tidak mengubah satu pun file modul transaksi donasi | Uji perubahan: tambahkan kategori `Coral reefs` ke `KATEGORI` (`src/shared/katalog.ts`), lalu jalankan `npx tsc --noEmit`, `git diff --stat`, Vitest, dan test node:test modul donasi/top-up. Periksa juga apakah 18 file modul transaksi (`DonasiController.ts`, `DonasiService.ts`, `DonasiRepository.ts`, `models/Donatur.ts`, `models/TransaksiDonasi.ts`, `models/BuktiTransaksi.ts`, 9 file `components/views/DonasiView/`, dan 3 file `app/api/donasi/`) merujuk `kategori` atau `katalog`. Perubahan dikembalikan setelah uji | `npx tsc --noEmit` meminta satu entri foto cadangan di `FOTO_KATEGORI` (`src/shared/explore.ts`); setelah ditambahkan, `tsc` lulus. `git diff --stat`: 2 file berubah (`shared/katalog.ts`, `shared/explore.ts`), 2 baris ditambah, tidak ada file modul transaksi yang berubah. Pencarian `kategori\|katalog` pada 18 file modul transaksi: 0 hasil. Kolom `kategori` bertipe `VARCHAR(50)`, bukan `ENUM`, sehingga tidak perlu migrasi basis data. Test donasi/top-up node:test: 42 test, 30 lulus, 0 gagal, 12 dilewati karena basis data tidak berjalan. Vitest: 194 dari 195 lulus; 1 gagal pada `node-runner.spec.ts` karena izin *symlink* Windows (sama dengan sebelum perubahan, lihat Subbab 4.2) | Pass |
 | *...* | *...* | *...* | *...* | *...* | *...* | *...* |
 
 Catatan KNF08: rumusan KNF08 pada SKPL menyebut pesan *chat* dan notifikasi status pesanan, padahal KlimPooL tidak memiliki fitur *chat* maupun pesanan. Notifikasi yang ada pada aplikasi adalah perubahan status pendaftaran relawan (KF22), sehingga KNF08 diuji pada tampilan status tersebut. Status dibaca ketika Volunteer membuka atau memuat ulang halamannya, bukan didorong secara *real-time*.
+
+Catatan KNF11: rumusan KNF11 pada SKPL menyebut "kategori jasa sekunder" dan "modul transaksi utama", padahal KlimPooL tidak memiliki jasa. Padanannya pada aplikasi adalah kategori aksi iklim (misalnya *Clean water*, *Reforestation*) dan modul transaksi donasi (UC06), sehingga KNF11 diuji dengan menambah kategori aksi baru lalu memeriksa apakah modul donasi ikut berubah.
+
+Catatan KNF09: pengujian beban dijalankan pada satu laptop, dengan alat uji, aplikasi, dan basis data berada di mesin yang sama, sehingga hasilnya belum mencerminkan server produksi. Pengukuran ulang direncanakan setelah aplikasi di-*deploy*.
 
 <br>
 
@@ -848,6 +1116,8 @@ Tabel 4.6. Bukti Hasil Pengujian
 | *UC01-TC01* | *[Sisipkan tangkapan layar UC01-TC01 sesuai prosedur pengujian]* |
 | *UC01-TC02* | *[Sisipkan tangkapan layar UC01-TC02 sesuai prosedur pengujian]* |
 | *KNF01-TC01* | *[Sisipkan bukti pengukuran parameter KNF01-TC01]* |
+| C01-UT01 – C01-UT17, C05-UT01 – C05-UT10, C18-UT01 – C18-UT04, C21-UT01 – C21-UT08, C27-UT01 – C27-UT07, C28-UT01 – C28-UT04, C29-UT01 – C29-UT08 | <img alt="Keluaran unit test UC05: 145 passed" src="./assets/pengujian/UT-UC05.png" width="70%"> |
+| C01, C05 (coverage) | <img alt="Laporan coverage C01 dan C05" src="./assets/pengujian/COVERAGE-C01-C05.png" width="70%"> |
 | C04-UT01 – C04-UT06, C06-UT01 – C06-UT10, C07-UT01 – C07-UT08, C30-UT01 – C30-UT04, C31-UT01 – C31-UT03, C39-UT01 – C39-UT04, C41-UT01 – C41-UT04, INT-TC05, INT-TC07 – INT-TC09, KNF04-TC01 | <img src="./assets/pengujian/unit-donasi-riwayat.png" width="100%"><br><img src="./assets/pengujian/unit-riwayat-kategori.png" width="100%"> |
 | Coverage C04, C06, C07 | <img src="./assets/pengujian/coverage-donasi.png" width="100%"> |
 | C09-UT01 – C09-UT18, C34-UT01 – C34-UT15, C38-UT01 – C38-UT11 | <img alt="Keluaran unit test C09, C34, C38: 44 pass" src="./assets/pengujian/UT-C09-C34-C38.png" width="70%"> |
@@ -864,6 +1134,23 @@ Tabel 4.6. Bukti Hasil Pengujian
 | INT-TC11 – INT-TC20 | <img alt="Keluaran integrasi MySQL: 10 pass, skipped 0" src="./assets/pengujian/INT-TC11-TC20.png" width="70%"> |
 | INT-TC21 | <img alt="INT-TC21 POST relawan 201" src="./assets/pengujian/INT-TC21-a.png" width="70%"><br><img alt="INT-TC21 POST progres 201" src="./assets/pengujian/INT-TC21-b.png" width="70%"><br><img alt="INT-TC21 header multipart" src="./assets/pengujian/INT-TC21-c.png" width="70%"> |
 | INT-TC22 | <img alt="INT-TC22 berkas tersimpan dan log GET dokumentasi 200" src="./assets/pengujian/INT-TC22.png" width="70%"><br><img alt="INT-TC22 dokumentasi terbuka" src="./assets/pengujian/UC09-TC01-c.png" width="70%"> |
+| INT-TC23 | <img alt="INT-TC23 GET katalog 200 dengan filter" src="./assets/pengujian/INT-TC23.png" width="70%"> |
+| INT-TC24 | <img alt="INT-TC24 parameter tidak valid 400" src="./assets/pengujian/INT-TC24.png" width="70%"> |
+| INT-TC25 | <img alt="INT-TC25 total katalog" src="./assets/pengujian/INT-TC25-a.png" width="70%"><br><img alt="INT-TC25 query status di basis data" src="./assets/pengujian/INT-TC25-b.png" width="70%"> |
+| INT-TC26 | <img alt="INT-TC26 kata kunci SQL dan tabel project tetap ada" src="./assets/pengujian/INT-TC26.png" width="70%"> |
+| INT-TC27 | <img alt="INT-TC27 GET peta seluruh wilayah" src="./assets/pengujian/INT-TC27.png" width="70%"> |
+| INT-TC28 | <img alt="INT-TC28 GET peta radius 30 km dan 400 tanpa pusat" src="./assets/pengujian/INT-TC28.png" width="70%"> |
+| INT-TC29 | <img alt="INT-TC29 detail sesuai basis data" src="./assets/pengujian/INT-TC29.png" width="70%"> |
+| INT-TC30 | <img alt="INT-TC30 detail belum terpublikasi 404" src="./assets/pengujian/INT-TC30.png" width="70%"> |
+| UC05-TC01 | <img alt="UC05-TC01 daftar terpublikasi" src="./assets/pengujian/UC05-TC01.png" width="70%"> |
+| UC05-TC02 | <img alt="UC05-TC02 hasil kata kunci mangrove" src="./assets/pengujian/UC05-TC02.png" width="70%"> |
+| UC05-TC03 | <img alt="UC05-TC03 kombinasi filter" src="./assets/pengujian/UC05-TC03.png" width="70%"> |
+| UC05-TC04 | <img alt="UC05-TC04 filter Closed / completed" src="./assets/pengujian/UC05-TC04-a.png" width="70%"><br><img alt="UC05-TC04 filter Open for donations dan Happening now" src="./assets/pengujian/UC05-TC04-b.png" width="70%"> |
+| UC05-TC05 | <img alt="UC05-TC05 detail project" src="./assets/pengujian/UC05-TC05.png" width="70%"> |
+| UC05-TC06 | <img alt="UC05-TC06 detail campaign" src="./assets/pengujian/UC05-TC06.png" width="70%"> |
+| UC05-TC07 | <img alt="UC05-TC07 tidak ditemukan" src="./assets/pengujian/UC05-TC07-a.png" width="70%"><br><img alt="UC05-TC07 setelah Clear all filters" src="./assets/pengujian/UC05-TC07-b.png" width="70%"> |
+| UC05-TC08 | <img alt="UC05-TC08 popup pin peta" src="./assets/pengujian/UC05-TC08.png" width="70%"> |
+| UC05-TC09 | <img alt="UC05-TC09 aksi belum terpublikasi 404" src="./assets/pengujian/UC05-TC09.png" width="70%"> |
 | UC06-TC01 | <img src="./assets/pengujian/UC06-TC01-bukti.png" width="100%"> |
 | UC06-TC02 | <img src="./assets/pengujian/UC06-TC02-login.png" width="100%"> |
 | UC06-TC03 | <img src="./assets/pengujian/UC06-TC03-saldo-kurang.png" width="100%"> |
@@ -891,11 +1178,15 @@ Tabel 4.6. Bukti Hasil Pengujian
 | UC10-TC05 | <img src="./assets/pengujian/UC10-TC05-kosong.png" width="100%"> |
 | UC10-TC06 | <img src="./assets/pengujian/UC10-TC06-kategori-kosong.png" width="100%"> |
 | UC10-TC07 | <img src="./assets/pengujian/UC10-TC07-belum-login.png" width="100%"> |
+| KNF02-TC01 | <img alt="KNF02-TC01 sepuluh pengukuran filter di DevTools" src="./assets/pengujian/KNF02-TC01.png" width="70%"> |
+| KNF02-TC02 | <img alt="KNF02-TC02 tiga puluh pengukuran API katalog" src="./assets/pengujian/KNF02-TC02.png" width="70%"> |
 | KNF06-TC01 | <img src="./assets/pengujian/KNF06-TC01-uptime.png" width="100%"> |
 | KNF06-TC02 | <img src="./assets/pengujian/KNF06-TC02-pulih.png" width="100%"> |
 | KNF07-TC01 | <img alt="KNF07-TC01 tiga pembaruan dengan PDF 49,9 MB" src="./assets/pengujian/KNF07-TC01-a.png" width="70%"><br><img alt="KNF07-TC01 tiga PDF tersimpan" src="./assets/pengujian/KNF07-TC01-b.png" width="70%"><br><img alt="KNF07-TC01 durasi tiga unggahan" src="./assets/pengujian/KNF07-TC01-c.png" width="70%"> |
 | KNF07-TC02 | <img alt="KNF07-TC02 ZIP ditolak" src="./assets/pengujian/UC09-TC04-a.png" width="70%"> |
 | KNF08-TC01 | <img alt="KNF08-TC01 sepuluh pengukuran" src="./assets/pengujian/KNF08-TC01.png" width="70%"> |
+| KNF09-TC01 | <img alt="KNF09-TC01 keluaran autocannon 1.000 koneksi" src="./assets/pengujian/KNF09-TC01.png" width="70%"> |
+| KNF11-TC01 | <img alt="KNF11-TC01 git diff stat dan tsc setelah kategori baru" src="./assets/pengujian/KNF11-TC01.png" width="70%"> |
 | *...* | *...* |
 
 <br>
@@ -914,6 +1205,8 @@ Tabel 5.1. Matriks Kerunutan KF terhadap Implementasi dan Pengujian
 | *KF01* | *-* | *UC01<br>UC02* | *[C01 - Nama kelas]<br>[C02 - Nama kelas]* | *[path/ke/file1]<br>[path/ke/file2]* | *UC01-TC01, UC01-TC02<br>UC02-TC01* | *-* |
 | *KF02* | *[KNFXX atau -]* | *[UCXX]* | *[CXX - Nama kelas]* | *[path/ke/file]* | *[UCXX-TCYY]* | *[CXX-UTYY, INT-TCYY, KNFXX-TCYY atau -]* |
 | *KFXX* | *-* | *[UCXX atau -]* | *[CXX - Nama kelas atau -]* | *Tidak diimplementasikan: [alasan]* | *-* | *-* |
+| KF13 | KNF02, KNF09 | UC05 | C01 - Katalog<br>C05 - PetaWilayah<br>C27 - FormPencarianView<br>C28 - PencarianController<br>C29 - FormPetaWilayahView | `src/shared/katalog.ts`<br>`src/server/controllers/pencarian.controller.ts`<br>`src/server/services/katalog.service.ts`<br>`src/server/repositories/katalog.repository.ts`<br>`src/app/api/katalog/route.ts`<br>`src/app/api/katalog/opsi/route.ts`<br>`src/components/views/ExploreView.tsx`<br>`src/components/views/FormPencarianView.tsx`<br>`src/shared/explore.ts`<br>`src/shared/explorePaging.ts`<br>`src/components/views/FormPetaWilayahView.tsx`<br>`src/components/ui/PetaSebaran.tsx` | UC05-TC02, UC05-TC03, UC05-TC04, UC05-TC07, UC05-TC08 | C01-UT01 – C01-UT17, C05-UT01 – C05-UT10, C27-UT01 – C27-UT07, C28-UT01 – C28-UT04, C29-UT01 – C29-UT08, INT-TC23 – INT-TC28, KNF02-TC01, KNF02-TC02, KNF09-TC01 |
+| KF14 | - | UC05 | C01 - Katalog<br>C05 - PetaWilayah<br>C18 - DetailCampaignView<br>C21 - DetailProjectView<br>C28 - PencarianController | `src/server/repositories/katalog.repository.ts`<br>`src/server/services/peta.service.ts`<br>`src/server/repositories/peta.repository.ts`<br>`src/server/controllers/peta.controller.ts`<br>`src/server/services/detail.service.ts`<br>`src/server/repositories/detail.repository.ts`<br>`src/components/detail/MuatDetail.tsx`<br>`src/components/views/DetailProjectView.tsx`<br>`src/components/views/DetailCampaignView.tsx`<br>`src/app/project/[id]/page.tsx`<br>`src/app/campaign/[id]/page.tsx` | UC05-TC01, UC05-TC05, UC05-TC06, UC05-TC08, UC05-TC09 | C01-UT04, C01-UT17, C05-UT03, C05-UT06, C18-UT01 – C18-UT04, C21-UT01 – C21-UT08, C28-UT02, INT-TC25, INT-TC27, INT-TC29, INT-TC30 |
 | KF15 | KNF04 | UC06 | C04 - Donatur<br>C06 - TransaksiDonasi<br>C30 - FormDonasiView<br>C32 - DonasiController | `src/models/Donatur.ts`<br>`src/models/TransaksiDonasi.ts`<br>`src/server/services/DonasiService.ts`<br>`src/server/repositories/DonasiRepository.ts`<br>`src/server/controllers/DonasiController.ts`<br>`src/components/views/DonasiView/FormDonasiView.tsx` | UC06-TC01, UC06-TC02, UC06-TC03, UC06-TC06, UC06-TC07, UC06-TC08 | C04-UT01 – C04-UT06, C06-UT01 – C06-UT03, C06-UT06, C06-UT08, C30-UT01, C30-UT02, C32-UT01 – C32-UT04, INT-TC01, INT-TC03 – INT-TC05 |
 | KF16 | KNF04 | UC06 | C06 - TransaksiDonasi<br>C04 - Donatur | `src/server/services/DonasiService.ts`<br>`src/server/repositories/DonasiRepository.ts` | UC06-TC03, UC06-TC04 | C06-UT07, C06-UT08, C04-UT05, KNF04-TC01 – KNF04-TC03 |
 | KF17 | - | UC06 | C06 - TransaksiDonasi<br>C07 - BuktiTransaksi<br>C31 - DetailBuktiTransaksiView | `src/models/TransaksiDonasi.ts`<br>`src/models/BuktiTransaksi.ts`<br>`src/components/views/DonasiView/DetailBuktiTransaksiView.tsx` | UC06-TC01 | C06-UT04, C06-UT06, C06-UT09, C07-UT01 – C07-UT08, C31-UT01 – C31-UT03, INT-TC04 |
@@ -935,8 +1228,11 @@ Tabel 5.2. Matriks Kerunutan KNF terhadap Pengujian
 | :--- | :--- | :--- | :--- |
 | *KNF01* | *Reliability* | *KF05 / UC03* | *KNF01-TC01* |
 | *KNFXX* | *[Parameter]* | *[KFXX / UCXX atau -]* | *[KNFXX-TCYY]* |
+| KNF02 | *Performance efficiency* (waktu tampil hasil filter) | KF13 / UC05 | KNF02-TC01, KNF02-TC02 |
 | KNF04 | Reliability | KF15, KF16, KF18 / UC06 | KNF04-TC01, KNF04-TC02, KNF04-TC03 |
 | KNF06 | Reliability | Umum (SKPL merujuk R36, R37, yang isinya tentang relawan dan tidak terkait uptime) | KNF06-TC01, KNF06-TC02 |
 | KNF07 | *Performance efficiency* (kapasitas dan format unggah) | KF24 / UC09 | KNF07-TC01, KNF07-TC02 |
 | KNF08 | *Performance efficiency* (waktu tampil notifikasi status) | KF22 / UC08 | KNF08-TC01 |
+| KNF09 | *Performance efficiency* (beban 1.000 pengguna) | Umum; diukur pada KF13 / UC05 (`GET /api/katalog`), endpoint publik utama halaman Explore yang dapat diakses tanpa login | KNF09-TC01 |
+| KNF11 | Maintainability (modularitas) | Umum; penambahan kategori aksi (KF13 / UC05) terhadap modul transaksi donasi (KF15–KF18 / UC06) | KNF11-TC01 |
 | *...* | *...* | *...* | *...* |
