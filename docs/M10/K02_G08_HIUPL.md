@@ -177,79 +177,134 @@ Tabel 2.1. Ringkasan Use Case
 
 ---
 
-# BAB 3: Implementasi
 
-Bagian ini diisi dengan informasi tentang elemen P/L yang dikembangkan (*executable files*, *configuration files*, *data files*, dan sebagainya) serta perubahannya terhadap rancangan pada DPPL (jika ada).
+# BAB 3: Implementasi 
+
+Bab ini memuat elemen perangkat lunak KlimPooL yang telah dikembangkan (kelas, komponen antarmuka, *route handler*, konfigurasi, skema basis data, dan file pengujian) serta perbedaannya terhadap rancangan DPPL. Penelusuran lengkap kelas perancangan ke implementasi ada pada Tabel B.5 dan perubahan rancangan pada Tabel B.1 laporan Implementasi (Tugas 9).
 
 ## 3.1 Lingkungan Implementasi
-
-Tuliskan *hardware* dan *software* yang digunakan untuk implementasi, mencakup *operating system*, bahasa pemrograman beserta versinya, *framework*/*library*, DBMS, *development tools*, dan *version control*. Lingkungan ini harus konsisten dengan **Subbab 2.1 DPPL**; jelaskan jika ada perubahan. Cantumkan juga *framework* dan alat pengujian yang dipakai.
 
 Tabel 3.1. Lingkungan Implementasi
 
 | Aspek | Keterangan |
 | :--- | :--- |
-| *Hardware* | *[Spesifikasi perangkat keras]* |
-| *Operating System* | *[Nama dan versi OS]* |
-| *Bahasa Pemrograman* | *[Bahasa dan versi]* |
-| *Framework/Library* | *[Daftar framework/library beserta versi]* |
-| *DBMS* | *[Nama dan versi DBMS]* |
-| *Development Tools* | *[IDE, version control, tools lain]* |
-| *Testing Tools* | *[Framework unit test, alat ukur performa, alat coverage]* |
+| *Hardware* | Lenovo IdeaPad dengan prosesor AMD Ryzen 5 (pengembangan UC01). Pengujian UC02–UC04: AMD Ryzen AI 7 350 (16 *logical CPU*). |
+| *Operating System* | Windows 11 (pengembangan dan pengujian sebagian besar modul); Linux Debian 13 x86_64 (pengujian UC02–UC04). |
+| *Bahasa Pemrograman* | TypeScript 5.9.3 pada Node.js (`.nvmrc` 20, `engines` ≥ 20; pengujian memakai Node.js 20.19.2 dan 24.13.0). SQL untuk skema dan *query* MySQL. |
+| *Framework/Library* | Next.js 16.4.4 (App Router; *route handler* di `src/app/api/` sebagai API REST JSON), React 19.3.0, Tailwind CSS 4, `mysql2` 3.24.6 (*connection pool* dan transaksi), `bcryptjs` 3.0.3 (hash kata sandi bcrypt *cost* 12). |
+| *DBMS* | MySQL 8.4 (InnoDB, `utf8mb4`) melalui Docker Compose, kontainer `klimpool-db`, port 3307. |
+| *Development Tools* | Visual Studio Code, Git dan GitHub (*branch* fitur, *pull request* dengan *reviewer*, *semantic commit*), npm, Docker Desktop, ESLint 9, Prettier 3, `tsc`. |
+| *Testing Tools* | *Test runner* bawaan Node.js (`node:test` dengan `tsx` 4.23, file `*.test.ts`, *coverage* `node --experimental-test-coverage`); Vitest 3.2.7 (file `*.spec.ts`, *coverage* `@vitest/coverage-v8` lewat `npx`); Playwright Chromium (`scripts/*.browser.mjs`); Chrome DevTools; `autocannon` lewat `npx` untuk uji beban. |
 
-Lingkungan pengujian UC02–UC04: Linux Debian 13 (x86_64), AMD Ryzen AI 7 350 (16 logical CPU), Node.js 20.19.2, TypeScript 5.9.3, Next.js 16.4.4, React 19.3.0, MySQL 8.4.13, Vitest/V8 3.2.7, serta Playwright Chromium headless. Berbeda dari target Vercel/Node.js 22 pada DPPL §2.1, pengujian memakai build produksi lokal dan HTTP loopback; belum memverifikasi deployment/HTTPS. Arsitektur aplikasi tetap sama. Basis data pengujian terpisah dari data demo/aplikasi.
+Perbedaan dari DPPL §2.1: DPPL menargetkan Vercel (Node.js 22 LTS, HTTPS/TLS 1.2). Aplikasi tidak di-*deploy* dan hanya dijalankan secara lokal, sehingga seluruh pengujian memakai *build* produksi lokal (`npm run build` lalu `npm run start`) melalui HTTP *loopback*. Akibatnya HTTPS/TLS belum terverifikasi (KNF05-TC02). Berkas dokumentasi progres disimpan di folder lokal `src/uploads/` (`DOKUMENTASI_DRIVER=lokal`), bukan layanan penyimpanan objek seperti rancangan DPPL §2.1.
 
 ## 3.2 Implementasi Modul
 
-Daftar modul/kelas yang **TELAH** diimplementasikan. Gunakan nama dan ID kelas yang sama dengan DPPL, dan konsisten dengan Tabel B.5 pada dokumen Implementasi (Tugas 9).
+Seluruh kelas perancangan DPPL (C00–C41). Path relatif terhadap akar repositori. Satu kelas perancangan dapat diwujudkan oleh beberapa file, dan satu file dapat mewujudkan beberapa kelas (Tabel B.5).
 
 Tabel 3.2. Implementasi Modul
 
 | No | ID Kelas | Nama Modul/Kelas | Nama File Fisik | Nama File Executable |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | *[C01]* | *[Nama modul/kelas]* | *[path/ke/file]* | *[Nama file executable, atau - jika tidak ada]* |
-| 2 | C02 | Project | `src/shared/validasiAksi.ts`, `src/server/services/AksiService.ts`, `src/server/repositories/AksiRepository.ts` | Server Next.js |
-| 3 | C03 | Campaign | `src/shared/validasiAksi.ts`, `src/server/services/AksiService.ts`, `src/server/repositories/AksiRepository.ts` | Server Next.js |
-| 4 | C10 | PembuatProject | `src/server/auth/aksesAksi.ts`, `src/server/services/AksiService.ts`, `src/components/aksi/MyActions.tsx` | Server/klien Next.js |
-| 5 | C11 | AdminSistem | `src/server/auth/aksesAksi.ts`, `src/server/services/AksiService.ts` | Server Next.js |
-| 6 | C17 | FormCampaignView | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start?type=campaign` |
-| 7 | C19 | CampaignController | `src/server/controllers/CampaignController.ts`, `AksiController.ts` | `/api/campaigns`, `/api/aksi/campaign/[id]` |
-| 8 | C20 | FormProjectView | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start?type=project` |
-| 9 | C22 | ProjectController | `src/server/controllers/ProjectController.ts`, `AksiController.ts` | `/api/projects`, `/api/aksi/project/[id]` |
-| 10 | C23 | PengajuanView | `src/components/aksi/TombolPengajuan.tsx` | Account/My Actions dan `/manage/[jenis]/[id]` |
-| 11 | C24 | DaftarPengajuanView | `src/components/aksi/DaftarPengajuan.tsx`, `src/app/admin/page.tsx` | `/admin` |
-| 12 | C25 | DetailPengajuanView | `src/components/aksi/DetailAksiPrivat.tsx`, `KeputusanPengajuan.tsx`, `src/app/admin/pengajuan/[jenis]/[id]/page.tsx` | `/admin/pengajuan/[jenis]/[id]` |
-| 13 | C26 | VerifikasiController | `src/server/controllers/VerifikasiController.ts`, `src/server/services/AksiService.ts` | `/api/aksi/[jenis]/[id]/pengajuan`, `/api/verifikasi` |
-| ... | *...* | *...* | *...* | *...* |
+| 1 | C00 | PenggunaUmum | `src/models/PenggunaUmum.ts`, `src/shared/autentikasi.ts` (`Peran`, `PenggunaDto`) | - |
+| 2 | C01 | Katalog | `src/server/services/katalog.service.ts`, `src/server/repositories/katalog.repository.ts`, `src/shared/katalog.ts` | `GET /api/katalog`, `GET /api/katalog/opsi` |
+| 3 | C02 | Project | `src/shared/aksi.ts`, `src/shared/validasiAksi.ts`, `src/server/services/AksiService.ts`, `src/server/repositories/AksiRepository.ts`, `src/server/repositories/CampaignProjectRepository.ts` | Server Next.js |
+| 4 | C03 | Campaign | `src/shared/aksi.ts`, `src/shared/validasiAksi.ts`, `src/server/services/AksiService.ts`, `src/server/repositories/AksiRepository.ts`, `src/server/repositories/CampaignProjectRepository.ts` | Server Next.js |
+| 5 | C04 | Donatur | `src/models/Donatur.ts`, `src/server/repositories/DonasiRepository.ts`; top-up: `src/models/TopupSaldo.ts`, `src/server/services/TopupService.ts`, `src/server/repositories/TopupRepository.ts`, `src/server/controllers/TopupController.ts` | `GET`/`POST /api/topup` |
+| 6 | C05 | PetaWilayah | `src/server/services/peta.service.ts`, `src/server/repositories/peta.repository.ts`, `src/server/controllers/peta.controller.ts`, `src/shared/peta.ts` | `GET /api/peta` |
+| 7 | C06 | TransaksiDonasi | `src/models/TransaksiDonasi.ts`, `src/server/services/DonasiService.ts`, `src/server/repositories/DonasiRepository.ts`, `src/shared/donasi.ts` | `POST /api/donasi` |
+| 8 | C07 | BuktiTransaksi | `src/models/BuktiTransaksi.ts`, `src/server/services/DonasiService.ts`, `src/server/repositories/DonasiRepository.ts` | `GET /api/donasi/bukti/[idTransaksi]` |
+| 9 | C08 | Volunteer | Peran `volunteer` pada kolom `pengguna.peran` (`src/db/migrations/001_schema.sql`, `src/shared/autentikasi.ts`); tanpa file kelas sendiri (B.1 No. 8) | - |
+| 10 | C09 | PendaftaranRelawan | `src/models/PendaftaranRelawan.ts`, `src/shared/relawan.ts`, `src/server/services/relawanService.ts`, `src/server/repositories/pendaftaranRelawanRepository.ts` | `/api/projects/[idProject]/relawan` |
+| 11 | C10 | PembuatProject | `src/server/auth/aksesAksi.ts`, `src/server/services/AksiService.ts`, `src/components/aksi/MyActions.tsx`, `src/components/aksi/TabMyActions.tsx` | Server/klien Next.js |
+| 12 | C11 | AdminSistem | `src/server/auth/aksesAksi.ts`, `src/server/services/AksiService.ts`, `src/app/admin/` | Server Next.js |
+| 13 | C12 | Akun | `src/models/Akun.ts` (`validasiKelengkapanInput()`, `normalisasiEmail()`), `src/server/services/AutentikasiService.ts` (`daftarAkun()`, `login()`), `src/server/repositories/UserRepository.ts` (`hitungEmail()`, `simpanAkunBaru()`, `cariAkunByEmail()`), `src/server/password.ts` (`hashPassword()`, `cocokPassword()`) | - |
+| 14 | C13 | SesiLogin | `src/models/SesiLogin.ts` (`buatSesi()`, `cekStatusLogin()`), `src/server/services/AutentikasiService.ts` (`penggunaDariSesi()`, `logout()`, `wajibLogin()`), `src/server/repositories/UserRepository.ts` (`simpanSesi()`, `cariSesi()`, `akhiriSesi()`), `src/server/sesi.ts` (cookie `klimpool_sesi`), `src/server/controllers/guard.ts`, `src/server/auth/sesiSementara.ts` | - |
+| 15 | C14 | FormPendaftaranView | `src/components/views/FormPendaftaranView.tsx`, `src/components/views/AuthModal.tsx` (tab Sign up) | Modal auth dari navbar, penghalang login, dan tombol yang membutuhkan login |
+| 16 | C15 | FormLoginView | `src/components/views/FormLoginView.tsx`, `src/components/views/AuthModal.tsx` (tab Log in), `src/components/ui/SesiProvider.tsx`, `src/components/ui/SesiContext.ts` (`useWajibLogin()`) | Modal auth (sama dengan C14) |
+| 17 | C16 | AutentikasiController | `src/server/controllers/AutentikasiController.ts`, `src/server/controllers/respons.ts`, `src/app/api/auth/daftar/route.ts`, `src/app/api/auth/masuk/route.ts`, `src/app/api/auth/keluar/route.ts`, `src/app/api/auth/saya/route.ts` | `POST /api/auth/daftar`, `POST /api/auth/masuk`, `POST /api/auth/keluar`, `GET /api/auth/saya` |
+| 18 | C17 | FormCampaignView | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start?type=campaign` |
+| 19 | C18 | DetailCampaignView | `src/components/views/DetailCampaignView.tsx`, `src/components/detail/MuatDetail.tsx`, `src/app/campaign/[id]/page.tsx` | `/campaign/[id]` |
+| 20 | C19 | CampaignController | `src/server/controllers/CampaignController.ts`, `src/server/controllers/AksiController.ts` | `POST /api/campaigns`, `/api/aksi/[jenis]/[id]` |
+| 21 | C20 | FormProjectView | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx`, `src/app/manage/[jenis]/[id]/page.tsx` | `/start?type=project`, `/manage/[jenis]/[id]` |
+| 22 | C21 | DetailProjectView | `src/components/views/DetailProjectView.tsx`, `src/components/detail/` (`KerangkaDetail`, `PanelSamping`, `PanelTentang`, `PanelKebutuhan`, `PanelProgres`, `PanelDana`), `src/app/project/[id]/page.tsx` | `/project/[id]` |
+| 23 | C22 | ProjectController | `src/server/controllers/ProjectController.ts`, `src/server/controllers/AksiController.ts` | `POST /api/projects`, `/api/aksi/[jenis]/[id]` |
+| 24 | C23 | PengajuanView | `src/components/aksi/TombolPengajuan.tsx` | Account › My actions, `/manage/[jenis]/[id]` |
+| 25 | C24 | DaftarPengajuanView | `src/components/aksi/DaftarPengajuan.tsx`, `src/app/admin/page.tsx` | `/admin` |
+| 26 | C25 | DetailPengajuanView | `src/components/aksi/DetailAksiPrivat.tsx`, `src/components/aksi/KeputusanPengajuan.tsx`, `src/app/admin/pengajuan/[jenis]/[id]/page.tsx` | `/admin/pengajuan/[jenis]/[id]` |
+| 27 | C26 | VerifikasiController | `src/server/controllers/VerifikasiController.ts`, `src/server/services/AksiService.ts` | `/api/aksi/[jenis]/[id]/pengajuan`, `/api/verifikasi`, `/api/verifikasi/[jenis]/[id]` |
+| 28 | C27 | FormPencarianView | `src/components/views/FormPencarianView.tsx`, `src/components/views/ExploreView.tsx`, `src/components/ui/KartuHasil.tsx`, `src/shared/explorePaging.ts`, `src/app/explore/page.tsx` | `/explore` |
+| 29 | C28 | PencarianController | `src/server/controllers/pencarian.controller.ts`, `src/app/api/katalog/route.ts`, `src/app/api/katalog/opsi/route.ts` | `GET /api/katalog`, `GET /api/katalog/opsi` |
+| 30 | C29 | FormPetaWilayahView | `src/components/views/FormPetaWilayahView.tsx`, `src/components/ui/PetaSebaran.tsx`, `src/components/ui/PetaSebaranMemuat.tsx` | Peta pada `/explore` |
+| 31 | C30 | FormDonasiView | `src/components/views/DonasiView/FormDonasiView.tsx`, `AlurDonasi.tsx`, `logikaDonasi.ts`, `panggilApi.ts`, `src/app/donasi/[jenis]/[id]/page.tsx` | Modal donasi, `/donasi/[jenis]/[id]` |
+| 32 | C31 | DetailBuktiTransaksiView | `src/components/views/DonasiView/DetailBuktiTransaksiView.tsx`, `HalamanBuktiView.tsx`, `KartuBukti.tsx`, `useBukti.ts`, `src/app/donasi/bukti/[idTransaksi]/page.tsx` | Modal bukti, `/donasi/bukti/[idTransaksi]` |
+| 33 | C32 | DonasiController | `src/server/controllers/DonasiController.ts`, `src/app/api/donasi/route.ts`, `src/app/api/donasi/form/route.ts`, `src/app/api/donasi/bukti/[idTransaksi]/route.ts` | `POST /api/donasi`, `GET /api/donasi/form`, `GET /api/donasi/bukti/[idTransaksi]` |
+| 34 | C33 | FormPendaftaranRelawanView | `src/components/views/RelawanView/FormPendaftaranRelawanView.tsx`, `opsiJadwal.ts`, `src/components/detail/aksi/TombolRelawan.tsx` | Modal pendaftaran relawan pada `/project/[id]` |
+| 35 | C34 | RelawanController | `src/server/controllers/RelawanController.ts`, `src/server/http.ts`, `src/app/api/projects/[idProject]/relawan/route.ts`, `src/app/api/projects/[idProject]/relawan/[idPendaftaran]/route.ts`, `src/app/api/relawan/saya/route.ts` | `/api/projects/[idProject]/relawan`, `/api/projects/[idProject]/relawan/[idPendaftaran]`, `GET /api/relawan/saya` |
+| 36 | C35 | FormVolunteerManagementView | `src/components/views/RelawanView/FormVolunteerManagementView.tsx`, `src/components/detail/aksi/AksiPemilik.tsx` | Modal *Manage volunteers* pada `/project/[id]` |
+| 37 | C36 | DetailStatusPendaftaranView | `src/components/views/RelawanView/DetailStatusPendaftaranView.tsx` | `/account`, tab *Volunteer applications* |
+| 38 | C37 | FormProgresProjectView | `src/components/views/ProgresView/FormProgresProjectView.tsx`, `src/components/aksi/ProgresAksi.tsx`, `src/app/progress/[id]/page.tsx` | Modal progres pada `/project/[id]`, `/progress/[id]` |
+| 39 | C38 | ProgresController | `src/server/controllers/ProgresController.ts`, `src/server/services/progresService.ts`, `src/server/repositories/progresRepository.ts`, `src/models/ProgresProject.ts`, `src/server/services/dokumentasiService.ts`, `src/server/storage/dokumentasiStorage.ts`, `src/shared/progres.ts`, `src/shared/dokumentasi.ts` | `/api/projects/[idProject]/progres`, `GET /api/dokumentasi/[idProject]/[nama]` |
+| 40 | C39 | FormRiwayatView | `src/components/views/RiwayatView/FormRiwayatView.tsx`, `TabRiwayat.tsx`, `mintaRiwayat.ts`, `src/shared/riwayat.ts`, `src/app/account/page.tsx` | `/account` (alias `/history`), tab *Activity history* |
+| 41 | C40 | DetailRiwayatView | `src/components/views/RiwayatView/DetailRiwayatView.tsx`, `label.ts` | Modal *Activity details* |
+| 42 | C41 | RiwayatController | `src/server/controllers/RiwayatController.ts`, `src/server/services/riwayatService.ts`, `src/shared/riwayat.ts` | `GET /api/riwayat`, `GET /api/riwayat/transaksi/[idTransaksi]`, `GET /api/riwayat/progres/[idProgres]` |
+
+**Perbedaan terhadap DPPL untuk UC01** (rinciannya pada B.1 No. 14–19):
+
+1. **C14 dan C15 digabung dalam satu modal.** Formulir pendaftaran dan login menjadi dua tab pada `AuthModal`, bukan dua halaman terpisah. Setelah pendaftaran berhasil, pengguna langsung login. Setelah login, pengguna tetap di halaman asal dan aksi yang tadi diminta (mis. formulir donasi) dilanjutkan, sehingga `arahkanKeHalamanUtama()` diwujudkan sebagai pemuatan ulang halaman saat ini.
+2. **C16 tidak menyimpan atribut `pesanKesalahan`.** Galat dikirim dalam respons JSON `{ ok: false, kode, pesan, bidang? }` dengan status HTTP sesuai kode (`VALIDASI` 400, `KREDENSIAL_SALAH` 401, `EMAIL_TERPAKAI` 409). Operasi `logout()` (`POST /api/auth/keluar`) dan `saya()` (`GET /api/auth/saya`) ditambahkan.
+3. **Operasi C12 tidak mengembalikan `Boolean`.** Validasi melempar `GalatAplikasi` berisi nama kolom yang salah. `simpanAkun()` menulis `pengguna`, `akun`, dan `donatur` (saldo 0) dalam satu transaksi dengan peran awal `volunteer`. Galat *duplicate key* pada indeks unik `akun.email` diubah menjadi `EMAIL_TERPAKAI`.
+4. **Cara membawa `idSesi` di peramban.** DPPL tidak menetapkannya. Implementasi memakai cookie `klimpool_sesi` dengan atribut `HttpOnly`, `SameSite=Lax`, `Secure` (hanya di produksi), dan `maxAge` 24 jam, sama dengan `DURASI_SESI_MS`. ID sesi berupa 32 byte acak (64 karakter heksadesimal).
+5. **Satu titik pemeriksaan login untuk semua modul.** `guard.ts` (`penggunaSaatIni()`, `requireLogin()`, `requireRole()`), `AutentikasiService.wajibLogin()` (donasi dan top-up), `getIdPenggunaSaatIni()` (relawan, progres, riwayat, detail), dan `sesiAksi()` (UC02–UC04) semuanya memanggil `AutentikasiService.penggunaDariSesi()`.
 
 ## 3.3 Implementasi Antarmuka
 
-Daftar antarmuka yang telah diimplementasikan. Gunakan ID dan nama layar yang sama dengan ID dan nama layar pada tugas DPPL.
+ID dan nama layar mengikuti DPPL2 Bab 6, yang memuat 10 rancangan antarmuka (I-01 sampai I-10). Layar yang diimplementasikan tetapi tidak memiliki rancangan pada Bab 6 ditandai "-".
 
 Tabel 3.3. Implementasi Antarmuka
 
 | No | ID Antarmuka | Nama Antarmuka | Nama File Fisik | Nama File Executable |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | *[I-01]* | *[Nama layar]* | *[path/ke/file]* | *[Nama file executable, atau - jika tidak ada]* |
-| 2 | *[I-02]* | *[Nama layar]* | *[path/ke/file]* | *[...]* |
-| 3 | I-09 | Pengajuan campaign/project | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start` |
-| 4 | I-10, I-11 | Account — My Actions | `src/components/aksi/TabMyActions.tsx`, `MyActions.tsx`, `TombolPengajuan.tsx` | `/account`, alias `/my-actions` |
-| 5 | I-14 | Peninjauan pengajuan admin | `src/components/aksi/DaftarPengajuan.tsx`, `DetailAksiPrivat.tsx`, `KeputusanPengajuan.tsx` | `/admin`, `/admin/pengajuan/[jenis]/[id]` |
-| ... | *...* | *...* | *...* | *...* |
+| 1 | I-01 | Home | `src/app/page.tsx`, `src/components/ui/AppShell.tsx`, `src/components/ui/Navbar.tsx` | `/` |
+| 2 | I-02 | Log in | `src/components/views/AuthModal.tsx`, `src/components/views/FormLoginView.tsx` | Modal pada seluruh halaman (tombol *Log in* di navbar) |
+| 3 | I-03 | Sign up | `src/components/views/AuthModal.tsx`, `src/components/views/FormPendaftaranView.tsx` | Modal pada seluruh halaman (tombol *Sign up* di navbar) |
+| 4 | I-04 | Explore | `src/app/explore/page.tsx`, `src/components/views/ExploreView.tsx`, `FormPencarianView.tsx`, `FormPetaWilayahView.tsx`, `src/components/ui/PetaSebaran.tsx` | `/explore` |
+| 5 | I-05 | Project Details (juga dipakai untuk detail campaign) | `src/app/project/[id]/page.tsx`, `src/app/campaign/[id]/page.tsx`, `src/components/views/DetailProjectView.tsx`, `DetailCampaignView.tsx`, `src/components/detail/` | `/project/[id]`, `/campaign/[id]` |
+| 6 | I-06 | Donate | `src/components/views/DonasiView/AlurDonasi.tsx`, `FormDonasiView.tsx`, `src/app/donasi/[jenis]/[id]/page.tsx` | Modal donasi, `/donasi/[jenis]/[id]` |
+| 7 | I-07 | Top up balance | `src/components/views/TopupView/FormTopupView.tsx`, `src/components/views/DonasiView/DompetKartu.tsx` | Modal top-up pada `/account` |
+| 8 | I-08 | Volunteer for this action | `src/components/views/RelawanView/FormPendaftaranRelawanView.tsx`, `src/components/detail/aksi/TombolRelawan.tsx` | Modal pada `/project/[id]` |
+| 9 | I-09 | Submit your climate action | `src/components/aksi/FormAksi.tsx`, `src/app/start/page.tsx` | `/start` |
+| 10 | I-10 | My activity | `src/app/account/page.tsx`, `src/components/views/RiwayatView/FormRiwayatView.tsx`, `TabRiwayat.tsx`, `src/components/views/RelawanView/DetailStatusPendaftaranView.tsx`, `src/components/aksi/TabMyActions.tsx`, `MyActions.tsx` | `/account` (alias `/history`, `/my-actions`) |
+| 11 | - | Penghalang login | `src/components/ui/GateLogin.tsx`, `src/components/views/GerbangView.tsx` | Halaman ber-login saat diakses tamu (mis. `/account`) |
+| 12 | - | Bukti transaksi | `src/components/views/DonasiView/DetailBuktiTransaksiView.tsx`, `HalamanBuktiView.tsx`, `KartuBukti.tsx` | Modal bukti, `/donasi/bukti/[idTransaksi]` |
+| 13 | - | Rincian riwayat | `src/components/views/RiwayatView/DetailRiwayatView.tsx` | Modal *Activity details* pada `/account` |
+| 14 | - | Kelola relawan | `src/components/views/RelawanView/FormVolunteerManagementView.tsx`, `src/components/detail/aksi/AksiPemilik.tsx` | Modal *Manage volunteers* pada `/project/[id]` |
+| 15 | - | Pembaruan progres project | `src/components/views/ProgresView/FormProgresProjectView.tsx`, `src/components/aksi/ProgresAksi.tsx` | Modal pada `/project/[id]`, `/progress/[id]` |
+| 16 | - | Kelola dan pengajuan aksi | `src/components/aksi/DetailAksiPrivat.tsx`, `TombolPengajuan.tsx`, `src/app/manage/[jenis]/[id]/page.tsx` | `/manage/[jenis]/[id]` |
+| 17 | - | Peninjauan pengajuan admin | `src/components/aksi/DaftarPengajuan.tsx`, `DetailAksiPrivat.tsx`, `KeputusanPengajuan.tsx`, `src/app/admin/page.tsx`, `src/app/admin/pengajuan/[jenis]/[id]/page.tsx` | `/admin`, `/admin/pengajuan/[jenis]/[id]` |
+
+Catatan: draf sebelumnya memakai ID I-11 untuk My Actions dan I-14 untuk peninjauan admin. Kedua ID itu tidak ada di DPPL2 Bab 6, sehingga diganti menjadi I-10 (My activity, tab *My actions*) dan "-" (peninjauan admin).
 
 ## 3.4 File Lain
-
-Daftar file lain yang dibuat selain file kelas dan antarmuka, misalnya file *utility*, *configuration*, *database schema/seed*, *file test*, atau *data*.
 
 Tabel 3.4. File Lain
 
 | No | Nama File | Keterangan |
 | :--- | :--- | :--- |
-| 1 | *[Nama file]* | *[Fungsi file]* |
-| 2 | `src/shared/aksi.ts`, `src/components/aksi/apiAksi.ts` | Kontrak data/status aksi dan adapter HTTP formulir. |
-| 3 | `src/tests/aksi.integrasi.test.ts`, `aksi.akses.test.ts`, `aksi.validasi.test.ts` | Integrasi MySQL, sesi, kepemilikan, transisi dan konkurensi. |
-| 4 | `docs/M10/assets/pengujian/aksi/` | Tangkapan hasil tes, coverage, dan layar pengujian aksi. |
-| ... | *...* | *...* |
+| 1 | `src/db/migrations/001_schema.sql` | Skema 11 tabel InnoDB: `pengguna`, `akun` (indeks unik `email`), `sesi_login`, `donatur`, `campaign`, `project`, `transaksi_donasi`, `bukti_transaksi`, `pendaftaran_relawan`, `progres_project`, `topup_saldo`. |
+| 2 | `src/db/migrations/002_seed.sql` | Data demo fiktif: 10 akun (mis. Andi, Sari, Admin, Nadia, Fajar) dengan kata sandi `klimpool123` yang disimpan sebagai hash bcrypt *cost* 12, beserta aksi, transaksi, dan progres contoh. |
+| 3 | `src/docker-compose.yml`, `src/.env.example`, `src/.nvmrc` | Basis data MySQL 8.4 lokal (kontainer `klimpool-db`, port 3307), contoh variabel lingkungan tanpa rahasia, dan versi Node.js. |
+| 4 | `src/README.md` | Panduan instalasi, menjalankan basis data dan aplikasi, *seed*, akun demo, dan perintah pengujian. |
+| 5 | `src/package.json`, `src/package-lock.json`, `src/next.config.ts`, `src/tsconfig.json`, `src/eslint.config.mjs`, `src/.prettierrc` | Dependensi dan skrip npm (`dev`, `build`, `start`, `test`, `db:reset`), konfigurasi Next.js, TypeScript (alias `@/`), ESLint, dan Prettier. |
+| 6 | `src/server/db.ts` | *Connection pool* `mysql2`, fungsi `query()` dan `withTransaction()`; waktu disimpan dan dibaca sebagai UTC. |
+| 7 | `src/shared/galatDonasi.ts`, `src/shared/galat.ts`, `src/server/controllers/respons.ts`, `src/server/http.ts` | Kode galat bersama (`GalatAplikasi`, `PESAN_GALAT`, `STATUS_HTTP`), `GalatValidasi`, pembentuk respons JSON, dan pemetaan galat ke status HTTP tanpa membocorkan rincian galat internal. |
+| 8 | `src/shared/konstanta.ts`, `src/shared/types.ts`, `src/shared/aksi.ts`, `src/components/aksi/apiAksi.ts`, `src/components/views/DonasiView/panggilApi.ts` | Konstanta (mis. `DURASI_SESI_MS` 24 jam), tipe bersama, kontrak data aksi, serta adapter HTTP sisi klien (`panggilApi()`, `kirimJson()`). |
+| 9 | `src/components/ui/` (`AppShell`, `Navbar`, `Footer`, `Modal`, `Toast`, `Field`, dll.) | Komponen antarmuka bersama tanpa logika use case (B.1 No. 13). |
+| 10 | `src/vitest.config.ts`, `src/scripts/test-node.mjs` | Konfigurasi Vitest (pola `tests/**/*.spec.ts`) dan pencari file `*.test.ts` untuk *test runner* Node.js. |
+| 11 | `src/scripts/aksi.browser.mjs`, `account.browser.mjs`, `ukur-performa-bukti.ts`, `uptime.ps1` | Skrip uji peramban (Playwright), pengukuran performa bukti transaksi, dan pemantauan *uptime* (KNF06). |
+| 12 | `src/tests/` (`*.test.ts`, `*.spec.ts`) | Pengujian unit dan integrasi seluruh modul, termasuk `autentikasi.unit.test.ts` (UC01, 20 test) dan `aksi.auth.spec.ts` (adaptor sesi UC02–UC04). |
+| 13 | `src/uploads/progres/` | Folder berkas dokumentasi progres (UC09), dibuat saat aplikasi berjalan dan diabaikan Git. |
+| 14 | `docs/M10/assets/pengujian/` | Tangkapan layar, keluaran *test runner*, dan laporan *coverage* seluruh modul. |
 
 <br>
 
@@ -303,6 +358,12 @@ Tabel 4.1.1. Identifikasi Tingkat Pengujian Kelas
 | C39 | FormRiwayatView | Sedang | Mengoordinasikan tampilan riwayat; logika terbatas pada penyaringan jenis dan pengelompokan per bulan di sisi klien | C39-UT01 s.d. C39-UT04 |
 | C40 | DetailRiwayatView | Tidak perlu | Hanya menampilkan rincian transaksi/progres yang diterima dari server, tanpa logika | UC10-TC02, UC10-TC03 |
 | C41 | RiwayatController | Sedang | Membaca filter dan sesi, lalu mendelegasikan penyusunan riwayat dan pemeriksaan kepemilikan ke `riwayatService` | C41-UT01 s.d. C41-UT04, INT-TC07 s.d. INT-TC09 |
+| C00 | PenggunaUmum | Tidak perlu | Hanya struktur data (`PenggunaUmum`, `PenggunaDto`) tanpa logika. Teruji tidak langsung lewat respons daftar/login dan use case UC01. | UC01-TC01, UC01-TC04 |
+| C12 | Akun | Mendalam | Memuat validasi kelengkapan dan format input, normalisasi email, cek ketersediaan email (KF02), hash bcrypt (KF03), dan validasi kredensial yang tidak membocorkan email terdaftar (Algo-001 s.d. Algo-003). Salah logika di sini berarti akun ganda atau kata sandi tersimpan terbuka. | C12-UT01 s.d. C12-UT09, INT-TC39, INT-TC40 |
+| C13 | SesiLogin | Mendalam | Memuat pembuatan ID sesi acak, masa berlaku 24 jam, pemeriksaan status login (aktif, sudah dimulai, belum kedaluwarsa, akun aktif), dan pengakhiran sesi (Algo-004, Algo-005; KF04). Seluruh modul lain bergantung pada pemeriksaan ini; salah logika berarti akses tanpa hak. | C13-UT01 s.d. C13-UT06, INT-TC41, INT-TC42, INT-TC44 |
+| C14 | FormPendaftaranView | Sedang | Hanya menyusun formulir, mengirim isian ke `/api/auth/daftar`, menampilkan galat per kolom dari server, lalu login otomatis. Validasi dijalankan di server. | C14-UT01, C14-UT02, INT-TC38, UC01-TC01 s.d. UC01-TC03 |
+| C15 | FormLoginView | Sedang | Hanya mengirim kredensial ke `/api/auth/masuk`, menampilkan galat, memperbarui navbar, dan melanjutkan aksi yang tertunda. | C15-UT01, C15-UT02, INT-TC38, UC01-TC04 s.d. UC01-TC06 |
+| C16 | AutentikasiController | Sedang | Membaca badan JSON, mendelegasikan aturan bisnis ke `AutentikasiService`, memetakan galat ke status HTTP, serta memasang dan menghapus cookie sesi. Pola ini sama dengan controller lain (C19, C22, C32). | C16-UT01 s.d. C16-UT06, INT-TC38, INT-TC43 |
 
 <br>
 
@@ -341,7 +402,8 @@ Tabel 4.2.0. Ringkasan *Coverage* Kelas Mendalam
 | C09 | PendaftaranRelawan | `models/PendaftaranRelawan.ts`; `shared/relawan.ts`; `server/services/relawanService.ts` | 100% / 85,71%; 95,35% / 89,02%; 99,19% / 94,03% | `node --experimental-test-coverage` |
 | C34 | RelawanController | `server/controllers/RelawanController.ts`; `server/http.ts` | 100% / 92,86%; 100% / 95,24% | `node --experimental-test-coverage` |
 | C38 | ProgresController | `server/controllers/ProgresController.ts`; `server/services/progresService.ts`; `shared/progres.ts`; `shared/dokumentasi.ts` | 98,11% / 95,45%; 98,70% / 93,75%; 97,91% / 82,61%; 93,48% / 79,17% | `node --experimental-test-coverage` |
-| *[CXX]* | *[Kelas Mendalam UC01–UC04]* | *[...]* | *[...]* | *[...]* |
+| C12 | Akun | `models/Akun.ts`; `server/password.ts` | 89,83% / 86,67%; 100% / 75% | `node --experimental-test-coverage` |
+| C13 | SesiLogin | `models/SesiLogin.ts`; `server/services/AutentikasiService.ts`; `server/sesi.ts` | 100% / 100%; 91,57% / 97,14%; 100% / 100% | `node --experimental-test-coverage` |
 
 ### Pengujian Unit UC05
 
@@ -435,6 +497,21 @@ node --experimental-test-module-mocks --experimental-test-coverage --import tsx 
 
 Hasil saat dijalankan: 44 dari 44 test case `relawanProgres.layanan.test.ts` dan 12 dari 12 test case `relawanProgres.view.spec.ts` lulus. Kelas C08 (Volunteer) dan C36 (DetailStatusPendaftaranView) bertingkat Tidak perlu sehingga tidak memiliki subbab unit test.
 
+### Pengujian Unit UC01 
+
+Kelas C12, C13, dan C16 diuji dengan *test runner* bawaan Node.js pada file `src/tests/autentikasi.unit.test.ts`. Pengujian ini tidak memakai basis data. `UserRepository` diganti repository tiruan berbasis `Map` yang mencatat setiap panggilan, jam diganti fungsi yang bisa dimajukan, dan hash bcrypt diganti hash tiruan kecuali pada C12-UT04, yang memakai bcrypt asli. Query ke MySQL (`UserRepository`) diuji sebagai pengujian integrasi pada INT-TC39 s.d. INT-TC42.
+
+Cara menjalankan (dari folder `src/`):
+
+```bash
+npm run test:node                      # seluruh *.test.ts, termasuk UC01
+# hanya UC01, dengan coverage:
+node --env-file-if-exists=.env --import tsx --test --experimental-test-coverage --test-coverage-include="models/**" --test-coverage-include="server/**" tests/autentikasi.unit.test.ts
+```
+
+Hasil (20 November 2026, Node.js v22.23.5): **20 test dalam 3 *suite*, 20 lulus, 0 gagal, 0 dilewati**. Bukti pada 4.6.
+
+*Coverage* `server/repositories/UserRepository.ts` dari unit test hanya 60,94% baris karena seluruh isinya *query* SQL ke MySQL yang tidak dijalankan pada unit test; file ini diuji pada INT-TC39 s.d. INT-TC42. C16 bertingkat Sedang sehingga tidak wajib mencapai 70%; *coverage* `AutentikasiController.ts` sebesar 68,25% karena `logout()` dan `saya()` membaca cookie Next.js dan diuji lewat UC01-TC07, UC01-TC08, dan INT-TC44.
 
 ### Pengujian Unit UC02–UC04
 
@@ -729,6 +806,89 @@ Seluruh operasi DPPL (`tinjauPengajuan`, `setujuiPengajuan`, `tolakPengajuan`) d
 | C11-UT02 | Hak admin | Negatif | Pembuat/volunteer meminta antrean dan keputusan | Seluruhnya 403 | 403; tidak ada penulisan keputusan | Pass |
 | C11-UT03 | `setujuiPengajuan` | Normal | Setujui pending | Published tanpa alasan penolakan | `terpublikasi`, alasan null, koneksi transaksi sama | Pass |
 | C11-UT04 | `tolakPengajuan` | Batas/negatif | Alasan spasi lalu alasan sah berspasi tepi | Kosong 400; alasan sah dirapikan | 400 lalu status `ditolak` dengan `Perbaiki lokasi` | Pass |
+
+### 4.2.12 Kelas Akun
+
+**ID Kelas:** C12 — **Nama Kelas:** Akun — **Tingkat:** Mendalam
+
+Operasi DPPL §5.2: `validasiKelengkapanInput()`, `cekKetersediaanEmail()` (Algo-001), `simpanAkun()` (Algo-002), dan `validasiKredensial()` (Algo-003), yang diwujudkan oleh `AutentikasiService.daftarAkun()` dan `AutentikasiService.login()`.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C12-UT01 | `simpanAkun()` (`daftarAkun()`) | Normal | Nama `Budi Santoso`, email `Budi@Mail.com ` (huruf besar dan spasi), kata sandi `rahasia123` | Akun tersimpan dengan email `budi@mail.com`, peran `volunteer`, status `aktif`; `passwordHash` tidak sama dengan kata sandi asli | Akun tersimpan dengan email `budi@mail.com`, peran `volunteer`, status `aktif`; hash berbeda dari kata sandi | Pass |
+| C12-UT02 | `validasiKelengkapanInput()` | Negatif dan batas | Enam masukan: nama kosong; nama `  Al ` (2 huruf, di bawah minimum 3); email kosong; email `budi@mail` (tanpa domain puncak); kata sandi kosong; kata sandi `1234567` (7 karakter, di bawah minimum 8) | Keenamnya ditolak `VALIDASI` dengan `bidang` sesuai kolom (`nama`, `email`, `password`); repository tidak dipanggil sama sekali | Keenamnya ditolak `VALIDASI` dengan `bidang` yang sesuai; daftar panggilan repository kosong | Pass |
+| C12-UT03 | `cekKetersediaanEmail()` | Negatif | Daftar `Budi@Mail.com `, lalu daftar lagi dengan `  BUDI@mail.COM` | Pendaftaran kedua ditolak `EMAIL_TERPAKAI` dengan `bidang: email`; `simpanAkunBaru()` hanya terpanggil satu kali | Ditolak `EMAIL_TERPAKAI`, `bidang` = `email`; `simpanAkunBaru()` terpanggil 1 kali | Pass |
+| C12-UT04 | `simpanAkun()` (hash KF03) | Normal | `hashPassword('rahasia123')`, lalu `cocokPassword()` dengan kata sandi benar dan salah | Hash berpola bcrypt *cost* 12 (`$2a$12$`, `$2b$12$`, atau `$2y$12$`); kata sandi benar cocok, kata sandi salah tidak | Hash cocok dengan pola `^\$2[aby]\$12\$`; `rahasia123` cocok, `salah12345` tidak | Pass |
+| C12-UT05 | `validasiKredensial()` | Negatif | Login dengan kata sandi salah; login dengan email `siapa@mail.com` yang tidak terdaftar | Keduanya `KREDENSIAL_SALAH` dengan kode, pesan, dan `bidang` yang sama persis; tidak ada sesi dibuat | Kode, pesan ("The email or password doesn't match. Check them and try again."), dan `bidang` identik; `simpanSesi()` tidak terpanggil | Pass |
+| C12-UT06 | `validasiKredensial()` | Negatif | Login dengan email tidak terdaftar; fungsi pembanding kata sandi dicatat | Kata sandi tetap dibandingkan satu kali dengan hash `null` (hash tiruan) agar waktu tanggap seragam | Pembanding dipanggil tepat satu kali dengan hash `null` | Pass |
+| C12-UT07 | `validasiKredensial()` | Negatif | Akun diubah menjadi `nonaktif`, lalu login dengan kredensial benar | Ditolak dengan galat yang sama persis dengan kata sandi salah; tidak ada sesi dibuat | Galat identik dengan kata sandi salah; `simpanSesi()` tidak terpanggil | Pass |
+| C12-UT08 | `validasiKredensial()` | Negatif | Akun `nonaktif`; jumlah pemanggilan pembanding kata sandi dihitung | Kata sandi tetap dibandingkan satu kali (waktu tanggap seragam) | Pembanding dipanggil 1 kali | Pass |
+| C12-UT09 | `validasiKredensial()` | Batas | Email berisi satu spasi; kata sandi kosong | Ditolak `VALIDASI` per kolom (`email`, `password`) sebelum basis data disentuh | `bidang` masing-masing `email` dan `password`; repository tidak dipanggil | Pass |
+
+Tabel 4.2.12b. Ringkasan Cakupan Kelas C12
+
+| Informasi | Keterangan |
+| :--- | :--- |
+| Operasi yang diuji | `validasiKelengkapanInput()`, `cekKetersediaanEmail()`, `simpanAkun()`, `validasiKredensial()` (seluruh operasi public C12 pada DPPL §5.2) |
+| Coverage (wajib ≥ 70%) | `models/Akun.ts` 89,83% / 86,67%; `server/password.ts` 100% / 75% (baris / cabang). Bukti pada 4.6 |
+| Batas pengujian | Panjang tepat minimum (nama 3 huruf, kata sandi 8 karakter) dan maksimum (nama 100, kata sandi 72) belum memiliki kasus tersendiri; kasus tepat di bawah minimum sudah diuji pada C12-UT02. |
+
+### 4.2.13 Kelas SesiLogin
+
+**ID Kelas:** C13 — **Nama Kelas:** SesiLogin — **Tingkat:** Mendalam
+
+Operasi DPPL §5.3: `buatSesi()` (Algo-004) dan `cekStatusLogin()` (Algo-005), ditambah pengakhiran sesi saat logout (Q-006).
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C13-UT01 | `buatSesi()` | Normal | Login `BUDI@mail.com` / `rahasia123` pada jam tetap `2026-11-09T08:00:00Z` | ID sesi 64 karakter heksadesimal; status `aktif`; kedaluwarsa tepat 24 jam setelah login; sesi tersimpan | ID cocok dengan `^[0-9a-f]{64}$`; status `aktif`; selisih kedaluwarsa = `DURASI_SESI_MS`; sesi ada di repository | Pass |
+| C13-UT02 | `cekStatusLogin()` | Normal dan negatif | Periksa ID sesi hasil login; tanpa ID (`undefined`); ID `id-palsu` | Sesi sah mengembalikan pengguna `budi@mail.com`; tanpa ID dan ID tak dikenal mengembalikan `null` (tamu) | Sesi sah mengembalikan `budi@mail.com`; dua lainnya `null` | Pass |
+| C13-UT03 | `cekStatusLogin()` | Batas | Jam dimajukan 24 jam − 1 ms, lalu 1 ms lagi (tepat kedaluwarsa), lalu diperiksa sekali lagi | Sebelum batas: sah. Tepat di batas: `null` dan sesi ditandai `berakhir`. Pemeriksaan berikutnya tidak menulis ulang ke basis data | Sebelum batas sah dan tetap `aktif`; tepat di batas `null` dan `berakhir`; `akhiriSesi()` tidak terpanggil lagi | Pass |
+| C13-UT04 | `cekStatusLogin()` | Negatif | Login, lalu akun diubah menjadi `nonaktif` | Sesi yang masih berlaku tidak dikenali lagi (`null`) | `null` | Pass |
+| C13-UT05 | `akhiriSesi()` (`logout()`) | Normal dan batas | Logout dengan ID sesi aktif; logout kedua dengan ID yang sama; logout tanpa ID | Sesi tidak dikenali lagi setelah logout; logout ulang dan tanpa ID tidak melempar galat (idempoten) | Sesi menjadi `null`; kedua logout berikutnya berjalan tanpa galat | Pass |
+| C13-UT06 | `cekStatusLogin()` | Batas | `aksi.auth.spec.ts` "pemeriksaan sesi bersama mempertahankan penolakan sesi masa depan": `waktuMulai` satu menit setelah jam sekarang, lalu tepat sama dengan jam sekarang | Sesi yang belum dimulai ditolak (`false`); sesi yang dimulai tepat sekarang diterima (`true`) | Sesi yang dimulai satu menit lagi ditolak (`false`); sesi yang dimulai tepat sekarang diterima (`true`). Asersi yang sama dijalankan dengan `node:test`: 1 pass, 0 fail | Pass |
+
+Tabel 4.2.13b. Ringkasan Cakupan Kelas C13
+
+| Informasi | Keterangan |
+| :--- | :--- |
+| Operasi yang diuji | `buatSesi()`, `cekStatusLogin()` (`penggunaDariSesi()`), `akhiriSesi()` (`logout()`) |
+| Coverage (wajib ≥ 70%) | `models/SesiLogin.ts` 100% / 100%; `server/services/AutentikasiService.ts` 91,57% / 97,14%; `server/sesi.ts` 100% / 100% (baris / cabang). Bukti pada 4.6 |
+
+### 4.2.14 Kelas FormPendaftaranView
+
+**ID Kelas:** C14 — **Nama Kelas:** FormPendaftaranView — **Tingkat:** Sedang
+
+Belum ada file tes otomatis untuk C14 dan C15. Kedua kelas diuji manual di peramban Chrome pada aplikasi lokal (`localhost:3000`) dengan basis data hasil `npm run db:reset`; tangkapan layarnya sama dengan UC01 (Subbab 4.6).
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C14-UT01 | `tampilkanFormulir()`, `kirimFormulir()`, `tampilkanNotifikasiBerhasil()` | Normal | Tekan *Sign up* di navbar; isi `Nayla Uji`, `nayla.uji@klimpool.id`, `rahasia123`; tekan *Create account* | Modal "Create an account" tampil dengan kolom *Full name*, *Email*, *Password*; setelah dikirim, modal tertutup dan muncul *toast* "Account created. Welcome to KlimPooL, <nama depan>." | Modal tampil dengan ketiga kolom; setelah dikirim modal tertutup, *toast* "Account created. Welcome to KlimPooL, Nayla." muncul, dan navbar menampilkan *Balance* Rp0 dengan avatar NU | Pass |
+| C14-UT02 | `tampilkanPesanKesalahan()` | Negatif | Kirim dengan email `ANDI@klimpool.id ` (huruf besar dan spasi); lalu tekan "Log in with this email" | Muncul "andi@klimpool.id is already used by another account. Use a different email, or log in with this one."; tautan memindahkan ke tab *Log in* dengan email sudah terisi | Pesan dan tautan muncul, kolom *Email* juga menampilkan "This email is already registered." (`POST /api/auth/daftar` 409 `EMAIL_TERPAKAI`); tautan membuka tab *Log in* dengan email `andi@klimpool.id` terisi | Pass |
+
+### 4.2.15 Kelas FormLoginView
+
+**ID Kelas:** C15 — **Nama Kelas:** FormLoginView — **Tingkat:** Sedang
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C15-UT01 | `kirimKredensial()`, `arahkanKeHalamanUtama()` | Normal | Dari `/explore`, buka tab *Log in*, isi `nayla.uji@klimpool.id` / `rahasia123` | Modal tertutup, *toast* "Welcome back, Nayla.", navbar menampilkan akun, halaman tetap `/explore` | `POST /api/auth/masuk` 200; modal tertutup, *toast* "Welcome back, Nayla.", navbar menampilkan *Balance* Rp0 dan avatar NU, halaman tetap `/explore` | Pass |
+| C15-UT02 | `tampilkanPesanKesalahan()` | Negatif | Isi `andi@klimpool.id` / `salah123` | Muncul "The email or password doesn't match. Check them and try again."; modal tetap terbuka | `POST /api/auth/masuk` 401 `KREDENSIAL_SALAH`; pesan tersebut tampil dan modal tetap terbuka | Pass |
+
+**Temuan dari inspeksi kode:** bila koneksi putus saat mendaftar atau login, `panggilApi()` mengembalikan `GAGAL_KONEKSI` dengan pesan khusus donasi ("The connection dropped. Press Try again; your donation will only be processed once."), sehingga pesan ini juga muncul di formulir auth. Usulan perbaikan: pesan koneksi umum untuk formulir auth.
+
+### 4.2.16 Kelas AutentikasiController
+
+**ID Kelas:** C16 — **Nama Kelas:** AutentikasiController — **Tingkat:** Sedang
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C16-UT01 | `daftarAkun()` | Normal | `POST /api/auth/daftar` dengan JSON daftar sah | Status 201, `ok: true`, email ternormalisasi; badan respons tidak memuat `password`, `Hash`, maupun kata sandi asli (KF03) | Status 201, `data.email` = `budi@mail.com`; ketiga teks terlarang tidak ada di badan respons | Pass |
+| C16-UT02 | `daftarAkun()` | Negatif | Daftar dua kali dengan data yang sama | Status 409, `kode: EMAIL_TERPAKAI`, `bidang: email` | Status 409, `EMAIL_TERPAKAI`, `bidang` = `email` | Pass |
+| C16-UT03 | `daftarAkun()` | Negatif | Badan kosong, `bukan json`, dan `[]` | Ketiganya 400 `VALIDASI` dengan `bidang: nama`, bukan 500 | Ketiganya 400, `VALIDASI`, `bidang` = `nama` | Pass |
+| C16-UT04 | Pembatasan peran (`requireRole()` → `pastikanPeran()`) | Negatif | Pengguna `volunteer` diperiksa terhadap `['volunteer','admin']` lalu `['admin']` | Peran yang diizinkan lolos; peran lain ditolak `DILARANG` (403) | Lolos untuk daftar pertama; daftar kedua melempar `DILARANG` | Pass |
+| C16-UT05 | Pemetaan galat (`gagal()`) | Negatif | `GalatAplikasi('BELUM_LOGIN')` dan `new Error('x')`, keduanya dengan header `Cache-Control` | 401 dan 500; header `private, no-store` tetap terkirim; galat tak terduga menjadi `GALAT_SERVER` | 401 dan 500, header terkirim pada keduanya | Pass |
+| C16-UT06 | Pemetaan galat (`gagal()`) | Normal | Galat berkolom (`VALIDASI`, `email`) dan galat tanpa kolom (`BELUM_LOGIN`) | Galat berkolom memuat `bidang`; galat tanpa kolom tidak memuat `bidang` | `{ ok: false, kode: "VALIDASI", pesan: "Enter your email.", bidang: "email" }`; `BELUM_LOGIN` tanpa `bidang` | Pass |
 
 ### 4.2.17 Kelas FormCampaignView
 
@@ -1112,6 +1272,9 @@ Tabel 4.3.1. Daftar Antarmuka Antarkomponen
 | IK-17 | Controller aksi / sesiAksi | Sesi dan akun MySQL | Controller - autentikasi - basis data | INT-TC32 |
 | IK-18 | AksiController / AksiService / AksiRepository | MySQL (`campaign`, `project`) | Controller - service - basis data | INT-TC33, INT-TC34, INT-TC37 |
 | IK-19 | VerifikasiController / AksiService / AksiRepository | MySQL (antrean, transisi, penguncian baris) | Controller - service - basis data | INT-TC35, INT-TC36 |
+| IK-20 | AuthModal (`FormPendaftaranView`, `FormLoginView`), `SesiProvider`, `AppShell` | AutentikasiController (`/api/auth/daftar`, `/masuk`, `/keluar`, `/saya`) | View - Controller (HTTP API) | INT-TC38 |
+| IK-21 | AutentikasiService / UserRepository | MySQL (`pengguna`, `akun`, `donatur`, `sesi_login`) | Controller - Model - Basis data | INT-TC39, INT-TC40 |
+| IK-22 | `penggunaDariSesi()` lewat `wajibLogin()`, `guard.ts`, `getIdPenggunaSaatIni()`, `sesiAksi()` | Modul lain (donasi, top-up, riwayat, relawan, progres, aksi/admin, `/account`) | Model - Model lintas modul | INT-TC41 s.d. INT-TC44 |
 
 Tabel 4.3.2. Hasil Pengujian Integrasi
 
@@ -1154,6 +1317,30 @@ Tabel 4.3.2. Hasil Pengujian Integrasi
 | INT-TC35 | IK-19 | Antrean, penolakan, revisi, publikasi | Kasus keempat: ajukan campaign, tolak tanpa/dengan alasan, revisi, ajukan ulang, setujui | Antrean pending saja; wajib alasan; revisi dapat diajukan lagi | Tanpa alasan 400; alasan tersimpan; pengajuan ulang membersihkan alasan/tanggal lama; published dengan tanggal verifikasi | Pass |
 | INT-TC36 | IK-19 | Konkurensi transisi | Kasus kelima: dua pengajuan bersamaan; dua keputusan bersamaan | Tepat satu berhasil per pasangan | Kedua pasangan menghasilkan status `[200,409]` | Pass |
 | INT-TC37 | IK-18 | JSON/parameter berbahaya | Kasus keenam: JSON rusak; jenis/ID mengandung SQL | Badan salah 400; parameter salah 404 | 400 dan 404 sesuai, tidak menjadi query dari input | Pass |
+| INT-TC38 | IK-20 | Normal: modal auth terhubung ke API | Daftar akun `nayla.uji@klimpool.id` lewat modal (UC01-TC01); periksa respons `/api/auth/*`, cookie (UC01-TC07), dan *Log out* (UC01-TC08) | `POST /api/auth/daftar` 201 dan `POST /api/auth/masuk` 200; cookie `klimpool_sesi` *HttpOnly* dan *SameSite* `Lax`; *Log out* menghapus cookie; navbar berubah sesuai status login | `POST /api/auth/daftar` → 201, `POST /api/auth/masuk` → 200; cookie `klimpool_sesi` `httpOnly=true`, `sameSite=Lax`; setelah *Log out* cookie terhapus dan navbar kembali menampilkan *Log in* dan *Sign up* | Pass |
+| INT-TC39 | IK-21 | Normal: satu pendaftaran menulis tiga tabel | Setelah UC01-TC01: `SELECT p.nama, p.peran, a.email, LEFT(a.password_hash,7) AS awalan, LENGTH(a.password_hash) AS panjang, d.saldo FROM akun a JOIN pengguna p USING (id_pengguna) JOIN donatur d ON d.id_donatur = a.id_pengguna WHERE a.email = 'nayla.uji@klimpool.id';` | Satu baris: peran `volunteer`, awalan `$2b$12$` (atau `$2a$12$`), panjang 60, saldo 0.00; kata sandi asli tidak ada di tabel | Satu baris: `Nayla Uji`, `volunteer`, `nayla.uji@klimpool.id`, awalan `$2b$12$`, panjang 60, saldo 0.00 | Pass |
+| INT-TC40 | IK-21 | Batas: lima pendaftaran bersamaan dengan email sama | Jalankan skrip `uji-daftar-bersamaan.mjs` (di bawah tabel), lalu `SELECT COUNT(*) FROM akun WHERE email = 'uji.bersamaan@klimpool.id';` | Tepat satu 201 dan empat 409 (urutan bebas); `COUNT(*)` = 1; tidak ada 500 | Status berurutan 409, 409, 201, 409, 409; keempat 409 berisi `EMAIL_TERPAKAI` dengan `bidang: email`; `COUNT(*)` = 1 | Pass |
+| INT-TC41 | IK-22 | Normal: sesi dibaca modul lain | Login `andi@klimpool.id`, lalu buka `/api/topup` (modul top-up) dan `/account` (modul riwayat) | `/api/topup` 200 dengan saldo Andi; `/account` menampilkan "Hi, Andi" | `GET /api/topup` → 200 `{"ok":true,"data":{"saldo":750000}}`; `/account` menampilkan "Hi, Andi" dengan saldo Rp750,000 | Pass |
+| INT-TC42 | IK-22 | Gagal: sesi kedaluwarsa di basis data | Login Andi dan buka `/account`; salin nilai cookie `klimpool_sesi`; `UPDATE sesi_login SET waktu_kedaluwarsa = '2000-01-01 00:00:00' WHERE id_sesi = '<nilai cookie>';` lalu muat ulang `/account`; terakhir `SELECT status_sesi, waktu_kedaluwarsa FROM sesi_login WHERE id_sesi = '<nilai cookie>';` | Sebelum diubah: `/account` terbuka. Sesudah: `/account` menampilkan "Log in to see your activity"; `status_sesi` menjadi `berakhir` | Sebelum diubah `/account` menampilkan "Hi, Andi"; sesudah `UPDATE` dan muat ulang tampil "Log in to see your activity"; `status_sesi` = `berakhir`, `waktu_kedaluwarsa` = `2000-01-01 00:00:00` | Pass |
+| INT-TC43 | IK-22 | Gagal: peran tidak sesuai | Login Andi (`volunteer`); buka `/admin`; di Console jalankan `fetch('/api/verifikasi').then(r => r.status)` | Halaman "Akses aksi" dengan pesan "Anda tidak memiliki akses ke fitur ini."; `fetch` mengembalikan 403 | `/admin` menampilkan "Anda tidak memiliki akses ke fitur ini." dan tombol "Kembali ke beranda"; `fetch('/api/verifikasi')` → 403 | Pass |
+| INT-TC44 | IK-22 | Normal: logout mematikan sesi di server | Login Andi; salin nilai cookie; tekan *Log out*; jalankan `curl.exe -i http://localhost:3000/api/topup -H "Cookie: klimpool_sesi=<nilai lama>"`; `SELECT status_sesi FROM sesi_login WHERE id_sesi = '<nilai lama>';` | `curl` mendapat 401 `BELUM_LOGIN` walaupun memakai cookie lama; `status_sesi` = `berakhir` | `HTTP/1.1 401 Unauthorized`, badan `{"ok":false,"kode":"BELUM_LOGIN","pesan":"Please log in first."}`; `status_sesi` = `berakhir` | Pass |
+
+Skrip INT-TC40. Simpan sebagai `uji-daftar-bersamaan.mjs` **di luar repositori**, lalu jalankan `node uji-daftar-bersamaan.mjs` saat aplikasi berjalan:
+
+```js
+// INT-TC40: 5 pendaftaran dengan email sama dikirim bersamaan
+const URL = 'http://localhost:3000/api/auth/daftar';
+const body = JSON.stringify({ nama: 'Uji Bersamaan', email: 'uji.bersamaan@klimpool.id', password: 'rahasia123' });
+
+const hasil = await Promise.all(
+  Array.from({ length: 5 }, () =>
+    fetch(URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body })
+      .then(async (r) => ({ status: r.status, body: await r.text() })),
+  ),
+);
+hasil.forEach((h, i) => console.log(`Request ${i + 1}: ${h.status}  ${h.body}`));
+console.log('Jumlah 201:', hasil.filter((h) => h.status === 201).length, '(harus 1)');
+```
 
 **Pelaksanaan UC02–UC04:** `npm run test:aksi` menghasilkan **15 Pass, 0 Fail, 0 Skip**, termasuk enam kasus integrasi MySQL (INT-TC32–TC37); sembilan lainnya menguji akses/validasi. INT-TC31 memakai browser sungguhan, bukan mock. Fixtures dibersihkan setelah pengujian; tidak ada layanan eksternal pada alur ini.
 
@@ -1165,16 +1352,30 @@ Pengujian use case dilakukan pada seluruh skenario normal dan alternatif sesuai 
 
 ### 4.4.1 Use Case [Nama Use Case 1]
 
-**ID Use Case:** *[UC01 sesuai SKPL]*  
-**Nama Use Case:** *[Nama use case sesuai SKPL]*
+**ID Use Case:** UC01  
+**Nama Use Case:** Melakukan Pendaftaran dan Autentikasi
 
-Tabel 4.4.1. Hasil Pengujian Use Case [UC01]
+Skenario mengikuti SKPL §4.4.1: Skenario Normal, Alternatif 1 (Email Sudah Terdaftar), dan Alternatif 2 (Kredensial Login Tidak Valid). UC01-TC07 s.d. UC01-TC10 menguji status login yang dipersyaratkan KF04. Data uji memakai akun demo `andi@klimpool.id` dengan kata sandi `klimpool123`; akun baru memakai email yang belum pernah dipakai. Basis data di-*reset* dengan `npm run db:reset` sebelum pengujian. Pengujian dilakukan manual di Chrome pada aplikasi lokal (`localhost:3000`).
 
+Catatan implementasi: setelah pendaftaran berhasil, pengguna langsung login (B.1 No. 14). Langkah 7–9 skenario normal SKPL (login dengan akun yang baru dibuat) diuji terpisah pada UC01-TC04.
+
+Tabel 4.4.1. Hasil Pengujian Use Case UC01
 | ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| *UC01-TC01* | *KF01* | *Normal* | *1. Buka halaman login.<br>2. Masukkan kredensial.<br>3. Klik tombol "Login".* | *User: rpl@gmail.com<br>Pass: 123456* | *Pengguna diarahkan ke Halaman Dashboard.* | *Pengguna diarahkan ke Halaman Dashboard sesuai hasil yang diharapkan.* | *Pass* |
-| *UC01-TC02* | *KF01* | *Alternatif 1: [Nama skenario]* | *[Langkah-langkah pengujian]* | *[Data masukan]* | *[Hasil yang diharapkan]* | *[Hasil aktual]* | *[Pass/Fail. Jika Fail: penjelasan dan solusi]* |
-| *...* | *...* | *...* | *...* | *...* | *...* | *...* | *...* |
+| UC01-TC01 | KF01, KF03 | Normal: pendaftaran akun | 1. Tanpa login, buka Home.<br>2. Tekan *Sign up* di navbar.<br>3. Isi formulir, tekan *Create account*. | Nama: `Nayla Uji`<br>Email: `nayla.uji@klimpool.id`<br>Kata sandi: `rahasia123` | Muncul *toast* "Account created. Welcome to KlimPooL, Nayla."; modal tertutup; navbar menampilkan akun dengan saldo Rp0 | *Toast* "Account created. Welcome to KlimPooL, Nayla." muncul; modal tertutup; navbar menampilkan *Balance* Rp0 dan avatar NU; `POST /api/auth/daftar` 201 | Pass |
+| UC01-TC02 | KF01 | Normal (langkah 4): isian tidak lengkap atau format salah | 1. Buka tab *Sign up*.<br>2. Kirim formulir kosong.<br>3. Isi nama, email `budi@mail`, kirim.<br>4. Perbaiki email, isi kata sandi `1234567`, kirim. | Nama: `Budi Uji`<br>Email: `budi@mail`, lalu `budi@mail.com`<br>Kata sandi: `1234567` | Langkah 2: "Enter your full name, at least 3 letters." di bawah *Full name*. Langkah 3: "That email format looks wrong. Example: name@email.com". Langkah 4: "Passwords need at least 8 characters." Tidak ada akun baru | Ketiga pesan tampil di bawah kolom yang sesuai, satu kolom per pengiriman; `POST /api/auth/daftar` menjawab 400 tiga kali; tidak ada akun dibuat | Pass |
+| UC01-TC03 | KF02 | Alternatif 1: email sudah terdaftar | 1. Buka tab *Sign up*.<br>2. Isi email akun demo (huruf besar dan spasi di akhir), kirim.<br>3. Tekan "Log in with this email". | Nama: `Andi Kedua`<br>Email: `ANDI@klimpool.id `<br>Kata sandi: `rahasia123` | Muncul "andi@klimpool.id is already used by another account. Use a different email, or log in with this one."; tab *Log in* terbuka dengan email terisi; tidak ada akun ganda | `POST /api/auth/daftar` 409 `EMAIL_TERPAKAI`; pesan tersebut tampil; tautan membuka tab *Log in* dengan email `andi@klimpool.id` terisi | Pass |
+| UC01-TC04 | KF01, KF04 | Normal (langkah 7–9): login | 1. Logout, buka `/explore`, tekan *Log in*.<br>2. Isi kredensial, tekan *Log in*. | `nayla.uji@klimpool.id` / `rahasia123` (akun dari UC01-TC01) | *Toast* "Welcome back, Nayla."; modal tertutup; tetap di `/explore`; navbar menampilkan akun | *Toast* "Welcome back, Nayla."; modal tertutup; tetap di `/explore`; navbar menampilkan *Balance* Rp0 dan avatar NU; `POST /api/auth/masuk` 200 | Pass |
+| UC01-TC05 | KF04 | Alternatif 2: kata sandi salah | Login dengan kata sandi salah | `andi@klimpool.id` / `salah123` | "The email or password doesn't match. Check them and try again."; tidak masuk | `POST /api/auth/masuk` 401 `KREDENSIAL_SALAH`; pesan tersebut tampil; modal tetap terbuka dan navbar tetap menampilkan *Log in* | Pass |
+| UC01-TC06 | KF04 | Alternatif 2: email tidak terdaftar | Login dengan email yang tidak terdaftar | `tidakada@klimpool.id` / `klimpool123` | Pesan **sama persis** dengan UC01-TC05, sehingga tidak membocorkan email mana yang terdaftar | `POST /api/auth/masuk` 401; badan respons sama persis dengan UC01-TC05 (`KREDENSIAL_SALAH`, pesan yang sama) | Pass |
+| UC01-TC07 | KF04 | Normal: sesi bertahan | 1. Login.<br>2. Muat ulang halaman, buka `/account`.<br>3. Periksa cookie `klimpool_sesi`. | - | Tetap login; cookie `klimpool_sesi` bertanda *HttpOnly*, *SameSite* `Lax`, dan kedaluwarsa ±24 jam dari waktu login | `/account` menampilkan "Hi, Nayla"; cookie `klimpool_sesi` `httpOnly=true`, `sameSite=Lax`, `path=/`, `expires=2026-11-21T08:07:35Z` (24 jam setelah login) | Pass |
+| UC01-TC08 | KF04 | Normal: logout | 1. Buka menu akun, tekan *Log out*.<br>2. Buka `/account`. | - | *Toast* "You're logged out."; diarahkan ke Home; cookie `klimpool_sesi` hilang; `/account` menampilkan "Log in to see your activity" | *Toast* "You're logged out." di Home; cookie `klimpool_sesi` terhapus; `/account` menampilkan "Log in to see your activity" | Pass |
+| UC01-TC09 | KF04 | Alternatif: fitur membutuhkan login | 1. Tanpa login, buka `/project/mgv`.<br>2. Tekan *Donate now*.<br>3. Login Andi pada modal. | `andi@klimpool.id` / `klimpool123` | Modal auth terbuka dengan keterangan "Log in to donate. Your donation form opens right after."; setelah login, formulir donasi langsung terbuka | Modal "Log in to KlimPooL" dengan keterangan tersebut tampil; setelah login, formulir *Donate* untuk Sayung Coastal Mangrove Restoration langsung terbuka dengan saldo Rp750,000 | Pass |
+| UC01-TC10 | KF04 | Alternatif: peran tidak sesuai | Login Andi (`volunteer`), buka `/admin` | - | Pesan "Anda tidak memiliki akses ke fitur ini."; antrean pengajuan tidak tampil | Pesan "Anda tidak memiliki akses ke fitur ini." dan tombol "Kembali ke beranda" tampil; antrean tidak tampil | Pass |
+
+<br>
+
+---
 
 ### 4.4.2 Use Case Membuat Campaign Penggalangan Donasi
 
@@ -1327,9 +1528,6 @@ Tabel 4.5. Hasil Pengujian KNF
 
 | ID Pengujian | ID KNF | Parameter | Target Terukur | Metode dan Alat | Hasil Aktual | Kesimpulan |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| *KNF01-TC01* | *KNF01* | *Reliability* | *Tidak ada data hilang/ganda saat jaringan putus di tengah transaksi* | *Simulasi putus koneksi saat bayar, lalu cek status di DB* | *[Hasil aktual]* | *Pass/Fail* |
-| *KNF02-TC01* | *KNF02* | *Security* | *Password tersimpan sebagai hash, bukan plain-text* | *Inspeksi tabel pengguna di DB* | *[...]* | *Pass/Fail* |
-| *KNFXX-TC01* | *KNFXX* | *Response time* | *Halaman tampil ≤ 4 detik* | *Chrome DevTools, 5 kali ukur, ambil rata-rata* | *[Rata-rata ... detik, maks ... detik]* | *Pass/Fail* |
 | KNF02-TC01 | KNF02 | *Performance efficiency* (waktu tampil hasil filter) | Hasil akhir pencarian tampil ≤ 3 detik setelah filter diterapkan, pada jaringan stabil | Build produksi lokal (`npm run build` lalu `npm run start`). Chrome DevTools tab Network (*Disable cache*, tanpa *throttling*, filter `katalog?`): ubah filter Explore 10 kali (tipe, kategori, provinsi, status, periode), catat kolom *Time* setiap permintaan `GET /api/katalog`; ambil rata-rata dan maksimum | 10 pengukuran `GET /api/katalog`: 48, 49, 44, 39, 49, 45, 39, 42, 43, dan 37 ms; rata-rata 0,04 detik (43,5 ms), maksimum 0,05 detik (49 ms) | Pass |
 | KNF02-TC02 | KNF02 | *Performance efficiency* (waktu tanggap API filter) | Respons `GET /api/katalog` dengan filter ≤ 3 detik | Script PowerShell `Measure-Command` + `Invoke-WebRequest` ke `GET /api/katalog?tipe=project&kategori=Clean%20water&status=donasi&periode=berjalan`, 30 kali berturut-turut pada build produksi lokal; ambil rata-rata, maksimum, dan jumlah respons selain 200 | 30 dari 30 permintaan berstatus 200; rata-rata 18,4 ms, maksimum 33 ms (permintaan pertama), permintaan lainnya 14–28 ms | Pass |
 | KNF03-TC01 | KNF03 | Interaction capability (lingkup aksi) | Maksimal 5 tahap normal campaign | Playwright Chromium; telusuri alur UI dan periksa status API | 4 tahap: My Actions → formulir campaign → detail Draft → status Menunggu Verifikasi | Pass pada lingkup aksi |
@@ -1346,6 +1544,22 @@ Tabel 4.5. Hasil Pengujian KNF
 | KNF09-TC01 | KNF09 | *Performance efficiency* (beban pengguna) | Dengan 1.000 koneksi bersamaan, waktu tanggap tiap permintaan ≤ 3 detik dan tidak ada permintaan gagal | Uji beban `autocannon` (dijalankan lewat `npx`, tidak ditambahkan ke `package.json`): `-c 1000 -d 30` ke `GET /api/katalog` pada build produksi lokal (`npm run start`) dengan basis data berisi data seed; catat latensi rata-rata, p99, maksimum, jumlah permintaan, dan jumlah galat/*timeout* | Selama 30 detik dengan 1.000 koneksi: latensi rata-rata 1.591,8 ms, median 1.609 ms, p97,5 1.905 ms, p99 2.040 ms, maksimum 2.284 ms; rata-rata 611,84 permintaan per detik. Total sekitar 19.000 permintaan dalam 30,15 detik (129 MB dibaca) tanpa galat maupun *timeout* | Pass |
 | KNF11-TC01 | KNF11 | Maintainability (modularitas) | Menambah satu kategori aksi baru tidak mengubah satu pun file modul transaksi donasi | Uji perubahan: tambahkan kategori `Coral reefs` ke `KATEGORI` (`src/shared/katalog.ts`), lalu jalankan `npx tsc --noEmit`, `git diff --stat`, Vitest, dan test node:test modul donasi/top-up. Periksa juga apakah 18 file modul transaksi (`DonasiController.ts`, `DonasiService.ts`, `DonasiRepository.ts`, `models/Donatur.ts`, `models/TransaksiDonasi.ts`, `models/BuktiTransaksi.ts`, 9 file `components/views/DonasiView/`, dan 3 file `app/api/donasi/`) merujuk `kategori` atau `katalog`. Perubahan dikembalikan setelah uji | `npx tsc --noEmit` meminta satu entri foto cadangan di `FOTO_KATEGORI` (`src/shared/explore.ts`); setelah ditambahkan, `tsc` lulus. `git diff --stat`: 2 file berubah (`shared/katalog.ts`, `shared/explore.ts`), 2 baris ditambah, tidak ada file modul transaksi yang berubah. Pencarian `kategori\|katalog` pada 18 file modul transaksi: 0 hasil. Kolom `kategori` bertipe `VARCHAR(50)`, bukan `ENUM`, sehingga tidak perlu migrasi basis data. Test donasi/top-up node:test: 42 test, 30 lulus, 0 gagal, 12 dilewati karena basis data tidak berjalan. Vitest: 194 dari 195 lulus; 1 gagal pada `node-runner.spec.ts` karena izin *symlink* Windows (sama dengan sebelum perubahan, lihat Subbab 4.2) | Pass |
 | *...* | *...* | *...* | *...* | *...* | *...* | *...* |
+| KNF01-TC01 | KNF01 | *Flexibility* (*smartphone*) | Pada lebar 360 px: tidak ada *scroll* horizontal; menu navbar berubah menjadi tombol panel; modal auth, Explore, dan detail project dapat dipakai tanpa memperbesar layar | Chrome DevTools *Device Toolbar* 360 px pada `/`, `/explore`, `/project/mgv`, dan modal *Sign up*; di Console jalankan `document.documentElement.scrollWidth <= innerWidth` | Keempat layar `true` (360 ≤ 360); navbar menampilkan *Log in* dan tombol menu ☰; filter Explore tersusun vertikal | Pass |
+| KNF01-TC02 | KNF01 | *Flexibility* (*tablet*) | Pada 768 px: tidak ada *scroll* horizontal; elemen tidak saling menimpa | DevTools 768 px pada halaman yang sama dan pemeriksaan Console yang sama | Keempat layar `true` (768 ≤ 768); navbar menampilkan *Log in*, *Sign up*, dan tombol menu; tidak ada elemen yang saling menimpa | Pass |
+| KNF01-TC03 | KNF01 | *Flexibility* (*desktop*) | Pada 1280 px: menu navbar tampil penuh; tidak ada *scroll* horizontal | DevTools 1280×800 pada halaman yang sama dan pemeriksaan Console yang sama | Keempat layar `true` (1280 ≤ 1280); navbar menampilkan menu penuh (Home, Explore, How it works, Start an action, Impact) | Pass |
+| KNF05-TC01 | KNF05 | *Security* (bcrypt) | 100% kata sandi tersimpan sebagai hash bcrypt *cost* 12 (awalan `$2a$12$`/`$2b$12$`, panjang 60); tidak ada teks terbuka | Inspeksi `src/db/migrations/002_seed.sql`; query akun baru pada INT-TC39; unit test C12-UT04 | 10 dari 10 akun *seed* tersimpan dengan hash `$2b$12$…` sepanjang 60 karakter. Akun baru `nayla.uji@klimpool.id` di basis data berawalan `$2b$12$` dengan panjang 60 (INT-TC39). C12-UT04 lulus. Tidak ada kata sandi teks terbuka | Pass |
+| KNF05-TC02 | KNF05 | *Security* (TLS ≥ 1.2) | Lalu lintas aplikasi melalui HTTPS dengan TLS ≥ 1.2; cookie sesi bertanda `Secure` | Aplikasi tidak di-*deploy* dan hanya dijalankan lokal melalui HTTP *loopback*; atribut `Secure` cookie hanya aktif bila `NODE_ENV=production` di server HTTPS | Tidak dapat diuji karena tidak ada server HTTPS | Tidak diuji. KNF05 bagian TLS belum terpenuhi pada lingkungan lokal |
+| KNF05-TC03 | KNF05 | *Security* (respons API) | Kata sandi dan hash tidak pernah muncul pada respons API | Periksa badan respons `POST /api/auth/masuk` dan `POST /api/auth/daftar`; cari teks `password` dan awalan hash `$2`. Pendukung: C16-UT01 | Badan `POST /api/auth/masuk` hanya berisi `idPengguna`, `nama`, `email`, `peran`, `saldo`; tidak memuat `password` maupun `$2`. Respons daftar 201 pada INT-TC40 juga tanpa keduanya; C16-UT01 lulus | Pass |
+| KNF10-TC01 | KNF10 | *Constraint* (minimisasi data) | UC01 hanya mengumpulkan nama, email, dan kata sandi | Inspeksi `FormPendaftaranView.tsx` dan `UserRepository.simpanAkunBaru()` | Formulir hanya memuat *Full name*, *Email*, *Password*. `simpanAkunBaru()` hanya menulis `nama`, `peran`, `tanggal_bergabung`, `email`, `password_hash`, `status_akun`, dan saldo 0; kolom `telepon` dan `kota` tidak diisi oleh UC01 | Pass (inspeksi kode) |
+| KNF10-TC02 | KNF10 | *Constraint* (kerahasiaan) | Data pribadi tidak bocor lewat pesan galat atau URL | Pesan login identik untuk email terdaftar dan tidak terdaftar (C12-UT05, UC01-TC06); galat tak terduga menjadi pesan umum `GALAT_SERVER` (C16-UT05); kredensial dikirim lewat badan `POST`, bukan URL (periksa tab Network) | C12-UT05 dan C16-UT05 lulus. Inspeksi kode: daftar dan login dikirim lewat badan `POST` JSON (`kirimJson()`), bukan parameter URL | Pass (unit test dan inspeksi kode) |
+| KNF10-TC03 | KNF10 | *Constraint* (akses data milik sendiri) | Pengguna hanya dapat membaca data pribadi miliknya | Merujuk INT-TC08 (rincian transaksi milik pengguna lain dijawab 404) dan INT-TC13 (daftar pendaftar berisi nomor telepon hanya untuk pemilik project) | INT-TC08 dan INT-TC13 berkesimpulan Pass pada Subbab 4.3 | Pass |
+| KNF10-TC04 | KNF10 | *Constraint* (hak subjek data) | Tersedia kebijakan privasi, persetujuan pengguna saat mendaftar, dan cara menghapus atau mengunduh data akun | Inspeksi antarmuka dan kode (`src/app/`, `src/components/`, `src/app/api/`) | Tidak ditemukan halaman kebijakan privasi, kotak persetujuan pada formulir *Sign up*, maupun fitur atau endpoint penghapusan dan ekspor data akun | Belum terpenuhi. Rencana: tambah halaman kebijakan privasi, persetujuan saat mendaftar, dan permintaan penghapusan akun |
+
+**Catatan KNF10:** pengujian di atas memeriksa kontrol teknis (minimisasi data, hash, tidak ada kebocoran lewat galat, pembatasan akses) dan keberadaan fitur hak subjek data. Hasil ini **bukan** pernyataan kepatuhan hukum terhadap UU PDP, karena kepatuhan juga bergantung pada dasar pemrosesan, kebijakan internal, dan prosedur organisasi yang berada di luar perangkat lunak. Berdasarkan KNF10-TC04, KNF10 dinyatakan **belum terpenuhi sepenuhnya**.
+
+**Catatan KNF05:** bagian bcrypt diuji pada KNF05-TC01 dan KNF05-TC03. Bagian TLS 1.2 tidak dapat diuji karena aplikasi tidak di-*deploy* dan hanya dijalankan lokal (lihat Subbab 3.1), sehingga KNF05 dinyatakan **terpenuhi sebagian**.
+
+**Catatan KNF01:** KNF01 tidak terkait satu KF tertentu (SKPL merujuk R01 dan R19). Pengujian diambil pada layar UC01 (modal *Sign up*) dan layar publik utama (Home, Explore, detail project) pada lebar 360, 768, dan 1280 px.
 
 Catatan KNF08: rumusan KNF08 pada SKPL menyebut pesan *chat* dan notifikasi status pesanan, padahal KlimPooL tidak memiliki fitur *chat* maupun pesanan. Notifikasi yang ada pada aplikasi adalah perubahan status pendaftaran relawan (KF22), sehingga KNF08 diuji pada tampilan status tersebut. Status dibaca ketika Volunteer membuka atau memuat ulang halamannya, bukan didorong secara *real-time*.
 
@@ -1381,10 +1595,6 @@ Tabel 4.6. Bukti Hasil Pengujian
 | UC04-TC02, UC04-TC03 | <img alt="Penolakan wajib alasan" src="./assets/pengujian/aksi/UC04-TC03-alasan.png" width="70%"><br><img alt="Status Ditolak dengan alasan" src="./assets/pengujian/aksi/UC04-TC02-ditolak.png" width="70%"> |
 | UC04-TC05 | <img alt="Non-admin tidak boleh membuka antrean" src="./assets/pengujian/aksi/UC04-TC05-akses.png" width="70%"> |
 | KNF03-TC01–TC03 | <img alt="Titik awal My Actions" src="./assets/pengujian/aksi/KNF03-TC01-mulai.png" width="70%"><br>Tahap berikutnya merujuk bukti UC02-TC01, UC03-TC01, UC04-TC01 dan keluaran browser di atas. |
-| *INT-TC01* | *[Sisipkan bukti pengujian integrasi]* |
-| *UC01-TC01* | *[Sisipkan tangkapan layar UC01-TC01 sesuai prosedur pengujian]* |
-| *UC01-TC02* | *[Sisipkan tangkapan layar UC01-TC02 sesuai prosedur pengujian]* |
-| *KNF01-TC01* | *[Sisipkan bukti pengukuran parameter KNF01-TC01]* |
 | C01-UT01 – C01-UT17, C05-UT01 – C05-UT15, C18-UT01 – C18-UT04, C21-UT01 – C21-UT08, C27-UT01 – C27-UT07, C28-UT01 – C28-UT04, C29-UT01 – C29-UT08 | <img alt="Keluaran unit test UC05: 150 passed" src="./assets/pengujian/UT-UC05.png" width="70%"> |
 | C01, C05 (coverage) | <img alt="Laporan coverage C01 dan C05" src="./assets/pengujian/COVERAGE-C01-C05.png" width="70%"> |
 | C04-UT01 – C04-UT06, C06-UT01 – C06-UT10, C07-UT01 – C07-UT08, C30-UT01 – C30-UT04, C31-UT01 – C31-UT03, C39-UT01 – C39-UT04, C41-UT01 – C41-UT04, INT-TC05, INT-TC07 – INT-TC09, KNF04-TC01 | <img src="./assets/pengujian/unit-donasi-riwayat.png" width="100%"><br><img src="./assets/pengujian/unit-riwayat-kategori.png" width="100%"> |
@@ -1456,7 +1666,28 @@ Tabel 4.6. Bukti Hasil Pengujian
 | KNF08-TC01 | <img alt="KNF08-TC01 sepuluh pengukuran" src="./assets/pengujian/KNF08-TC01.png" width="70%"> |
 | KNF09-TC01 | <img alt="KNF09-TC01 keluaran autocannon 1.000 koneksi" src="./assets/pengujian/KNF09-TC01.png" width="70%"> |
 | KNF11-TC01 | <img alt="KNF11-TC01 git diff stat dan tsc setelah kategori baru" src="./assets/pengujian/KNF11-TC01.png" width="70%"> |
-| *...* | *...* |
+| C12-UT01 – C12-UT09, C13-UT01 – C13-UT05, C16-UT01 – C16-UT06 | <img alt="Keluaran autentikasi.unit.test.ts: 20 pass" src="./assets/pengujian/akun/UT-UC01.png" width="70%"> |
+| C12, C13 (coverage) | <img alt="Laporan coverage C12 dan C13" src="./assets/pengujian/akun/COVERAGE-C12-C13.png" width="70%"> |
+| UC01-TC01, C14-UT01, INT-TC38 | <img alt="Toast akun berhasil dibuat" src="./assets/pengujian/akun/UC01-TC01_a_akun-dibuat.png" width="70%"><br><img alt="POST daftar 201 dan masuk 200" src="./assets/pengujian/akun/UC01-TC01_b_network.png" width="70%"> |
+| UC01-TC02 | <img alt="Galat nama kosong" src="./assets/pengujian/akun/UC01-TC02_a_kosong.png" width="70%"><br><img alt="Galat format email" src="./assets/pengujian/akun/UC01-TC02_b_email-tidak-valid.png" width="70%"><br><img alt="Galat kata sandi pendek" src="./assets/pengujian/akun/UC01-TC02_c_password-pendek.png" width="70%"> |
+| UC01-TC03, C14-UT02 | <img alt="Email sudah terdaftar" src="./assets/pengujian/akun/UC01-TC03_a_email-terpakai.png" width="70%"><br><img alt="Tab Log in dengan email terisi" src="./assets/pengujian/akun/UC01-TC03_b_login-dengan-email.png" width="70%"> |
+| UC01-TC04, C15-UT01 | <img alt="Login berhasil di Explore" src="./assets/pengujian/akun/UC01-TC04_login-berhasil.png" width="70%"> |
+| UC01-TC05, C15-UT02 | <img alt="Kata sandi salah" src="./assets/pengujian/akun/UC01-TC05_password-salah.png" width="70%"> |
+| UC01-TC06 | <img alt="Email tidak terdaftar, pesan sama" src="./assets/pengujian/akun/UC01-TC06_email-tidak-terdaftar.png" width="70%"> |
+| UC01-TC07, INT-TC38 | <img alt="Sesi bertahan dan cookie HttpOnly" src="./assets/pengujian/akun/UC01-TC07_sesi-bertahan.png" width="70%"> |
+| UC01-TC08, INT-TC38 | <img alt="Toast logout" src="./assets/pengujian/akun/UC01-TC08_a_logout.png" width="70%"><br><img alt="Account meminta login setelah logout" src="./assets/pengujian/akun/UC01-TC08_b_account-setelah-logout.png" width="70%"> |
+| UC01-TC09 | <img alt="Modal login saat Donate now" src="./assets/pengujian/akun/UC01-TC09_a_donate-minta-login.png" width="70%"><br><img alt="Formulir donasi terbuka setelah login" src="./assets/pengujian/akun/UC01-TC09_b_form-donasi.png" width="70%"> |
+| UC01-TC10 | <img alt="Akses admin ditolak" src="./assets/pengujian/akun/UC01-TC10_admin-ditolak.png" width="70%"> |
+| INT-TC39, KNF05-TC01 | <img alt="Query akun baru, hash bcrypt, saldo 0" src="./assets/pengujian/akun/INT-TC39_query-akun-nayla.png" width="70%"> |
+| INT-TC40 | <img alt="Lima pendaftaran bersamaan" src="./assets/pengujian/akun/INT-TC40_a_daftar-bersamaan.png" width="70%"><br><img alt="COUNT akun = 1" src="./assets/pengujian/akun/INT-TC40_b_count.png" width="70%"> |
+| INT-TC41 | <img alt="GET api/topup 200" src="./assets/pengujian/akun/INT-TC41_api-topup-200.png" width="70%"> |
+| INT-TC42 | <img alt="Account sebelum sesi kedaluwarsa" src="./assets/pengujian/akun/INT-TC42_a_sebelum-kedaluwarsa.png" width="70%"><br><img alt="Account setelah sesi kedaluwarsa" src="./assets/pengujian/akun/INT-TC42_b_account-setelah-kedaluwarsa.png" width="70%"><br><img alt="status_sesi berakhir" src="./assets/pengujian/akun/INT-TC42_status-sesi.png" width="70%"> |
+| INT-TC43 | <img alt="fetch api/verifikasi 403" src="./assets/pengujian/akun/INT-TC43_verifikasi-403.png" width="70%"> |
+| INT-TC44 | <img alt="Cookie lama setelah logout 401" src="./assets/pengujian/akun/INT-TC44_curl-401.png" width="70%"> |
+| KNF01-TC01 | <img alt="360 px beranda" src="./assets/pengujian/akun/KNF01_360_beranda.png" width="22%"> <img alt="360 px explore" src="./assets/pengujian/akun/KNF01_360_explore.png" width="22%"> <img alt="360 px modal-signup" src="./assets/pengujian/akun/KNF01_360_modal-signup.png" width="22%"> <img alt="360 px project-mgv" src="./assets/pengujian/akun/KNF01_360_project-mgv.png" width="22%"> |
+| KNF01-TC02 | <img alt="768 px beranda" src="./assets/pengujian/akun/KNF01_768_beranda.png" width="22%"> <img alt="768 px explore" src="./assets/pengujian/akun/KNF01_768_explore.png" width="22%"> <img alt="768 px modal-signup" src="./assets/pengujian/akun/KNF01_768_modal-signup.png" width="22%"> <img alt="768 px project-mgv" src="./assets/pengujian/akun/KNF01_768_project-mgv.png" width="22%"> |
+| KNF01-TC03 | <img alt="1280 px beranda" src="./assets/pengujian/akun/KNF01_1280_beranda.png" width="45%"><br><img alt="1280 px explore" src="./assets/pengujian/akun/KNF01_1280_explore.png" width="45%"><br><img alt="1280 px modal-signup" src="./assets/pengujian/akun/KNF01_1280_modal-signup.png" width="45%"><br><img alt="1280 px project-mgv" src="./assets/pengujian/akun/KNF01_1280_project-mgv.png" width="45%"> |
+| KNF05-TC03 | <img alt="Respons login tanpa kata sandi dan hash" src="./assets/pengujian/akun/KNF05-TC03_response-login.png" width="70%"> |
 
 <br>
 
@@ -1477,10 +1708,10 @@ Tabel 5.1. Matriks Kerunutan KF terhadap Implementasi dan Pengujian
 | KF09 | - | UC03 | C02 - Project; C10 - PembuatProject; C22 - ProjectController | `src/server/services/AksiService.ts`<br>`src/server/repositories/AksiRepository.ts`<br>`src/server/controllers/AksiController.ts` | UC03-TC01, UC03-TC03, UC03-TC04 | C02-UT09–UT13, C10-UT01, C10-UT04, C22-UT01–UT04, INT-TC33–TC34 |
 | KF10 | - | UC03 | C02 - Project; C20 - FormProjectView; C22 - ProjectController | `src/shared/validasiAksi.ts`<br>`src/server/services/AksiService.ts`<br>`src/components/aksi/FormAksi.tsx` | UC03-TC02, UC03-TC05 | C02-UT03–UT08, C20-UT02, C26-UT02, INT-TC34 |
 | KF11 | KNF03 (lingkup aksi) | UC04 | C02 - Project; C03 - Campaign; C11 - AdminSistem; C23–C25 - Views pengajuan; C26 - VerifikasiController | `src/server/controllers/VerifikasiController.ts`<br>`src/server/services/AksiService.ts`<br>`src/server/repositories/AksiRepository.ts`<br>`src/components/aksi/KeputusanPengajuan.tsx` | UC04-TC01–TC04 | C03-UT08, C11-UT01–UT04, C23-UT01–UT02, C24-UT01–UT02, C25-UT01–UT03, C26-UT01–UT11, INT-TC35–TC36, KNF03-TC03 |
-| KF12 | - | UC04 | C11 - AdminSistem; C24 - DaftarPengajuanView; C25 - DetailPengajuanView; C26 - VerifikasiController | `src/server/auth/aksesAksi.ts`<br>`src/server/controllers/VerifikasiController.ts`<br>`src/server/services/AksiService.ts`<br>`src/app/admin/page.tsx` | UC04-TC01, UC04-TC05 | C11-UT02, C26-UT08–UT09, INT-TC32–TC33 |
-| *KF01* | *-* | *UC01<br>UC02* | *[C01 - Nama kelas]<br>[C02 - Nama kelas]* | *[path/ke/file1]<br>[path/ke/file2]* | *UC01-TC01, UC01-TC02<br>UC02-TC01* | *-* |
-| *KF02* | *[KNFXX atau -]* | *[UCXX]* | *[CXX - Nama kelas]* | *[path/ke/file]* | *[UCXX-TCYY]* | *[CXX-UTYY, INT-TCYY, KNFXX-TCYY atau -]* |
-| *KFXX* | *-* | *[UCXX atau -]* | *[CXX - Nama kelas atau -]* | *Tidak diimplementasikan: [alasan]* | *-* | *-* |
+| KF12 | - | UC04 | C11 - AdminSistem; C24 - DaftarPengajuanView; C25 - DetailPengajuanView; C26 - VerifikasiController | `src/server/auth/aksesAksi.ts`<br>`src/server/controllers/VerifikasiController.ts`<br>`src/server/services/AksiService.ts`<br>`src/app/admin/page.tsx` | UC04-TC01, UC04-TC05 | C11-UT02, C26-UT08–UT09, INT-TC32–TC33 || KF01 | KNF01, KNF10 | UC01 | C00 - PenggunaUmum<br>C12 - Akun<br>C14 - FormPendaftaranView<br>C15 - FormLoginView<br>C16 - AutentikasiController | `src/models/Akun.ts`<br>`src/server/services/AutentikasiService.ts`<br>`src/server/controllers/AutentikasiController.ts`<br>`src/app/api/auth/daftar/route.ts`<br>`src/components/views/FormPendaftaranView.tsx` | UC01-TC01, UC01-TC02, UC01-TC04 | C12-UT01, C12-UT02, C14-UT01, C16-UT01, C16-UT03, INT-TC38, KNF01-TC01 – KNF01-TC03, KNF10-TC01 |
+| KF02 | - | UC01 | C12 - Akun<br>C14 - FormPendaftaranView<br>C16 - AutentikasiController | `src/server/services/AutentikasiService.ts`<br>`src/server/repositories/UserRepository.ts`<br>`src/db/migrations/001_schema.sql` (`uq_akun_email`) | UC01-TC03 | C12-UT03, C14-UT02, C16-UT02, INT-TC40 |
+| KF03 | KNF05, KNF10 | UC01 | C12 - Akun<br>C16 - AutentikasiController | `src/server/password.ts`<br>`src/server/repositories/UserRepository.ts`<br>`src/shared/autentikasi.ts` | UC01-TC01 | C12-UT04, C16-UT01, INT-TC39, KNF05-TC01, KNF05-TC03 |
+| KF04 | KNF05, KNF10 | UC01 | C12 - Akun<br>C13 - SesiLogin<br>C15 - FormLoginView<br>C16 - AutentikasiController | `src/models/SesiLogin.ts`<br>`src/server/services/AutentikasiService.ts`<br>`src/server/sesi.ts`<br>`src/server/controllers/guard.ts`<br>`src/app/api/auth/masuk/route.ts`<br>`src/components/views/FormLoginView.tsx` | UC01-TC04 – UC01-TC10 | C12-UT05 – C12-UT09, C13-UT01 – C13-UT06, C15-UT01, C15-UT02, C16-UT04 – C16-UT06, INT-TC41 – INT-TC44, KNF05-TC02, KNF10-TC02, KNF10-TC03 |
 | KF13 | KNF02, KNF09 | UC05 | C01 - Katalog<br>C05 - PetaWilayah<br>C27 - FormPencarianView<br>C28 - PencarianController<br>C29 - FormPetaWilayahView | `src/shared/katalog.ts`<br>`src/server/controllers/pencarian.controller.ts`<br>`src/server/services/katalog.service.ts`<br>`src/server/repositories/katalog.repository.ts`<br>`src/app/api/katalog/route.ts`<br>`src/app/api/katalog/opsi/route.ts`<br>`src/components/views/ExploreView.tsx`<br>`src/components/views/FormPencarianView.tsx`<br>`src/shared/explore.ts`<br>`src/shared/explorePaging.ts`<br>`src/components/views/FormPetaWilayahView.tsx`<br>`src/components/ui/PetaSebaran.tsx` | UC05-TC02, UC05-TC03, UC05-TC04, UC05-TC07, UC05-TC08 | C01-UT01 – C01-UT17, C05-UT01 – C05-UT15, C27-UT01 – C27-UT07, C28-UT01 – C28-UT04, C29-UT01 – C29-UT08, INT-TC23 – INT-TC28, KNF02-TC01, KNF02-TC02, KNF09-TC01 |
 | KF14 | - | UC05 | C01 - Katalog<br>C05 - PetaWilayah<br>C18 - DetailCampaignView<br>C21 - DetailProjectView<br>C28 - PencarianController | `src/server/repositories/katalog.repository.ts`<br>`src/server/services/peta.service.ts`<br>`src/server/repositories/peta.repository.ts`<br>`src/server/controllers/peta.controller.ts`<br>`src/server/services/detail.service.ts`<br>`src/server/repositories/detail.repository.ts`<br>`src/components/detail/MuatDetail.tsx`<br>`src/components/views/DetailProjectView.tsx`<br>`src/components/views/DetailCampaignView.tsx`<br>`src/app/project/[id]/page.tsx`<br>`src/app/campaign/[id]/page.tsx` | UC05-TC01, UC05-TC05, UC05-TC06, UC05-TC08, UC05-TC09 | C01-UT04, C01-UT17, C05-UT03, C05-UT06, C05-UT11, C05-UT14, C18-UT01 – C18-UT04, C21-UT01 – C21-UT08, C28-UT02, INT-TC25, INT-TC27, INT-TC29, INT-TC30 |
 | KF15 | KNF04 | UC06 | C04 - Donatur<br>C06 - TransaksiDonasi<br>C30 - FormDonasiView<br>C32 - DonasiController | `src/models/Donatur.ts`<br>`src/models/TransaksiDonasi.ts`<br>`src/server/services/DonasiService.ts`<br>`src/server/repositories/DonasiRepository.ts`<br>`src/server/controllers/DonasiController.ts`<br>`src/components/views/DonasiView/FormDonasiView.tsx` | UC06-TC01, UC06-TC02, UC06-TC03, UC06-TC06, UC06-TC07, UC06-TC08 | C04-UT01 – C04-UT06, C06-UT01 – C06-UT03, C06-UT06, C06-UT08, C30-UT01, C30-UT02, C32-UT01 – C32-UT04, INT-TC01, INT-TC03 – INT-TC05 |
@@ -1501,9 +1732,9 @@ Tabel 5.1. Matriks Kerunutan KF terhadap Implementasi dan Pengujian
 Tabel 5.2. Matriks Kerunutan KNF terhadap Pengujian
 
 | ID KNF | Parameter | KF/UC Terkait | Test Case |
-| :--- | :--- | :--- | :--- |
-| *KNF01* | *Reliability* | *KF05 / UC03* | *KNF01-TC01* |
-| *KNFXX* | *[Parameter]* | *[KFXX / UCXX atau -]* | *[KNFXX-TCYY]* |
+| :--- | :--- | :--- | :--- || KNF01 | *Flexibility* (tata letak responsif) | Umum (SKPL merujuk R01, R19); diukur pada modal auth (KF01, KF04 / UC01), Explore (UC05), detail project, dan `/account` | KNF01-TC01, KNF01-TC02, KNF01-TC03 |
+| KNF05 | *Security* (bcrypt, TLS ≥ 1.2) | KF03, KF04 / UC01 | KNF05-TC01, KNF05-TC02, KNF05-TC03 |
+| KNF10 | *Constraint* (UU PDP) | KF01, KF03, KF04 / UC01; akses data pribadi lintas modul (UC06, UC08) | KNF10-TC01, KNF10-TC02, KNF10-TC03, KNF10-TC04 |
 | KNF03 | Interaction capability; tahap UI (batas pada §4.5) | KF05, KF06, KF08, KF11 / UC02–UC04; tidak membuktikan alur literal pemesanan/pembayaran | KNF03-TC01–TC03 |
 | KNF02 | *Performance efficiency* (waktu tampil hasil filter) | KF13 / UC05 | KNF02-TC01, KNF02-TC02 |
 | KNF04 | Reliability | KF15, KF16, KF18 / UC06 | KNF04-TC01, KNF04-TC02, KNF04-TC03 |

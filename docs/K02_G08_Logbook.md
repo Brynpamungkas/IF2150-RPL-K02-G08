@@ -246,7 +246,13 @@
 | Tanggal | Nama Anggota | Deskripsi Pekerjaan | Durasi (Jam) | Status | Kendala / Blocker |
 | 20-11-2026 | Bryan | Melengkapi pemetaan implementasi Bab 3 serta strategi, hasil unit, dan coverage 12 kelas UC02–UC04 pada Bab 4.1–4.2 | 3 | Done | - |
 | 20-11-2026 | Bryan | Menguji integrasi, UC02–UC04, dan KNF03 serta melengkapi hasil dan bukti pada Bab 4.3–4.6 | 2| Done | - |
-| 20-11-2026 | Bryan | Melengkapi traceability KF05–KF12 dan KNF03 pada Bab 5 serta deklarasi penggunaan AI | 1 | Done | - |
+| 20-11-2026 | Bryan | Melengkapi traceability KF05–KF12 dan KNF03 pada Bab 5 serta deklarasi penggunaan AI | 1 | Done | - || 20-11-2026 | Naya | Menyusun BAB 3: lingkungan implementasi (3.1), tabel implementasi kelas C00–C41 (3.2), antarmuka I-01–I-10 (3.3), dan file lain (3.4) | 1 | Done | ID antarmuka disamakan dengan DPPL2 Bab 6; ID I-11 dan I-14 diganti karena tidak ada di DPPL |
+| 20-11-2026 | Naya | Menjalankan unit test UC01 (`autentikasi.unit.test.ts`) dan mengukur coverage C12, C13 | 0,5 | Done | 20/20 pass. Coverage `UserRepository.ts` 60,94% karena isinya query SQL; diuji lewat INT-TC39–TC42 |
+| 20-11-2026 | Naya | Uji use case UC01-TC01–TC10 serta C14, C15 (formulir Sign up dan Log in) | 1 | Done | Semua pass. Temuan: saat koneksi putus, formulir auth menampilkan pesan khusus donasi |
+| 20-11-2026 | Naya | Uji integrasi INT-TC38–TC44 (modal auth–API, pendaftaran bersamaan, sesi kedaluwarsa, peran, logout) | 1 | Done | 5 pendaftaran bersamaan menghasilkan tepat 1 akun |
+| 20-11-2026 | Naya | Uji KNF01 (responsif 360/768/1280 px), KNF05 (bcrypt, respons API), KNF10 (data pribadi) | 0,5 | Done | TLS (KNF05-TC02) tidak diuji karena aplikasi hanya lokal; KNF10 belum terpenuhi (belum ada kebijakan privasi dan hapus akun) |
+| 20-11-2026 | Naya | Mengisi baris KF01–KF04 Tabel 5.1, KNF01/05/10 Tabel 5.2, dan bukti pengujian di 4.6 | 0,5 | Done | Gambar bukti di `docs/M10/assets/pengujian/akun/` |
+
 **Catatan/Evaluasi Milestone 10:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
 
