@@ -61,6 +61,7 @@ Dipersiapkan oleh:
 | :--- | :--- |
 | A | Melengkapi Bab 1 berdasarkan SKPL, APL, DPPL, dan laporan Implementasi Tugas 9; menggunakan kode `main` terbaru sebagai acuan pengujian UC02–UC04. |
 | B | Menambahkan pemetaan implementasi dan strategi pengujian 12 kelas UC02–UC04. |
+| C | Mencatat 68 kasus unit, coverage tujuh modul aksi, integrasi MySQL, dan hasil browser UC02–UC04 beserta batas pengujiannya. |
 
 ---
 
@@ -190,6 +191,8 @@ Tabel 3.1. Lingkungan Implementasi
 | *DBMS* | *[Nama dan versi DBMS]* |
 | *Development Tools* | *[IDE, version control, tools lain]* |
 | *Testing Tools* | *[Framework unit test, alat ukur performa, alat coverage]* |
+
+Lingkungan pengujian UC02–UC04: Linux Debian 13 (x86_64), AMD Ryzen AI 7 350 (16 logical CPU), Node.js 20.19.2, TypeScript 5.9.3, Next.js 16.4.4, React 19.3.0, MySQL 8.4.13, Vitest/V8 3.2.7, serta Playwright Chromium headless. Berbeda dari target Vercel/Node.js 22 pada DPPL §2.1, pengujian memakai build produksi lokal dan HTTP loopback; belum memverifikasi deployment/HTTPS. Arsitektur aplikasi tetap sama. Basis data pengujian terpisah dari data demo/aplikasi.
 
 ## 3.2 Implementasi Modul
 
@@ -359,35 +362,77 @@ node --experimental-test-module-mocks --experimental-test-coverage --import tsx 
 Hasil saat dijalankan: 44 dari 44 test case `relawanProgres.layanan.test.ts` dan 12 dari 12 test case `relawanProgres.view.spec.ts` lulus. Kelas C08 (Volunteer) dan C36 (DetailStatusPendaftaranView) bertingkat Tidak perlu sehingga tidak memiliki subbab unit test.
 
 
-### 4.2.1 Kelas [Nama Kelas 1]
+### Pengujian Unit UC02–UC04
 
-**ID Kelas:** *[C02]*  
-**Nama Kelas:** *[Pesanan]*  
-**Tingkat:** *[Mendalam]*
+Lima file `src/tests/aksi.m10-*.spec.ts` menjalankan **68 kasus: 68 Pass, 0 Fail**. Validasi diuji langsung; repository, sesi, koneksi, dan HTTP diganti tiruan pada unit yang memerlukannya. Komponen view diuji melalui HTML statis dan adapter `apiAksi`; interaksi klik diuji terpisah pada §4.4. Waktu unit dipatok 19 November 2026 agar batas tanggal konsisten.
 
-Tabel 4.2.1. Hasil Pengujian Unit Kelas [C02]
+Jalankan dari `src/`:
+
+```bash
+npm ci
+npm run test:aksi:unit
+npm run test:aksi:coverage
+```
+
+Kelas DPPL diwujudkan sebagai fungsi bersama, bukan satu file per kelas (lihat B.5 Tugas 9). Coverage V8 berikut hanya mencakup **tujuh file aksi**, bukan seluruh aplikasi, file view, autentikasi, atau seluruh operasi lintas UC. Ambang setiap file: 70% baris, pernyataan, fungsi, dan cabang. Bukti: §4.6.
+
+| File (relatif terhadap `src/`) | Kelas yang Dilayani | Baris | Pernyataan | Fungsi | Cabang |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `shared/validasiAksi.ts` | C02, C03 | 100% | 100% | 100% | 98,82% |
+| `server/services/AksiService.ts` | C02, C03, C10, C11, C26 | 100% | 100% | 100% | 100% |
+| `server/repositories/AksiRepository.ts` | C02, C03, C10, C26 | 100% | 100% | 100% | 100% |
+| `server/controllers/AksiController.ts` | C10, C19, C22, C26 | 100% | 100% | 100% | 100% |
+| `server/controllers/CampaignController.ts` | C19 | 100% | 100% | 100% | 100% |
+| `server/controllers/ProjectController.ts` | C22 | 100% | 100% | 100% | 100% |
+| `server/controllers/VerifikasiController.ts` | C26 | 100% | 100% | 100% | 100% |
+| **Total** | **587/587 baris; 36/36 fungsi; 187/188 cabang** | **100%** | **100%** | **100%** | **99,46%** |
+
+### 4.2.2 Kelas Project
+
+**ID:** C02 — **Tingkat:** Mendalam.
+
+Operasi `setInformasi()`, `setKebutuhan()`, `validasiData()`, `validasiKebutuhan()`, `simpanProject()`, dan `tampilkanDetail()` diwujudkan oleh `validasiAksi`, `AksiService.buat/ubah/lihat`, serta `AksiRepository.buat/cari/ubah`. `ubahStatus()` dan `getDaftarMenungguVerifikasi()` diuji bersama C11/C26. Algoritma terkait: Algo-011 dan Algo-012. Implementasi menyimpan **Draft terlebih dahulu**, lalu menjadi menunggu verifikasi setelah tombol pengajuan.
 
 | ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| *C02-UT01* | *`hitungTotal(): Decimal`* | *Normal* | *Pesanan berisi 2 item: 10.000 x 2 dan 5.000 x 1* | *Total = 25.000* | *[Hasil aktual]* | *Pass/Fail* |
-| *C02-UT02* | *`hitungTotal(): Decimal`* | *Batas* | *Pesanan berisi tepat 1 item dengan jumlah 1* | *Total = harga item tersebut* | *[...]* | *Pass/Fail* |
-| *C02-UT03* | *`hitungTotal(): Decimal`* | *Negatif* | *Pesanan tanpa item* | *Total = 0 atau melempar kesalahan sesuai rancangan* | *[...]* | *Pass/Fail* |
-| *...* | *...* | *...* | *...* | *...* | *...* | *...* |
+| C02-UT01 | `validasiData/Kebutuhan` | Normal | Informasi, dana, logistik, kriteria, kuota, jadwal lengkap | Data valid | Data sama dengan fixture | Pass |
+| C02-UT02 | `setInformasi` | Batas | Tahap informasi tanpa kebutuhan/jadwal | Boleh disimpan sebagian | `mulai=null`, `targetDana=0` | Pass |
+| C02-UT03 | `validasiKebutuhan` | Batas/negatif | Dana 0 lalu -1 | 0 diterima; negatif ditolak | 0 diterima; -1 melempar galat | Pass |
+| C02-UT04 | `validasiKebutuhan` | Batas | Kuota 1, 2147483647, 0, -1, 1,5, 2147483648 | Hanya dua pertama valid | Kedua batas diterima; sisanya ditolak | Pass |
+| C02-UT05 | `validasiData/Kebutuhan` | Negatif | Kosongkan lokasi, tanggal, tujuan, logistik, kriteria, titik kumpul bergantian | Setiap isian wajib ditolak | Semua isian kosong ditolak | Pass |
+| C02-UT06 | `validasiData` | Batas/negatif | Satu hari; 30 Feb; tanggal terbalik/lampau/tahun 0001 | Satu hari valid; sisanya ditolak | Sesuai seluruh variasi | Pass |
+| C02-UT07 | `validasiData` | Batas/negatif | Koordinat -90/180; tidak sepasang, di luar rentang, atau teks | Batas valid; lainnya ditolak | -90/180 diterima; lainnya ditolak | Pass |
+| C02-UT08 | `setKebutuhan` | Batas/negatif | Rincian dana 50/51 baris; format salah, uraian kosong, nominal 0 | Maksimal 50 baris sah | 50 diterima; variasi tidak sah ditolak | Pass |
+| C02-UT09 | `simpanProject` | Normal/negatif | Buat tahap informasi, lalu tahap `unknown` | Draft parsial; tahap salah 400 | Repository menerima jadwal null/dana 0; tahap salah 400 | Pass |
+| C02-UT10 | `setInformasi` | Normal | Revisi judul pada draft lengkap | ID/koneksi sama; kebutuhan tidak hilang | `ubah()` menerima ID, koneksi dan kebutuhan lama | Pass |
+| C02-UT11 | `setInformasi` | Negatif | Bukan pemilik; status pending/published | 404/409 tanpa menulis | 404/409; repository tidak dipanggil | Pass |
+| C02-UT12 | `tampilkanDetail` | Normal/negatif | Cari ID dalam transaksi; cari ID kosong | Parameter SQL dan kunci baris; `null` bila tidak ada | `WHERE id_project = ? FOR UPDATE`; hasil kosong `null` | Pass |
+| C02-UT13 | `setInformasi/Kebutuhan` | Negatif | Periksa SQL perubahan | Batasi pemilik dan draft/ditolak | Kondisi pemilik/status ada dalam SQL | Pass |
 
-Khusus kelas **Mendalam**:
+**Cakupan:** tujuh file di atas, termasuk validasi 100% baris/98,82% cabang dan service/repository 100%/100%. Operasi tambahan C02 untuk donasi, relawan, progres, dan riwayat (DPPL §5.43) **bukan bagian 13 tes ini**; rujukan hasil terkait: C06-UT06, INT-TC05, C09/C34/C38, dan UC10 pada bagian tim.
 
-Tabel 4.2.1b. Ringkasan Cakupan Kelas [C02]
+### 4.2.3 Kelas Campaign
 
-| Informasi | Keterangan |
-| :--- | :--- |
-| Daftar operasi public pada DPPL | *[op1(), op2(), ...]* |
-| Operasi yang diuji | *[op1(), op2(), ...]* |
-| ID Algoritma yang tercakup | *[Algo-001, ...]* |
-| Coverage (wajib ≥ 70%) | *[% baris / % cabang, alat dan bukti pada 4.6]* |
+**ID:** C03 — **Tingkat:** Mendalam.
 
-### 4.2.2 Kelas [Nama Kelas 2]
+`validasiData/Target/Periode()` dipetakan ke `validasiAksi`; `simpanCampaign()` dan `tampilkanDetail()` ke `AksiService.buat/lihat` dan repository. `ubahStatus()` serta `getDaftarMenungguVerifikasi()` diuji bersama C11/C26. Algoritma terkait: Algo-006–Algo-010. Coverage validasi 100% baris/98,82% cabang; service/repository 100%/100%.
 
-### 4.2.3 Kelas [Nama Kelas 3]
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C03-UT01 | `validasiData` | Normal | Judul dengan spasi, rincian dana sah | Judul dirapikan, rincian utuh | Judul tanpa spasi tepi; rincian sama | Pass |
+| C03-UT02 | `validasiTarget` | Batas/negatif | 0,01; 1 miliar; 0; negatif; melebihi batas; >2 desimal; tipe salah | Dua batas diterima; sisanya ditolak | Seluruh variasi sesuai | Pass |
+| C03-UT03 | `validasiPeriode` | Batas | Durasi 0, 365, 366 hari | Hanya 365 hari valid | Satu hari/366 hari ditolak; 365 diterima | Pass |
+| C03-UT04 | `validasiPeriode` | Normal/negatif | Periode berlangsung lalu sudah berakhir | Berlangsung valid; berakhir ditolak | Sesuai kedua kondisi | Pass |
+| C03-UT05 | `validasiData` | Batas/negatif | Judul 200/201/kosong; deskripsi 10000/10001 karakter | Batas panjang diterima | 200/10000 diterima; sisanya ditolak | Pass |
+| C03-UT06 | `validasiData` | Negatif | Badan null, array, angka, teks | Seluruhnya ditolak | Seluruhnya melempar galat | Pass |
+| C03-UT07 | `validasiData` | Batas | Atribut opsional tidak disertakan | Nilai kosong yang aman | Kategori kosong; rincian `[]` | Pass |
+| C03-UT08 | `ubahStatus` (alasan) | Batas/negatif | Alasan berspasi, 2000/2001 karakter, kosong/null | Trim; maksimal 2000 dan tidak kosong | Trim/2000 diterima; lainnya ditolak | Pass |
+| C03-UT09 | `simpanCampaign/tampilkanDetail` | Normal | Buat campaign sah | Baca kembali hasil penyimpanan | `jenis=campaign`; cari dipanggil dengan ID hasil buat | Pass |
+| C03-UT10 | `simpanCampaign` | Negatif | Repository gagal | Galat diteruskan, bukan sukses | Promise ditolak dengan galat repository | Pass |
+| C03-UT11 | `tampilkanDetail` | Batas | JSON rincian berbentuk teks; atribut null | DTO aman dan rincian terurai | Rincian sesuai; kategori kosong; rincian null menjadi `[]` | Pass |
+| C03-UT12 | `simpanCampaign/Project` | Negatif | Judul berisi potongan SQL | Nilai tetap sebagai parameter | Potongan SQL hanya di parameter, bukan query | Pass |
+
+**Batas cakupan:** operasi donasi `cekStatusCampaign()`, `tambahDana()`, dan `hitungPersentaseCapaian()` tidak masuk 12 tes ini; hasil lintas modul dirujuk pada C06-UT06/UT07 dan INT-TC05.
 
 ### 4.2.4 Kelas Donatur
 
@@ -516,6 +561,125 @@ Tabel 4.2.9b. Ringkasan Cakupan Kelas C09
 | Operasi yang diuji | Seluruhnya (6 dari 6 operasi public) |
 | ID Algoritma yang tercakup | Algo-113, Algo-114, Algo-115, Algo-116, Algo-117 |
 | Coverage (wajib ≥ 70%) | `models/PendaftaranRelawan.ts` 100% / 85,71%; `shared/relawan.ts` 95,35% / 89,02%; `server/services/relawanService.ts` 99,19% / 94,03% (baris / cabang). Alat: `node --experimental-test-coverage`; bukti pada 4.6 |
+
+### 4.2.10 Kelas PembuatProject
+
+**ID:** C10 — **Tingkat:** Mendalam.
+
+`buatCampaign/Project()` → `AksiService.buat()`, `ajukanVerifikasi()` → `AksiService.ajukan()` (C26-UT01–UT03). Operasi pengelolaan relawan dan progres pada DPPL §5.7 didelegasikan ke modul UC08/UC09; hasilnya dirujuk pada C34/C38, bukan diklaim tercakup keenam tes berikut. Coverage service/repository/controller bersama: 100% baris dan cabang; file autentikasi tidak masuk pengukuran.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C10-UT01 | `buatCampaign/Project` | Normal/negatif | JSON mencoba mengganti pemilik/status | Pemilik dari sesi; status bukan dari klien | Repository menerima `owner` dan data tervalidasi | Pass |
+| C10-UT02 | `buatCampaign/Project` | Negatif | Peran volunteer/admin membuat aksi | 403 tanpa penulisan | 403; `buat()` repository tidak dipanggil | Pass |
+| C10-UT03 | Daftar milik sendiri | Normal/negatif | Pembuat lalu volunteer meminta daftar | Filter pemilik; volunteer ditolak | Filter `owner`; volunteer 403 | Pass |
+| C10-UT04 | Akses detail | Normal/negatif | Pemilik/admin, pembuat lain, ID hilang | Pemilik/admin boleh; lainnya 404 | Kedua pengguna berhak mendapat detail; lainnya 404 | Pass |
+| C10-UT05 | Endpoint My Actions | Normal | Controller menerima sesi pembuat | Daftar diteruskan dengan sesi | 200, JSON `aksi: []`; sesi diteruskan | Pass |
+| C10-UT06 | Query daftar | Normal | Daftar pemilik dan antrean pending | Filter diterapkan pada kedua tabel | `UNION ALL` dengan parameter pemilik/status di kedua sisi | Pass |
+
+### 4.2.11 Kelas AdminSistem
+
+**ID:** C11 — **Tingkat:** Mendalam.
+
+Seluruh operasi DPPL (`tinjauPengajuan`, `setujuiPengajuan`, `tolakPengajuan`) diwujudkan oleh `AksiService.lihat/antrean/putuskan`; akses detail admin juga diuji pada C10-UT04. Coverage service bersama: 100% baris/cabang. Aturan keputusan berhubungan dengan Algo-010 dan Algo-013.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C11-UT01 | `tinjauPengajuan` (antrean) | Normal | Admin meminta antrean | Hanya pending diminta | Filter `menunggu_verifikasi` diteruskan | Pass |
+| C11-UT02 | Hak admin | Negatif | Pembuat/volunteer meminta antrean dan keputusan | Seluruhnya 403 | 403; tidak ada penulisan keputusan | Pass |
+| C11-UT03 | `setujuiPengajuan` | Normal | Setujui pending | Published tanpa alasan penolakan | `terpublikasi`, alasan null, koneksi transaksi sama | Pass |
+| C11-UT04 | `tolakPengajuan` | Batas/negatif | Alasan spasi lalu alasan sah berspasi tepi | Kosong 400; alasan sah dirapikan | 400 lalu status `ditolak` dengan `Perbaiki lokasi` | Pass |
+
+### 4.2.17 Kelas FormCampaignView
+
+**ID:** C17 — **Tingkat:** Sedang. Unit: HTML `FormAksi` dan adapter HTTP `apiAksi`.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C17-UT01 | Tampilkan formulir | Normal | Render campaign | Kolom judul, deskripsi, target, periode, penggunaan dana dan tombol simpan | Semua kolom/tombol ada; tanpa tahap project | Pass |
+| C17-UT02 | Pesan kesalahan | Negatif | Adapter menerima HTTP 400 dengan galat target | Galat kolom tetap tersedia | Status 400 dan `rincian.targetDana` sesuai | Pass |
+| C17-UT03 | Kirim formulir | Negatif | Fetch gagal lalu respons 500 | Tidak dianggap sukses | Galat `Koneksi gagal` lalu pesan server | Pass |
+| C17-UT04 | Kirim formulir | Normal | Respons sukses berisi ID | ID dikembalikan; JSON tanpa cache | ID `aksi-1`; POST, `no-store`, badan JSON sesuai | Pass |
+
+### 4.2.19 Kelas CampaignController
+
+**ID:** C19 — **Tingkat:** Sedang. Fungsi `buatCampaign` dan `kelolaAksi`.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C19-UT01 | Buat campaign | Normal | Request JSON sah dan sesi pembuat | 201; service menerima jenis campaign | 201, `no-store`; asal request diperiksa | Pass |
+| C19-UT02 | Buat campaign | Negatif | Sesi melempar galat login | 401 sebelum service | 401; service tidak dipanggil | Pass |
+| C19-UT03 | Pesan validasi | Negatif | Service menolak target | 400 dengan galat kolom | JSON pesan dan `galat.targetDana` sesuai | Pass |
+| C19-UT04 | Detail privat | Normal | Request ID dengan sesi | 200; sesi/jenis/ID diteruskan | 200; `lihat(user,campaign,aksi-1)` dipanggil | Pass |
+
+### 4.2.20 Kelas FormProjectView
+
+**ID:** C20 — **Tingkat:** Sedang. Render statis dilengkapi validasi bersama; interaksi Kembali diuji pada UC03-TC03.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C20-UT01 | Tampilkan informasi | Normal | Render project baru | Tahap informasi mendahului kebutuhan | Tahap 1, tujuan, Simpan dan lanjut tampil; kuota belum tampil | Pass |
+| C20-UT02 | Validasi kebutuhan | Negatif | Validasi bersama menerima dana -1 | Ditolak | `GalatValidasi` dilempar | Pass |
+| C20-UT03 | Isi ulang draft | Normal | Render draft ber-ID dengan judul revisi | Judul/ID tetap tersedia | Judul revisi dan `aksi-1` ada dalam HTML | Pass |
+
+### 4.2.22 Kelas ProjectController
+
+**ID:** C22 — **Tingkat:** Sedang. Fungsi `buatProject`, `kelolaAksi`, `parameterAksi`.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C22-UT01 | Simpan informasi | Normal | JSON tahap informasi | 201; jenis project diteruskan | 201; data dan sesi sesuai | Pass |
+| C22-UT02 | Isi kebutuhan/revisi | Normal | Ubah kebutuhan untuk `aksi-1` | ID sama diteruskan ke service | 200; `ubah(user,project,aksi-1,data)` | Pass |
+| C22-UT03 | Validasi parameter | Negatif | Jenis berisi SQL; ID berbahaya atau >36 karakter | Ditolak | Semua parameter melempar galat | Pass |
+| C22-UT04 | JSON dan hak akses | Negatif | JSON rusak lalu service menolak akses | 400 untuk badan; 404 untuk akses | Badan null diteruskan; HTTP 400/404 | Pass |
+
+### 4.2.23 Kelas PengajuanView
+
+**ID:** C23 — **Tingkat:** Sedang. Render `TombolPengajuan`; klik/notifikasi dilengkapi UC02-TC01, UC03-TC01, UC04-TC04.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C23-UT01 | Tampilkan pengajuan | Normal | Draft lalu ditolak | Tombol sesuai status | `Ajukan Verifikasi` / `Ajukan Ulang` tampil | Pass |
+| C23-UT02 | Cegah pengajuan ulang | Negatif | Pending lalu published | Tombol pengajuan tidak ada | HTML kosong pada kedua status | Pass |
+
+### 4.2.24 Kelas DaftarPengajuanView
+
+**ID:** C24 — **Tingkat:** Sedang. Render `DaftarPengajuan`.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C24-UT01 | Tampilkan/pilih pengajuan | Normal | Satu project pending | Jenis, pembuat, tautan detail sesuai | Project, owner, `/admin/pengajuan/project/aksi-1` tampil | Pass |
+| C24-UT02 | Daftar kosong | Batas | Daftar `[]` | Pesan kosong tanpa tautan keputusan | `Tidak ada pengajuan`; tidak ada `Tinjau pengajuan` | Pass |
+
+### 4.2.25 Kelas DetailPengajuanView
+
+**ID:** C25 — **Tingkat:** Sedang. Render `KeputusanPengajuan` dan `DetailAksiPrivat`; keputusan interaktif diuji pada UC04.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C25-UT01 | Pilihan keputusan | Normal | Pengajuan pending | Kolom alasan, Setujui, Tolak | Ketiganya tampil | Pass |
+| C25-UT02 | Tampilkan status | Negatif | Pengajuan terpublikasi | Status saja, tanpa formulir keputusan | Terpublikasi tampil; textarea/tombol Setujui tidak ada | Pass |
+| C25-UT03 | Detail aman | Negatif | Deskripsi berisi script, alasan dan rincian dana | Teks di-escape; rincian tetap tampil | `&lt;script&gt;`, alasan, dan Bibit tampil; tag script tidak ada | Pass |
+
+### 4.2.26 Kelas VerifikasiController
+
+**ID:** C26 — **Tingkat:** Mendalam.
+
+Seluruh operasi DPPL diuji: `ajukanVerifikasi()` → `ajukan`, `getDaftarMenunggu()` → `antrean`, `getDetailPengajuan()` → `kelolaAksi/lihat` (C10-UT04/C19-UT04), `setujuiPengajuan/tolakPengajuan()` → `putuskan`. Aturan ada di `AksiService` dan repository; Algo-013. Coverage controller/service/repository bersama: 100% baris/cabang.
+
+| ID Pengujian | Operasi yang Diuji | Jenis Kasus | Prosedur/Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| C26-UT01 | `ajukanVerifikasi` | Normal/negatif | Draft, ditolak, pending | Dua pertama diajukan; pending 409 | Repository dipanggil untuk draft/ditolak; pending 409 | Pass |
+| C26-UT02 | `ajukanVerifikasi` | Negatif | Draft tanpa jadwal/titik kumpul | 400 sebelum perubahan status | 400; `ajukan()` repository tidak dipanggil | Pass |
+| C26-UT03 | `ajukanVerifikasi` | Negatif | Milik orang lain; update gagal bersyarat | 404 lalu 409 | 404/409 sesuai | Pass |
+| C26-UT04 | Keputusan | Negatif | Keputusan `publish`; pengajuan bukan pending | 400 lalu 409 | 400/409 sesuai | Pass |
+| C26-UT05 | Setujui/tolak | Batas | Periode sudah berakhir | Setujui 400; tolak beralasan tetap boleh | Persetujuan 400; penolakan diproses | Pass |
+| C26-UT06 | Keputusan bersamaan | Negatif | Repository mengembalikan false | 409, bukan sukses | 409 | Pass |
+| C26-UT07 | Delegasi controller | Normal | Ajukan, antrean, putuskan dengan sesi/ID | 200; parameter diteruskan tepat | Semua 200 dan argumen sesuai | Pass |
+| C26-UT08 | Galat controller | Negatif | Non-admin, konflik, asal salah | 403/409/403 | Seluruh status sesuai | Pass |
+| C26-UT09 | Galat internal | Negatif | Service melempar rincian rahasia DB | 500 dengan pesan umum | 500 `Terjadi kesalahan pada peladen.` tanpa rincian DB | Pass |
+| C26-UT10 | SQL pengajuan | Normal/negatif | Ajukan; affectedRows 1 lalu 0 | Bersihkan keputusan lama; true/false | Alasan/tanggal verifikasi null; true lalu false | Pass |
+| C26-UT11 | SQL keputusan | Normal/negatif | Putuskan pending; affectedRows 1 lalu 0 | Kondisi pending; true/false | SQL membatasi pending; parameter benar; true/false | Pass |
 
 ### 4.2.30 Kelas FormDonasiView
 
@@ -715,6 +879,10 @@ Tabel 4.3.1. Daftar Antarmuka Antarkomponen
 | IK-09 | ProgresController / progresService | MySQL (`progres_project`, `project`) | Controller - Model - Basis data | INT-TC17 s.d. INT-TC20 |
 | IK-10 | RelawanView, ProgresView (`FormPendaftaranRelawanView`, `FormVolunteerManagementView`, `FormProgresProjectView`) | RelawanController, ProgresController (`/api/projects/{id}/relawan`, `/api/projects/{id}/progres`) | View - Controller (HTTP API) | INT-TC21 |
 | IK-11 | dokumentasiService | Penyimpanan berkas lokal (`src/uploads/progres/`) dan `/api/dokumentasi/{idProject}/{nama}` | Aplikasi - Sistem berkas | INT-TC22 |
+| IK-12 | FormAksi, TombolPengajuan, KeputusanPengajuan | API campaign/project/pengajuan/verifikasi | View - Controller (HTTP nyata) | INT-TC23 |
+| IK-13 | Controller aksi / sesiAksi | Sesi dan akun MySQL | Controller - autentikasi - basis data | INT-TC24 |
+| IK-14 | AksiController / AksiService / AksiRepository | MySQL (`campaign`, `project`) | Controller - service - basis data | INT-TC25, INT-TC26, INT-TC29 |
+| IK-15 | VerifikasiController / AksiService / AksiRepository | MySQL (antrean, transisi, penguncian baris) | Controller - service - basis data | INT-TC27, INT-TC28 |
 
 Tabel 4.3.2. Hasil Pengujian Integrasi
 
@@ -742,6 +910,23 @@ Tabel 4.3.2. Hasil Pengujian Integrasi
 | INT-TC20 | IK-09 | Normal: urutan riwayat dan hak lihat | Tes "KF14: riwayat terbaru lebih dulu; project draft hanya untuk pemiliknya" | Riwayat terurut dari yang terbaru; riwayat project draft hanya dapat dibaca pemiliknya | Riwayat terurut dari yang terbaru; riwayat project draft hanya terbaca oleh pemiliknya | Pass |
 | INT-TC21 | IK-10 | Normal: formulir terhubung ke API | Jalankan aplikasi; login `nadia@klimpool.id`, kirim formulir relawan pada "Clean Water for Upper Citarum Villages"; login `sari@klimpool.id`, kirim progres pada "Sayung Coastal Mangrove Restoration"; amati tab Network | `POST /api/projects/air/relawan` berstatus 201 dengan `Content-Type: application/json`; `POST /api/projects/mgv/progres` berstatus 201 dengan `multipart/form-data`; modal tertutup dan notifikasi berhasil tampil | `POST /api/projects/air/relawan` berstatus 201 Created dengan respons `application/json`, lalu tampil "Application sent". `POST /api/projects/air/progres` berstatus 201 Created dengan *request header* `Content-Type: multipart/form-data; boundary=…`, lalu pembaruan tampil di timeline. | Pass |
 | INT-TC22 | IK-11 | Normal: dokumentasi tersimpan dan dapat diambil | Lanjut dari INT-TC21 dengan satu berkas PNG; buka folder `src/uploads/progres/mgv/` dan URL dokumentasi pada timeline | Berkas baru bernama `<uuid>.png` ada di folder; `GET /api/dokumentasi/mgv/<nama>` berstatus 200 dengan `Content-Type: image/png` | Berkas `bc443ab8-43b8-47d4-a7f4-60c852f9665a.png` (1.454 byte) tersimpan di `src/uploads/progres/mgv/`; log server mencatat `GET /api/dokumentasi/mgv/bc443ab8-….png 200` dan gambar tampil di peramban. | Pass |
+| INT-TC23 | IK-12 | Formulir terhubung ke API produksi | Jalankan `aksi.m10.browser.mjs`; simpan dan ajukan campaign/project; admin menolak lalu menyetujui | UI dan API memperlihatkan data/status yang sama | Draft → pending; ditolak dengan alasan; pengajuan ulang → pending → terpublikasi | Pass |
+| INT-TC24 | IK-13 | Sesi, peran dan asal request | Kasus pertama `aksi.integrasi.test.ts`: tanpa sesi, cookie dev, relawan/admin, lintas situs, sesi usang, akun nonaktif | Tanpa sesi sah 401; peran/asal salah 403 | Seluruh variasi 401/403 sesuai | Pass |
+| INT-TC25 | IK-14 | Kepemilikan dan penyimpanan | Kasus kedua: JSON memalsukan pemilik/status; pembuat lain melihat/mengubah/mengajukan | Pemilik/status ditentukan server; data privat tidak bocor | Pemilik sesi, status draft; akses orang lain 404; daftar orang lain kosong; pemilik dapat revisi | Pass |
+| INT-TC26 | IK-14 | Project dua tahap | Kasus ketiga: simpan informasi, ajukan sebelum lengkap, lengkapi, kembali, ajukan | ID tetap; kebutuhan tidak hilang; draft belum lengkap ditolak | 400 sebelum lengkap; ID/kebutuhan sama; status pending dan tanggal pengajuan terisi; edit pending 409 | Pass |
+| INT-TC27 | IK-15 | Antrean, penolakan, revisi, publikasi | Kasus keempat: ajukan campaign, tolak tanpa/dengan alasan, revisi, ajukan ulang, setujui | Antrean pending saja; wajib alasan; revisi dapat diajukan lagi | Tanpa alasan 400; alasan tersimpan; pengajuan ulang membersihkan alasan/tanggal lama; published dengan tanggal verifikasi | Pass |
+| INT-TC28 | IK-15 | Konkurensi transisi | Kasus kelima: dua pengajuan bersamaan; dua keputusan bersamaan | Tepat satu berhasil per pasangan | Kedua pasangan menghasilkan status `[200,409]` | Pass |
+| INT-TC29 | IK-14 | JSON/parameter berbahaya | Kasus keenam: JSON rusak; jenis/ID mengandung SQL | Badan salah 400; parameter salah 404 | 400 dan 404 sesuai, tidak menjadi query dari input | Pass |
+
+**Pelaksanaan UC02–UC04:** `npm run test:aksi` menghasilkan **15 Pass, 0 Fail, 0 Skip**, termasuk enam kasus integrasi MySQL (INT-TC24–TC29); sembilan lainnya menguji akses/validasi. INT-TC23 memakai browser sungguhan, bukan mock. Fixtures dibersihkan setelah pengujian; tidak ada layanan eksternal pada alur ini.
+
+Jalankan dari `src/` dengan berkas env **khusus database test** (bukan env aplikasi):
+
+```bash
+node --env-file=/path/ke/test.env /usr/bin/npm run test:aksi
+```
+
+Isi `AKSI_TEST_DB=1` dan `DB_*` untuk database bernama mengandung `test`, dengan skema/seed dari `src/db/migrations/`. Simpan kredensial di luar Git; jangan menjalankan reset database aplikasi.
 
 <br>
 
@@ -762,9 +947,56 @@ Tabel 4.4.1. Hasil Pengujian Use Case [UC01]
 | *UC01-TC02* | *KF01* | *Alternatif 1: [Nama skenario]* | *[Langkah-langkah pengujian]* | *[Data masukan]* | *[Hasil yang diharapkan]* | *[Hasil aktual]* | *[Pass/Fail. Jika Fail: penjelasan dan solusi]* |
 | *...* | *...* | *...* | *...* | *...* | *...* | *...* | *...* |
 
-### 4.4.2 Use Case [Nama Use Case 2]
+### 4.4.2 Use Case Membuat Campaign Penggalangan Donasi
 
-*[Lanjutkan untuk seluruh use case dengan pola yang sama, hingga 4.4.N.]*
+**ID:** UC02 — **Aktor:** Pembuat Project.
+
+UC02–UC04 memakai `src/scripts/aksi.m10.browser.mjs`, build produksi, dan MySQL terisolasi. Akun/sesi fixture dibuat sebagai prasyarat login; tes ini **tidak menguji formulir login**. Data dasar: judul unik, deskripsi pemulihan pesisir, Jawa Tengah/Demak, target Rp100.000, mulai hari uji, selesai 30 hari berikutnya.
+
+| ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| UC02-TC01 | KF05, KF06 | Normal | My Actions → New submission; isi campaign; Simpan Draft; Ajukan Verifikasi | Data dasar | Campaign tersimpan dengan ID/pemilik/status sah | ID UUID, pemilik sesi, target/periode sesuai; Draft → Menunggu Verifikasi | Pass |
+| UC02-TC02 | KF07 | Alternatif 2: target tidak sah | Isi target 0; Simpan Draft | Target 0 | Ditolak dan kolom target ditandai | `aria-invalid=true` pada target; tetap di form | Pass |
+| UC02-TC03 | KF07 | Alternatif 2: periode tidak sah | Isi tanggal selesai sebelum mulai/lampau; simpan | Selesai 1 Jan 2026 | Ditolak dan kolom periode ditandai | Kolom selesai ditandai salah; tidak berpindah halaman | Pass |
+| UC02-TC04 | KF06 | Keamanan tambahan: bukan pemilik | Pembuat lain membuka detail privat/API | ID campaign pemilik | Tidak membuka data privat | UI tidak ditemukan; API 404 | Pass |
+| UC02-TC05 | KF05, KF06 | Keamanan tambahan: tanpa hak | Tamu membuka `/start`; volunteer memanggil API buat | Tanpa sesi; peran volunteer | Login diwajibkan; peran salah ditolak | UI meminta login; API 403 | Pass |
+| UC02-TC06 | KF05, KF07 | Alternatif 1: tidak lengkap | Kirim form kosong, lalu lengkapi | Judul dan isian lain kosong | Galat kolom; tidak ada campaign baru | Judul ditandai salah; query jumlah campaign pemilik = 0 | Pass |
+
+### 4.4.3 Use Case Membuat Project Aksi Iklim
+
+**ID:** UC03 — **Aktor:** Pembuat Project. Tambahan data: tujuan memulihkan pesisir, logistik bibit/sarung tangan, kriteria siap bekerja di lapangan, kuota 5, titik kumpul Balai desa.
+
+| ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| UC03-TC01 | KF08, KF09 | Normal | My Actions → New submission → Project; isi informasi; lanjut kebutuhan; simpan; ajukan | Data dasar dan kebutuhan di atas | Project lengkap dengan pemilik/ID tetap; pending | API membaca kembali dana, logistik, kriteria, kuota, jadwal, titik kumpul dan pemilik sesuai; pending | Pass |
+| UC03-TC02 | KF10 | Alternatif 2: kebutuhan salah | Pada tahap kebutuhan isi dana -1; simpan; perbaiki; kosongkan logistik; simpan | Dana -1; logistik kosong | Kedua variasi ditolak pada kolomnya | Target lalu kebutuhan ditandai `aria-invalid=true` | Pass |
+| UC03-TC03 | KF08, KF09 | Navigasi tambahan: kembali | Isi kebutuhan; Kembali ke informasi; lanjut; simpan | Draft yang sama | Isian/ID tidak hilang, tidak membuat duplikat | Judul/logistik tetap; ID tahap awal = ID detail | Pass |
+| UC03-TC04 | KF09 | Keamanan tambahan: pemilik lain | Pembuat lain PATCH project; cek jumlah project pemilik | ID project yang sama | 404; tidak ada duplikat | PATCH 404; jumlah project pemilik tetap 1 | Pass |
+| UC03-TC05 | KF08, KF10 | Alternatif 1: informasi tidak lengkap | Pada tahap informasi tekan Simpan dan lanjut tanpa isian | Form kosong | Tidak lanjut/tersimpan; galat kolom | Judul ditandai salah; query jumlah project pemilik = 0 | Pass |
+
+### 4.4.4 Use Case Meninjau dan Memverifikasi Project
+
+**ID:** UC04 — **Aktor:** Admin Sistem dan Pembuat Project.
+
+| ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| UC04-TC01 | KF11, KF12 | Normal: setujui | Admin membuka antrean; memilih campaign pending; Setujui | Campaign yang diajukan ulang | Antrean memuat pengajuan; status terpublikasi | Campaign ada di antrean; status keputusan Terpublikasi | Pass |
+| UC04-TC02 | KF11 | Alternatif 1: tolak | Admin membuka detail; isi alasan; Tolak | `Perjelas rincian anggaran` | Ditolak dan alasan tersimpan | UI/API Ditolak; alasan sama dengan masukan | Pass |
+| UC04-TC03 | KF11 | Validasi tambahan: alasan kosong | Tolak tanpa alasan | Alasan kosong | Galat; status tetap pending | `Alasan penolakan wajib` tampil; API masih pending | Pass |
+| UC04-TC04 | KF06, KF11 | Pengajuan ulang | Pemilik membuka My Actions; melihat alasan; Ajukan Ulang | Campaign ditolak | Kembali pending; alasan lama dibersihkan | Alasan tampil; status Menunggu Verifikasi; alasan API null | Pass |
+| UC04-TC05 | KF12 | Keamanan: non-admin | Volunteer membuka `/admin` dan endpoint antrean/keputusan | Peran volunteer | UI/API menolak | UI tidak memiliki akses; kedua endpoint 403 | Pass |
+
+**Perbedaan rancangan:** simpan formulir menghasilkan Draft; pengajuan merupakan tombol terpisah. Validasi lengkap diwajibkan sebelum pengajuan. Project boleh memiliki draft informasi tanpa jadwal/kebutuhan, tetapi draft tersebut belum dapat diajukan (INT-TC26). Label diterima pada SKPL diwujudkan sebagai `terpublikasi`. Seluruh skenario normal dan alternatif UC02–UC04 di atas diuji; hasil bukan klaim atas semua fitur aplikasi.
+
+Reproduksi dari `src/`, setelah build dengan env database test:
+
+```bash
+node --env-file=/path/ke/test.env /usr/bin/npm run build
+M10_EVIDENCE_DIR=../docs/M10/assets/pengujian/aksi \
+  node --env-file=/path/ke/test.env scripts/aksi.m10.browser.mjs
+```
+
+Playwright/Chromium harus tersedia. Jika terpasang di luar proyek, isi `PLAYWRIGHT_MODULE` dan `PLAYWRIGHT_EXECUTABLE_PATH` sesuai lokasi lokal. Script menyalakan server sendiri pada port 3210 (ubah dengan `M10_TEST_PORT`), lalu membersihkan fixture.
 
 ### 4.4.6 Use Case Melakukan Transaksi Donasi
 
