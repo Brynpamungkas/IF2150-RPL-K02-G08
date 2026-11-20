@@ -236,6 +236,12 @@
 | 18-11-2026 | Nathan | Pengujian manual UC07–UC09, INT-TC21–INT-TC22, KNF07, dan KNF08 beserta tangkapan layar bukti pada Subbab 4.6 | 1,5 | Done | KNF07-TC02 Fail: format MP4 dan ZIP belum didukung |
 | 18-11-2026 | Sahla | Bab 2, Bab 4.1 untuk C04-C07, C30-C32, C39-C41, Bab 4.2 untuk Kelas-kelas UC06 dan UC10, Bab 4.3 untuk IK-01 -IK-016, dan Bab 4.4 untuk UC06 dan UC10 | 2,5 | Done | - |
 | 19-11-2026 | Sahla | Bab 4.5 untuk KNF04 dan KNF06, Bab 4.6 dan Bab 5 untuk UC06 dan UC10 | 2,5 | Done | - |
+| 19-11-2026 | Neysa | Bab 4.1 untuk C01, C05, C18, C21, C27–C29 dan pembuka Bab 4.2 (kerangka Vitest dan node:test, ringkasan coverage) | 1,5 | Done | - |
+| 19-11-2026 | Neysa | Bab 4.2 untuk kelas-kelas UC05 dan peta (C01, C05, C18, C21, C27–C29) dari tes katalog, Explore, detail, dan peta | 2 | Done | - |
+| 19-11-2026 | Neysa | Menyusun skenario Bab 4.3 untuk IK-12–IK-15, Bab 4.4 untuk UC05, Bab 4.5 untuk KNF02, KNF09, dan KNF11, serta Bab 5 untuk KF13, KF14, KNF02, KNF09, dan KNF11 | 1,5 | Done | Laptop belum ada MySQL/Docker |
+| 20-11-2026 | Neysa | Ukur coverage C01 dan C05, uji integrasi INT-TC23–INT-TC30 dan KNF11 | 1 | Done | - |
+| 20-11-2026 | Neysa | Uji UC05-TC01–UC05-TC09 dan KNF02 (Chrome DevTools dan script PowerShell) & screenshoot bukti pada Bab 4.6 | 0,5 | Done | - |
+| 20-11-2026 | Neysa | Uji KNF09 (1.000 koneksi), menambah unit test `PetaRepository`| 0,5 | Done | Coverage `peta.repository.ts` awalnya 34,61%, di bawah batas 70% |
 
 **Catatan/Evaluasi Milestone 10:**
 * *(Isi jika ada catatan khusus untuk asisten atau evaluasi singkat kerja tim)*
