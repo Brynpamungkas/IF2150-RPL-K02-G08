@@ -101,6 +101,7 @@ Silakan catat penggunaan AI yang berdampak signifikan pada pengerjaan tugas (mis
 | Tool AI | Tujuan Penggunaan | Contoh Prompt Utama | Modifikasi & Validasi Manusia |
 | :--- | :--- | :--- | :--- |
 | Claude | Membantu melengkapi skema testing | "Saya ingin melakukan testing untuk UC06, UC10 (KF15–KF18, KF26, KF27), C04, C06, C07, C30–C32, dan C39–C41 sesuai DDPL, selain melalui website dan file testing yang berupa typescript apa lagi yang harus saya lakukan" | Tinjau skema testing & hasil testing |
+| OpenAI melalui OpenCode (Bryan) | Pendamping pemrograman untuk pengujian UC02–UC04, pengukuran coverage, bukti browser, dan penyusunan HIUPL | Ringkasan prompt: melanjutkan pengujian bagian aksi pada kode main terbaru dan menulis hasil secara singkat | Hasil dicatat dari tes otomatis pada database terisolasi; batas coverage dan KNF03 dijelaskan. Review manusia atas perubahan ini belum dilakukan; disiapkan melalui PR |
 ---
 
 ### Pernyataan Integritas dan Persetujuan
