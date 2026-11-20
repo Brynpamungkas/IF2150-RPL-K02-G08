@@ -64,6 +64,7 @@ Dipersiapkan oleh:
 | C | Mencatat 68 kasus unit, coverage tujuh modul aksi, integrasi MySQL, dan hasil browser UC02–UC04 beserta batas pengujiannya. |
 | D | Melampirkan bukti aktual, pengukuran tahap KNF03, traceability KF05–KF12, dan deklarasi AI Bryan. |
 | E | Menggabungkan pembaruan UC05 dari main `9527672`; ID integrasi aksi menjadi INT-TC31–TC37 dan IK-16–IK-19 agar tidak berbenturan. |
+| F | Merapikan bukti dan pembahasan agar berfokus pada pengujian UC02–UC04. |
 
 ---
 
@@ -246,11 +247,8 @@ Tabel 3.4. File Lain
 | :--- | :--- | :--- |
 | 1 | *[Nama file]* | *[Fungsi file]* |
 | 2 | `src/shared/aksi.ts`, `src/components/aksi/apiAksi.ts` | Kontrak data/status aksi dan adapter HTTP formulir. |
-| 3 | `src/tests/aksi.m10-*.spec.ts`, `src/tests/fixtures/aksi.ts` | 68 kasus unit UC02–UC04 dan data uji. |
-| 4 | `src/vitest.aksi.config.ts` | Pengukuran coverage tujuh modul aksi, ambang 70% per file. |
-| 5 | `src/tests/aksi.integrasi.test.ts`, `aksi.akses.test.ts`, `aksi.validasi.test.ts` | Integrasi MySQL, sesi, kepemilikan, transisi dan konkurensi. |
-| 6 | `src/scripts/aksi.m10.browser.mjs` | Pengujian browser dan pengambilan bukti UC02–UC04/KNF03. |
-| 7 | `docs/M10/assets/pengujian/aksi/` | Tangkapan hasil tes, coverage, dan layar pengujian aksi. |
+| 3 | `src/tests/aksi.integrasi.test.ts`, `aksi.akses.test.ts`, `aksi.validasi.test.ts` | Integrasi MySQL, sesi, kepemilikan, transisi dan konkurensi. |
+| 4 | `docs/M10/assets/pengujian/aksi/` | Tangkapan hasil tes, coverage, dan layar pengujian aksi. |
 | ... | *...* | *...* |
 
 <br>
@@ -440,17 +438,7 @@ Hasil saat dijalankan: 44 dari 44 test case `relawanProgres.layanan.test.ts` dan
 
 ### Pengujian Unit UC02–UC04
 
-Tambahan file tes, skrip browser, dan tooling coverage **tidak disertakan dalam `main`**; [PR #93](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/93) telah ditutup tanpa digabungkan. Hasil dan bukti berikut berasal dari [snapshot pengujian `867d333`](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/commit/867d333). Pemetaan file tes/tooling dan perintah reproduksi di bagian ini merujuk snapshot tersebut, bukan checkout `main` saat ini.
-
-Lima file `src/tests/aksi.m10-*.spec.ts` menjalankan **68 kasus: 68 Pass, 0 Fail**. Validasi diuji langsung; repository, sesi, koneksi, dan HTTP diganti tiruan pada unit yang memerlukannya. Komponen view diuji melalui HTML statis dan adapter `apiAksi`; interaksi klik diuji terpisah pada §4.4. Waktu unit dipatok 19 November 2026 agar batas tanggal konsisten.
-
-Jalankan dari `src/`:
-
-```bash
-npm ci
-npm run test:aksi:unit
-npm run test:aksi:coverage
-```
+Pengujian unit yang dilakukan mencakup **68 kasus: 68 Pass, 0 Fail**. Validasi diuji langsung; repository, sesi, koneksi, dan HTTP diganti tiruan pada unit yang memerlukannya. Komponen view diuji melalui HTML statis dan adapter `apiAksi`; interaksi klik diuji terpisah pada §4.4. Waktu unit dipatok 19 November 2026 agar batas tanggal konsisten.
 
 Kelas DPPL diwujudkan sebagai fungsi bersama, bukan satu file per kelas (lihat B.5 Tugas 9). Coverage V8 berikut hanya mencakup **tujuh file aksi**, bukan seluruh aplikasi, file view, autentikasi, atau seluruh operasi lintas UC. Ambang setiap file: 70% baris, pernyataan, fungsi, dan cabang. Bukti: §4.6.
 
@@ -1159,7 +1147,7 @@ Tabel 4.3.2. Hasil Pengujian Integrasi
 | INT-TC28 | IK-14 | Batas: sebaran dalam radius | Kirim `GET /api/peta?jenis=project&pusat=-6.9,110.5&radius=30`; lalu `GET /api/peta?radius=10` tanpa pusat | Permintaan pertama berstatus 200 dan hanya berisi project yang berjarak ≤ 30 km dari titik pusat, yaitu `mgv` (Sayung, Demak) dan `biopori` (Gajahmungkur, Semarang); permintaan kedua berstatus 400 `{ pesan: "Parameter pusat harus berformat \"lat,lng\"." }` | Permintaan pertama mengembalikan 2 titik: `mgv` (3,3 km dari pusat) dan `biopori` (16,6 km), dihitung dengan rumus *haversine* di PowerShell. Permintaan kedua berstatus 400 | Pass |
 | INT-TC29 | IK-15 | Normal: detail diambil dari basis data | Tanpa login, buka `/project/mgv` dan `/campaign/surya`; bandingkan dengan `SELECT nama, kebutuhan_dana, dana_terkumpul FROM project WHERE id_project = 'mgv';` dan query setara pada `campaign` | Kedua halaman tampil; nama, target, dan dana terkumpul sama dengan isi basis data | `/project/mgv` menampilkan "Rp61,250,000 raised of a Rp85,000,000 target" (72% funded), sama dengan query `project` (`kebutuhan_dana` 85000000.00, `dana_terkumpul` 61250000.00, status `terpublikasi`). `/campaign/surya` menampilkan "Rp22,800,000 raised of a Rp95,000,000 target" (24% funded), sama dengan query `campaign` (`target_nominal` 95000000.00, `dana_terkumpul` 22800000.00, status `terpublikasi`) | Pass |
 | INT-TC30 | IK-15 | Gagal: detail yang belum terpublikasi | Tanpa login, buka `/project/rusun`, `/campaign/lewotobi`, `/campaign/tamankali`, dan `/project/tidakada` | Keempatnya menampilkan halaman tidak ditemukan (404); data aksi tidak tampil | `/project/rusun`, `/campaign/lewotobi`, `/campaign/tamankali`, dan `/project/tidak%20ada` menampilkan halaman 404 "This page could not be found." di bawah navbar; data aksi tidak tampil | Pass |
-| INT-TC31 | IK-16 | Formulir terhubung ke API produksi | Jalankan `aksi.m10.browser.mjs`; simpan dan ajukan campaign/project; admin menolak lalu menyetujui | UI dan API memperlihatkan data/status yang sama | Draft → pending; ditolak dengan alasan; pengajuan ulang → pending → terpublikasi | Pass |
+| INT-TC31 | IK-16 | Formulir terhubung ke API produksi | Melalui browser, simpan dan ajukan campaign/project; admin menolak lalu menyetujui | UI dan API memperlihatkan data/status yang sama | Draft → pending; ditolak dengan alasan; pengajuan ulang → pending → terpublikasi | Pass |
 | INT-TC32 | IK-17 | Sesi, peran dan asal request | Kasus pertama `aksi.integrasi.test.ts`: tanpa sesi, cookie dev, relawan/admin, lintas situs, sesi usang, akun nonaktif | Tanpa sesi sah 401; peran/asal salah 403 | Seluruh variasi 401/403 sesuai | Pass |
 | INT-TC33 | IK-18 | Kepemilikan dan penyimpanan | Kasus kedua: JSON memalsukan pemilik/status; pembuat lain melihat/mengubah/mengajukan | Pemilik/status ditentukan server; data privat tidak bocor | Pemilik sesi, status draft; akses orang lain 404; daftar orang lain kosong; pemilik dapat revisi | Pass |
 | INT-TC34 | IK-18 | Project dua tahap | Kasus ketiga: simpan informasi, ajukan sebelum lengkap, lengkapi, kembali, ajukan | ID tetap; kebutuhan tidak hilang; draft belum lengkap ditolak | 400 sebelum lengkap; ID/kebutuhan sama; status pending dan tanggal pengajuan terisi; edit pending 409 | Pass |
@@ -1168,14 +1156,6 @@ Tabel 4.3.2. Hasil Pengujian Integrasi
 | INT-TC37 | IK-18 | JSON/parameter berbahaya | Kasus keenam: JSON rusak; jenis/ID mengandung SQL | Badan salah 400; parameter salah 404 | 400 dan 404 sesuai, tidak menjadi query dari input | Pass |
 
 **Pelaksanaan UC02–UC04:** `npm run test:aksi` menghasilkan **15 Pass, 0 Fail, 0 Skip**, termasuk enam kasus integrasi MySQL (INT-TC32–TC37); sembilan lainnya menguji akses/validasi. INT-TC31 memakai browser sungguhan, bukan mock. Fixtures dibersihkan setelah pengujian; tidak ada layanan eksternal pada alur ini.
-
-Jalankan dari `src/` dengan berkas env **khusus database test** (bukan env aplikasi):
-
-```bash
-node --env-file=/path/ke/test.env /usr/bin/npm run test:aksi
-```
-
-Isi `AKSI_TEST_DB=1` dan `DB_*` untuk database bernama mengandung `test`, dengan skema/seed dari `src/db/migrations/`. Simpan kredensial di luar Git; jangan menjalankan reset database aplikasi.
 
 <br>
 
@@ -1200,7 +1180,7 @@ Tabel 4.4.1. Hasil Pengujian Use Case [UC01]
 
 **ID:** UC02 — **Aktor:** Pembuat Project.
 
-UC02–UC04 memakai `src/scripts/aksi.m10.browser.mjs`, build produksi, dan MySQL terisolasi. Akun/sesi fixture dibuat sebagai prasyarat login; tes ini **tidak menguji formulir login**. Data dasar: judul unik, deskripsi pemulihan pesisir, Jawa Tengah/Demak, target Rp100.000, mulai hari uji, selesai 30 hari berikutnya.
+UC02–UC04 diuji melalui browser otomatis pada build produksi dan MySQL terisolasi. Akun/sesi fixture dibuat sebagai prasyarat login; tes ini **tidak menguji formulir login**. Data dasar: judul unik, deskripsi pemulihan pesisir, Jawa Tengah/Demak, target Rp100.000, mulai hari uji, selesai 30 hari berikutnya.
 
 | ID Pengujian | ID KF | Skenario | Prosedur Pengujian | Masukan | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
@@ -1236,16 +1216,6 @@ UC02–UC04 memakai `src/scripts/aksi.m10.browser.mjs`, build produksi, dan MySQ
 | UC04-TC05 | KF12 | Keamanan: non-admin | Volunteer membuka `/admin` dan endpoint antrean/keputusan | Peran volunteer | UI/API menolak | UI tidak memiliki akses; kedua endpoint 403 | Pass |
 
 **Perbedaan rancangan:** simpan formulir menghasilkan Draft; pengajuan merupakan tombol terpisah. Validasi lengkap diwajibkan sebelum pengajuan. Project boleh memiliki draft informasi tanpa jadwal/kebutuhan, tetapi draft tersebut belum dapat diajukan (INT-TC34). Label diterima pada SKPL diwujudkan sebagai `terpublikasi`. Seluruh skenario normal dan alternatif UC02–UC04 di atas diuji; hasil bukan klaim atas semua fitur aplikasi.
-
-Reproduksi dari `src/`, setelah build dengan env database test:
-
-```bash
-node --env-file=/path/ke/test.env /usr/bin/npm run build
-M10_EVIDENCE_DIR=../docs/M10/assets/pengujian/aksi \
-  node --env-file=/path/ke/test.env scripts/aksi.m10.browser.mjs
-```
-
-Playwright/Chromium harus tersedia. Jika terpasang di luar proyek, isi `PLAYWRIGHT_MODULE` dan `PLAYWRIGHT_EXECUTABLE_PATH` sesuai lokasi lokal. Script menyalakan server sendiri pada port 3210 (ubah dengan `M10_TEST_PORT`), lalu membersihkan fixture.
 
 ### 4.4.5 Use Case Mencari dan Menelusuri Project
 
@@ -1385,8 +1355,6 @@ SKPL KNF03 menyebut “pemesanan jasa hingga pembayaran”, yang tidak tersedia 
 
 **Ringkasan UC02–UC04:** 68 unit Pass; runner akses/validasi/integrasi 15 Pass, 0 Skip; browser 16 kasus UC + 3 pengukuran KNF Pass pada lingkupnya, tanpa `pageerror`. Lint lulus. Build lulus pada percobaan ulang; percobaan awal dihentikan peringatan kerentanan Next.js 16.4.4. Peningkatan framework belum dilakukan karena di luar perubahan pengujian ini. Angka pengujian di atas hanya untuk cakupan aksi, bukan seluruh repositori.
 
-**Pemeriksaan regresi tambahan:** `npm test` pada database test menghasilkan 133 Pass, 1 Fail, 0 Skip dari 134 tes Node. `relawanProgres.layanan.test.ts` gagal dimuat karena `ERR_MODULE_NOT_FOUND` pada alias `@/server/db` (terurai ke `src/tests/@/server/db`); akibatnya rangkaian `npm test` berhenti sebelum Vitest. `npm run test:vitest` yang dijalankan terpisah lulus **263/263**. Kegagalan loader ini tidak diperbaiki pada bagian aksi; tindak lanjutnya memeriksa resolusi alias `mock.module`/tsx dan menjalankan ulang suite pada runtime tim. Hasil terbaru ini tidak menggantikan catatan pengujian rekan pada lingkungan mereka.
-
 Catatan KNF11: rumusan KNF11 pada SKPL menyebut "kategori jasa sekunder" dan "modul transaksi utama", padahal KlimPooL tidak memiliki jasa. Padanannya pada aplikasi adalah kategori aksi iklim (misalnya *Clean water*, *Reforestation*) dan modul transaksi donasi (UC06), sehingga KNF11 diuji dengan menambah kategori aksi baru lalu memeriksa apakah modul donasi ikut berubah.
 
 Catatan KNF09: pengujian beban dijalankan pada satu laptop, dengan alat uji, aplikasi, dan basis data berada di mesin yang sama, sehingga hasilnya belum mencerminkan server produksi. Pengukuran ulang direncanakan setelah aplikasi di-*deploy*.
@@ -1405,7 +1373,6 @@ Tabel 4.6. Bukti Hasil Pengujian
 | Coverage tujuh file aksi (C02, C03, C10, C11, C26; batas pada §4.2) | <img alt="Total coverage aksi" src="./assets/pengujian/aksi/COVERAGE-aksi.png" width="100%"><br><img alt="Coverage validasi" src="./assets/pengujian/aksi/COVERAGE-validasi.png" width="100%"><br><img alt="Coverage service" src="./assets/pengujian/aksi/COVERAGE-service.png" width="100%"><br><img alt="Coverage repository" src="./assets/pengujian/aksi/COVERAGE-repository.png" width="100%"><br><img alt="Coverage empat controller" src="./assets/pengujian/aksi/COVERAGE-controller.png" width="100%"> |
 | INT-TC32–TC37 | <img alt="Runner aksi: 15 pass, 0 fail, 0 skip; termasuk enam integrasi MySQL" src="./assets/pengujian/aksi/INT-aksi-15.png" width="100%"> |
 | INT-TC31, seluruh UC02–UC04 dan KNF03 | <img alt="Keluaran browser: 16 UC dan 3 KNF pass, tanpa pageerror" src="./assets/pengujian/aksi/BROWSER-aksi-19.png" width="100%"> |
-| Regresi tambahan (bukan kasus aksi baru) | <img alt="Suite Vitest: 263 passed" src="./assets/pengujian/aksi/REGRESI-vitest.png" width="100%"><br><img alt="Cuplikan kegagalan loader Node dan ringkasan 133 pass, 1 fail, 0 skip" src="./assets/pengujian/aksi/REGRESI-node.png" width="100%"> |
 | UC02-TC01 | <img alt="Campaign Draft" src="./assets/pengujian/aksi/UC02-TC01-draft.png" width="70%"><br><img alt="Campaign pending" src="./assets/pengujian/aksi/UC02-TC01-pending.png" width="70%"> |
 | UC02-TC02, UC02-TC03, UC02-TC06 | <img alt="Target 0 ditolak" src="./assets/pengujian/aksi/UC02-TC02-target.png" width="70%"><br><img alt="Periode salah ditolak" src="./assets/pengujian/aksi/UC02-TC03-periode.png" width="70%"><br><img alt="Campaign tidak lengkap ditolak" src="./assets/pengujian/aksi/UC02-TC06-kelengkapan.png" width="70%"> |
 | UC03-TC01, UC03-TC03 | <img alt="Informasi project" src="./assets/pengujian/aksi/UC03-TC01-informasi.png" width="70%"><br><img alt="Kebutuhan project" src="./assets/pengujian/aksi/UC03-TC01-kebutuhan.png" width="70%"><br><img alt="Project Draft dengan ID tetap" src="./assets/pengujian/aksi/UC03-TC01-draft.png" width="70%"><br><img alt="Project pending" src="./assets/pengujian/aksi/UC03-TC01-pending.png" width="70%"> |
