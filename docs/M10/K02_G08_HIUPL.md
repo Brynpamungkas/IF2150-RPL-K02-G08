@@ -440,7 +440,7 @@ Hasil saat dijalankan: 44 dari 44 test case `relawanProgres.layanan.test.ts` dan
 
 ### Pengujian Unit UC02–UC04
 
-Dokumentasi dan bukti dipublikasikan lebih dulu ke `main`. Tambahan file tes, skrip browser, dan tooling coverage masih menunggu review pada [PR #93](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/93). Untuk mengulang tes tambahan sebelum PR digabung, gunakan branch `docs/m10-aksi-bryan`.
+Tambahan file tes, skrip browser, dan tooling coverage **tidak disertakan dalam `main`**; [PR #93](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/pull/93) telah ditutup tanpa digabungkan. Hasil dan bukti berikut berasal dari [snapshot pengujian `867d333`](https://github.com/Brynpamungkas/IF2150-RPL-K02-G08/commit/867d333). Pemetaan file tes/tooling dan perintah reproduksi di bagian ini merujuk snapshot tersebut, bukan checkout `main` saat ini.
 
 Lima file `src/tests/aksi.m10-*.spec.ts` menjalankan **68 kasus: 68 Pass, 0 Fail**. Validasi diuji langsung; repository, sesi, koneksi, dan HTTP diganti tiruan pada unit yang memerlukannya. Komponen view diuji melalui HTML statis dan adapter `apiAksi`; interaksi klik diuji terpisah pada §4.4. Waktu unit dipatok 19 November 2026 agar batas tanggal konsisten.
 
